@@ -43,12 +43,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -78,9 +78,1973 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: SkinDark_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6462b4ed036cbe546a86be71fc373ac6
+      internalID: -1108393521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1513d60db93370a45854fc0f0dce37f0
+      internalID: 2121274655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 12}
+        - {x: -9, y: 7}
+        - {x: -9, y: -11}
+        - {x: -5, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 10}
+        - {x: 6, y: 12}
+      physicsShape:
+      - - {x: -8, y: 12}
+        - {x: -9, y: 7}
+        - {x: -9, y: -11}
+        - {x: -5, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 10}
+        - {x: 6, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: afb95ef3855b5a949bb059c775877fcd
+      internalID: -447272120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97c9cc0e0d9df144aa704b302f80866d
+      internalID: -1676298387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e8759d750fb4b24f8d51f45065e4763
+      internalID: -1728253110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_5
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: b73fcf19c6ff2b44f95c44f542480fad
+      internalID: -1996749652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_6
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 14}
+        - {x: -9, y: 9}
+        - {x: -9, y: -9}
+        - {x: -5, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 12}
+        - {x: 6, y: 14}
+      physicsShape:
+      - - {x: -8, y: 14}
+        - {x: -9, y: 9}
+        - {x: -9, y: -9}
+        - {x: -5, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 12}
+        - {x: 6, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a24da5232515f654f8b37401d1ce07b4
+      internalID: -279556178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_7
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: b133738cf285e014a862047975b7aba5
+      internalID: -1023190747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: c29f5832e1623ae458ea74cad27c0fa3
+      internalID: -523181666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_9
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      physicsShape:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1056f42ba0871c4bbd47497a3a47b2f
+      internalID: -813310566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_10
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -3}
+        - {x: -4, y: -14}
+        - {x: 6, y: -14}
+        - {x: 8, y: -9}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: -4, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -3}
+        - {x: -4, y: -14}
+        - {x: 6, y: -14}
+        - {x: 8, y: -9}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88aa0608f5f9e814682e9179f4079fc2
+      internalID: -2101162202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_11
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      physicsShape:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4e3cd82f1eaedf4583fbef372e13209
+      internalID: -724990421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: fad7ff0600fc8734897fa9d3c3a927ea
+      internalID: -1222726353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_13
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      physicsShape:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd049e53f2922f147ab12bc6a688d3fe
+      internalID: -1381365910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_14
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 12}
+        - {x: -7, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -5}
+        - {x: 8, y: 10}
+      physicsShape:
+      - - {x: 4, y: 12}
+        - {x: -7, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -5}
+        - {x: 8, y: 10}
+      tessellationDetail: 0
+      bones: []
+      spriteID: b978e0d7a547c514dad04f33f2aac0ff
+      internalID: 2117458003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_15
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      physicsShape:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97dec5e7fb309a14a9e6d9f6a66a153c
+      internalID: -1682876094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f8c71dcf82f16543a8c7bcd15b6db1d
+      internalID: 780991684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_17
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: -7}
+        - {x: -1, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: -7}
+        - {x: -1, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7b3dcced728b09458974189da94880a
+      internalID: -429485505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_18
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -6}
+        - {x: 0, y: -12}
+        - {x: 6, y: -12}
+        - {x: 8, y: -9}
+        - {x: 8, y: 9}
+        - {x: 7, y: 14}
+      physicsShape:
+      - - {x: -5, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -6}
+        - {x: 0, y: -12}
+        - {x: 6, y: -12}
+        - {x: 8, y: -9}
+        - {x: 8, y: 9}
+        - {x: 7, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2f5be844ca286549a6e323afe64eac9
+      internalID: -1188216780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_19
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -9}
+        - {x: -1, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -9}
+        - {x: -1, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e3fcbaa14aa97346ade799bcee4f3c0
+      internalID: 1056303208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_20
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31cc9c353d71cdc4bb5c6703688e4c94
+      internalID: -715266267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_21
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 15}
+        - {x: -9, y: 13}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 1, y: -12}
+        - {x: 8, y: -8}
+        - {x: 8, y: 11}
+        - {x: 6, y: 15}
+      physicsShape:
+      - - {x: -4, y: 15}
+        - {x: -9, y: 13}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 1, y: -12}
+        - {x: 8, y: -8}
+        - {x: 8, y: 11}
+        - {x: 6, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 325b311705e5b9e49a4d0909e4189ebc
+      internalID: -2012893612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_22
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -6}
+        - {x: -7, y: -8}
+        - {x: -2, y: -12}
+        - {x: 0, y: -12}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+        - {x: 6, y: 14}
+      physicsShape:
+      - - {x: -3, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -6}
+        - {x: -7, y: -8}
+        - {x: -2, y: -12}
+        - {x: 0, y: -12}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+        - {x: 6, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a34d362c2ebb33f44830839275ffde12
+      internalID: 567491603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_23
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 13}
+        - {x: -9, y: 11}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 1, y: -14}
+        - {x: 8, y: -10}
+        - {x: 8, y: 9}
+        - {x: 6, y: 13}
+      physicsShape:
+      - - {x: -4, y: 13}
+        - {x: -9, y: 11}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 1, y: -14}
+        - {x: 8, y: -10}
+        - {x: 8, y: 9}
+        - {x: 6, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 598ad45175dd49e4892ce8c0ed8b54ba
+      internalID: -855966016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ea7ba310a000004386e91832f35161f
+      internalID: -94970684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_25
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 6, y: 17}
+        - {x: -4, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -4}
+        - {x: -1, y: -10}
+        - {x: 3, y: -10}
+        - {x: 6, y: -7}
+        - {x: 8, y: -4}
+        - {x: 8, y: 14}
+      physicsShape:
+      - - {x: 6, y: 17}
+        - {x: -4, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -4}
+        - {x: -1, y: -10}
+        - {x: 3, y: -10}
+        - {x: 6, y: -7}
+        - {x: 8, y: -4}
+        - {x: 8, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21c2794b46a4855408ea1dfb268e540b
+      internalID: 1435578716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_26
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 16}
+        - {x: -8, y: -7}
+        - {x: -7, y: -10}
+        - {x: 5, y: -10}
+        - {x: 8, y: -3}
+        - {x: 8, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -8, y: 16}
+        - {x: -8, y: -7}
+        - {x: -7, y: -10}
+        - {x: 5, y: -10}
+        - {x: 8, y: -3}
+        - {x: 8, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: af1a7c233b6b3574ba9d1c1bab679afd
+      internalID: 1079389780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_27
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -9}
+        - {x: -4, y: -12}
+        - {x: 4, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 15}
+      physicsShape:
+      - - {x: -4, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -9}
+        - {x: -4, y: -12}
+        - {x: 4, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb46ec9580731764d8b8a1df677b3288
+      internalID: 1910116024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_28
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fa7c6cdfa5a13a4ab22ef595668d8e8
+      internalID: -2035441291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_29
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -2}
+        - {x: -5, y: -10}
+        - {x: 1, y: -10}
+        - {x: 8, y: -6}
+        - {x: 8, y: 13}
+        - {x: 6, y: 17}
+      physicsShape:
+      - - {x: -3, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -2}
+        - {x: -5, y: -10}
+        - {x: 1, y: -10}
+        - {x: 8, y: -6}
+        - {x: 8, y: 13}
+        - {x: 6, y: 17}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2893a5837af916844bd27a8f65b51c60
+      internalID: 2077595807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_30
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 16}
+        - {x: -8, y: 14}
+        - {x: -8, y: -8}
+        - {x: -5, y: -10}
+        - {x: 7, y: -10}
+        - {x: 8, y: -7}
+        - {x: 8, y: 16}
+      physicsShape:
+      - - {x: -3, y: 16}
+        - {x: -8, y: 14}
+        - {x: -8, y: -8}
+        - {x: -5, y: -10}
+        - {x: 7, y: -10}
+        - {x: 8, y: -7}
+        - {x: 8, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02778f0c8a8bb0b4d8553dbba660cdc4
+      internalID: -314314165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_31
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+        - {x: -3, y: -12}
+        - {x: 5, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 7, y: 15}
+      physicsShape:
+      - - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+        - {x: -3, y: -12}
+        - {x: 5, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 7, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: e86df1a359d3f7a4082baab6d241bc31
+      internalID: -544171210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2e6dc1dc550d884cabf6c49b021083e
+      internalID: 1266549085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_33
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: 3}
+        - {x: -6, y: -11}
+        - {x: -5, y: -13}
+        - {x: 5, y: -13}
+        - {x: 8, y: -12}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: 3}
+        - {x: -6, y: -11}
+        - {x: -5, y: -13}
+        - {x: 5, y: -13}
+        - {x: 8, y: -12}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: f75d425881c01a541b8fe556bd6e0e61
+      internalID: 2053761949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_34
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      physicsShape:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7e712e22cbb7fe4ab1b415f9c4d0823
+      internalID: 1800903627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_35
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -6, y: -13}
+        - {x: 0, y: -15}
+        - {x: 8, y: -15}
+        - {x: 8, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -6, y: -13}
+        - {x: 0, y: -15}
+        - {x: 8, y: -15}
+        - {x: 8, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ebcfbb69d26df541a2b5111320d4866
+      internalID: -1891286340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_36
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fbebcc476b60994caee4a7d902f15a2
+      internalID: 1810274981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_37
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -3}
+        - {x: -7, y: -11}
+        - {x: -5, y: -13}
+        - {x: 7, y: -13}
+        - {x: 8, y: -10}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -7, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -3}
+        - {x: -7, y: -11}
+        - {x: -5, y: -13}
+        - {x: 7, y: -13}
+        - {x: 8, y: -10}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a87bec35f2566ce4587d567950362390
+      internalID: -2013468455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_38
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      physicsShape:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78ac274494d13914b815f426deead4e5
+      internalID: -314066816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_39
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -7, y: -13}
+        - {x: -2, y: -15}
+        - {x: 4, y: -15}
+        - {x: 8, y: -13}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -7, y: -13}
+        - {x: -2, y: -15}
+        - {x: 4, y: -15}
+        - {x: 8, y: -13}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 205edb710cec9a64887693639c6dfff3
+      internalID: 852128539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 853be35a26ebc4a448c7441c25783055
+      internalID: -1902909556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_41
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 15}
+        - {x: -8, y: -13}
+        - {x: 8, y: -13}
+        - {x: 8, y: 14}
+        - {x: 3, y: 15}
+      physicsShape:
+      - - {x: -8, y: 15}
+        - {x: -8, y: -13}
+        - {x: 8, y: -13}
+        - {x: 8, y: 14}
+        - {x: 3, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 875bba557743d2141ac145b15571e22b
+      internalID: -932263985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_42
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      physicsShape:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: e92a97f880c58cf49adf9edcb0562a8d
+      internalID: 701851672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_43
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -14}
+        - {x: -7, y: -15}
+        - {x: 0, y: -15}
+        - {x: 6, y: -13}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -14}
+        - {x: -7, y: -15}
+        - {x: 0, y: -15}
+        - {x: 6, y: -13}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d61003b958b81549b3f808dd4e2d128
+      internalID: -101904175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_44
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b3e52defe4e90d43854d176c434b2a1
+      internalID: 312924179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_45
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -6}
+        - {x: 8, y: 15}
+        - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+      physicsShape:
+      - - {x: -6, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -6}
+        - {x: 8, y: 15}
+        - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84b8895cf80560c4e9d87da552ffc6a7
+      internalID: -2125002492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_46
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      physicsShape:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64d3b1e2c29975045965c7e9f09fdf3f
+      internalID: -1880132244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_47
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -13}
+        - {x: -6, y: -15}
+        - {x: -1, y: -15}
+        - {x: 6, y: -12}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -13}
+        - {x: -6, y: -15}
+        - {x: -1, y: -15}
+        - {x: 6, y: -12}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3519175f58b8dd241899413a307212f5
+      internalID: 1244544012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      physicsShape:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 652fa4b9f00cbe0479f753e1a820c682
+      internalID: 501235720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_49
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      physicsShape:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: de4cccf3cc955d4448038ba67aae05ce
+      internalID: 1599815142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -10}
+        - {x: -2, y: -13}
+        - {x: 6, y: -13}
+        - {x: 7, y: -12}
+        - {x: 7, y: 11}
+        - {x: 5, y: 14}
+      physicsShape:
+      - - {x: -5, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -10}
+        - {x: -2, y: -13}
+        - {x: 6, y: -13}
+        - {x: 7, y: -12}
+        - {x: 7, y: 11}
+        - {x: 5, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26da93b83bf956747b375515a5b77857
+      internalID: 1553403840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinDark_51
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 5, y: 14}
+        - {x: -5, y: 14}
+        - {x: -7, y: 11}
+        - {x: -7, y: -12}
+        - {x: -3, y: -13}
+        - {x: 3, y: -13}
+        - {x: 7, y: -7}
+        - {x: 9, y: -1}
+        - {x: 9, y: 12}
+      physicsShape:
+      - - {x: 5, y: 14}
+        - {x: -5, y: 14}
+        - {x: -7, y: 11}
+        - {x: -7, y: -12}
+        - {x: -3, y: -13}
+        - {x: 3, y: -13}
+        - {x: 7, y: -7}
+        - {x: 9, y: -1}
+        - {x: 9, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9dc6ea6eba995a49b9448147f484b31
+      internalID: 24867911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -91,7 +2055,59 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      SkinDark_1: 2121274655
+      SkinDark_22: 567491603
+      SkinDark_40: -1902909556
+      SkinDark_48: 501235720
+      SkinDark_0: -1108393521
+      SkinDark_19: 1056303208
+      SkinDark_44: 312924179
+      SkinDark_43: -101904175
+      SkinDark_27: 1910116024
+      SkinDark_10: -2101162202
+      SkinDark_47: 1244544012
+      SkinDark_32: 1266549085
+      SkinDark_30: -314314165
+      SkinDark_37: -2013468455
+      SkinDark_31: -544171210
+      SkinDark_33: 2053761949
+      SkinDark_11: -724990421
+      SkinDark_17: -429485505
+      SkinDark_21: -2012893612
+      SkinDark_6: -279556178
+      SkinDark_13: -1381365910
+      SkinDark_36: 1810274981
+      SkinDark_46: -1880132244
+      SkinDark_24: -94970684
+      SkinDark_15: -1682876094
+      SkinDark_45: -2125002492
+      SkinDark_49: 1599815142
+      SkinDark_14: 2117458003
+      SkinDark_9: -813310566
+      SkinDark_5: -1996749652
+      SkinDark_8: -523181666
+      SkinDark_12: -1222726353
+      SkinDark_35: -1891286340
+      SkinDark_2: -447272120
+      SkinDark_26: 1079389780
+      SkinDark_28: -2035441291
+      SkinDark_51: 24867911
+      SkinDark_20: -715266267
+      SkinDark_42: 701851672
+      SkinDark_7: -1023190747
+      SkinDark_18: -1188216780
+      SkinDark_29: 2077595807
+      SkinDark_23: -855966016
+      SkinDark_3: -1676298387
+      SkinDark_34: 1800903627
+      SkinDark_16: 780991684
+      SkinDark_38: -314066816
+      SkinDark_39: 852128539
+      SkinDark_41: -932263985
+      SkinDark_25: 1435578716
+      SkinDark_50: 1553403840
+      SkinDark_4: -1728253110
   spritePackingTag: 
   pSDRemoveMatte: 0
   userData: 

@@ -43,12 +43,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -78,9 +78,1973 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: SkinTan_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: b21e734e61ca30545a8d91f11bdabc88
+      internalID: 1051095537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 300138b90fd6c754bb6c434070ef765b
+      internalID: -2081342697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 12}
+        - {x: -9, y: 7}
+        - {x: -9, y: -11}
+        - {x: -5, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 10}
+        - {x: 6, y: 12}
+      physicsShape:
+      - - {x: -8, y: 12}
+        - {x: -9, y: 7}
+        - {x: -9, y: -11}
+        - {x: -5, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 10}
+        - {x: 6, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ae0d222370086f4f82f772ac768adc2
+      internalID: -307640749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 704
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -9, y: 9}
+        - {x: -9, y: -8}
+        - {x: -4, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: f866951fb0c26e94c85b6590e7165aaf
+      internalID: 1190220586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91a54d42ad9e6744fb0b9578e67d2508
+      internalID: -1265421102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_5
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: d690a489881552248b50239d90e50a80
+      internalID: 1709232312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_6
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 14}
+        - {x: -9, y: 9}
+        - {x: -9, y: -9}
+        - {x: -5, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 12}
+        - {x: 6, y: 14}
+      physicsShape:
+      - - {x: -8, y: 14}
+        - {x: -9, y: 9}
+        - {x: -9, y: -9}
+        - {x: -5, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 12}
+        - {x: 6, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3954e758184509b469d4c81b75248039
+      internalID: 379539999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_7
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 640
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -9, y: 11}
+        - {x: -9, y: -6}
+        - {x: -4, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2bfd4c93a6503f48999722ed483ad48
+      internalID: 1755830015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfba91dd96611b64a84097ffc167fc71
+      internalID: 412365272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_9
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      physicsShape:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92760f623d5459b4f9f709baf0c8ea27
+      internalID: 919860818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_10
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -3}
+        - {x: -4, y: -14}
+        - {x: 6, y: -14}
+        - {x: 8, y: -9}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: -4, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -3}
+        - {x: -4, y: -14}
+        - {x: 6, y: -14}
+        - {x: 8, y: -9}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1332b548d273e849aebdf61cac85dc1
+      internalID: -95636731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_11
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 576
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      physicsShape:
+      - - {x: -4, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -10}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 8, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4cfd3d11d3e9664a8d6235a4094725c
+      internalID: 1719012035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43baf9e794a2bcd46bdc6c108e952f50
+      internalID: 2095797083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_13
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      physicsShape:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3da332c91666c6d49a300d8d15c373c2
+      internalID: 2095915610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_14
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 12}
+        - {x: -7, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -5}
+        - {x: 8, y: 10}
+      physicsShape:
+      - - {x: 4, y: 12}
+        - {x: -7, y: 12}
+        - {x: -8, y: 10}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -5}
+        - {x: 8, y: 10}
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea9db9c51c5dbf648bd877774b7f587a
+      internalID: -372096061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_15
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 512
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      physicsShape:
+      - - {x: 4, y: 13}
+        - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -7}
+        - {x: -7, y: -13}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 7, y: -8}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb8ad8e1530aac14d92c6c6fb3bb8606
+      internalID: 771288808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56172764b6e2bfc4ba8c6f22c8d16890
+      internalID: 1733335257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_17
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: -7}
+        - {x: -1, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: -7}
+        - {x: -1, y: -12}
+        - {x: 5, y: -12}
+        - {x: 9, y: -6}
+        - {x: 9, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b1f2e746d6b3db438f9c291df73cc6b
+      internalID: -737115125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_18
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -6}
+        - {x: 0, y: -12}
+        - {x: 6, y: -12}
+        - {x: 8, y: -9}
+        - {x: 8, y: 9}
+        - {x: 7, y: 14}
+      physicsShape:
+      - - {x: -5, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -6}
+        - {x: 0, y: -12}
+        - {x: 6, y: -12}
+        - {x: 8, y: -9}
+        - {x: 8, y: 9}
+        - {x: 7, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: c401cb0a03ee9704b85ab7270785198d
+      internalID: -497859077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_19
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -9}
+        - {x: -1, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -9}
+        - {x: -1, y: -14}
+        - {x: 5, y: -14}
+        - {x: 9, y: -8}
+        - {x: 9, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ba4ef6ce48f7b049a3fa7a801bfb04c
+      internalID: -2013673047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_20
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -6, y: 14}
+        - {x: -9, y: 10}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 4, y: -14}
+        - {x: 9, y: -7}
+        - {x: 9, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8cba5c8749d2c14384f33508239e47a
+      internalID: 82601017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_21
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 15}
+        - {x: -9, y: 13}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 1, y: -12}
+        - {x: 8, y: -8}
+        - {x: 8, y: 11}
+        - {x: 6, y: 15}
+      physicsShape:
+      - - {x: -4, y: 15}
+        - {x: -9, y: 13}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 1, y: -12}
+        - {x: 8, y: -8}
+        - {x: 8, y: 11}
+        - {x: 6, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 122cad5b10bcf8240860383743a8843a
+      internalID: -1930695240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_22
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -6}
+        - {x: -7, y: -8}
+        - {x: -2, y: -12}
+        - {x: 0, y: -12}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+        - {x: 6, y: 14}
+      physicsShape:
+      - - {x: -3, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -6}
+        - {x: -7, y: -8}
+        - {x: -2, y: -12}
+        - {x: 0, y: -12}
+        - {x: 8, y: -4}
+        - {x: 8, y: 11}
+        - {x: 6, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: df2b06d022ec0794f98b79c211ec674d
+      internalID: -1273621071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_23
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 13}
+        - {x: -9, y: 11}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 1, y: -14}
+        - {x: 8, y: -10}
+        - {x: 8, y: 9}
+        - {x: 6, y: 13}
+      physicsShape:
+      - - {x: -4, y: 13}
+        - {x: -9, y: 11}
+        - {x: -9, y: -8}
+        - {x: -5, y: -14}
+        - {x: 1, y: -14}
+        - {x: 8, y: -10}
+        - {x: 8, y: 9}
+        - {x: 6, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e92b48ecf4c3724389dd3304cf67929
+      internalID: -587911864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7edc8ce5bd4424342b435528428a6573
+      internalID: 1138205582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_25
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 6, y: 17}
+        - {x: -4, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -4}
+        - {x: -1, y: -10}
+        - {x: 3, y: -10}
+        - {x: 6, y: -7}
+        - {x: 8, y: -4}
+        - {x: 8, y: 14}
+      physicsShape:
+      - - {x: 6, y: 17}
+        - {x: -4, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -4}
+        - {x: -1, y: -10}
+        - {x: 3, y: -10}
+        - {x: 6, y: -7}
+        - {x: 8, y: -4}
+        - {x: 8, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 827d6d3b1cd7daa43b2262a7ba0a1861
+      internalID: 281816805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_26
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 16}
+        - {x: -8, y: -7}
+        - {x: -7, y: -10}
+        - {x: 5, y: -10}
+        - {x: 8, y: -3}
+        - {x: 8, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -8, y: 16}
+        - {x: -8, y: -7}
+        - {x: -7, y: -10}
+        - {x: 5, y: -10}
+        - {x: 8, y: -3}
+        - {x: 8, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c144ecccd524884b8c0a71b775281be
+      internalID: -919741007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_27
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -9}
+        - {x: -4, y: -12}
+        - {x: 4, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 15}
+      physicsShape:
+      - - {x: -4, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -9}
+        - {x: -4, y: -12}
+        - {x: 4, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 744819ab0f93f1140927c3550f7451f5
+      internalID: 430749571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_28
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      physicsShape:
+      - - {x: -6, y: 16}
+        - {x: -9, y: 12}
+        - {x: -9, y: -6}
+        - {x: -5, y: -12}
+        - {x: 4, y: -12}
+        - {x: 9, y: -5}
+        - {x: 9, y: 14}
+        - {x: 4, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e71058564b2cc547a0ecbfebecdd778
+      internalID: -1358272318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_29
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -2}
+        - {x: -5, y: -10}
+        - {x: 1, y: -10}
+        - {x: 8, y: -6}
+        - {x: 8, y: 13}
+        - {x: 6, y: 17}
+      physicsShape:
+      - - {x: -3, y: 17}
+        - {x: -8, y: 15}
+        - {x: -8, y: -2}
+        - {x: -5, y: -10}
+        - {x: 1, y: -10}
+        - {x: 8, y: -6}
+        - {x: 8, y: 13}
+        - {x: 6, y: 17}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8912f680bb7286643862c16d6e1c85d2
+      internalID: -1307454158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_30
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 16}
+        - {x: -8, y: 14}
+        - {x: -8, y: -8}
+        - {x: -5, y: -10}
+        - {x: 7, y: -10}
+        - {x: 8, y: -7}
+        - {x: 8, y: 16}
+      physicsShape:
+      - - {x: -3, y: 16}
+        - {x: -8, y: 14}
+        - {x: -8, y: -8}
+        - {x: -5, y: -10}
+        - {x: 7, y: -10}
+        - {x: 8, y: -7}
+        - {x: 8, y: 16}
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe3437a1dad265e4d9f4e6b0fd83396e
+      internalID: 1683929200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_31
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 384
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+        - {x: -3, y: -12}
+        - {x: 5, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 7, y: 15}
+      physicsShape:
+      - - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+        - {x: -3, y: -12}
+        - {x: 5, y: -12}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 7, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 055a3e8f6c6cd7542b5fa5e1b7b9e95a
+      internalID: -1515822841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e8043805b21f9945915d7143ac9b3bc
+      internalID: 1044835922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_33
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: 3}
+        - {x: -6, y: -11}
+        - {x: -5, y: -13}
+        - {x: 5, y: -13}
+        - {x: 8, y: -12}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -6, y: 15}
+        - {x: -8, y: 12}
+        - {x: -8, y: 3}
+        - {x: -6, y: -11}
+        - {x: -5, y: -13}
+        - {x: 5, y: -13}
+        - {x: 8, y: -12}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 214c63afbee73de4b9449d66da559652
+      internalID: 1811087795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_34
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      physicsShape:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b2d6df8608a50f43b44c3295b86f7d6
+      internalID: 30288730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_35
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -6, y: -13}
+        - {x: 0, y: -15}
+        - {x: 8, y: -15}
+        - {x: 8, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -6, y: -13}
+        - {x: 0, y: -15}
+        - {x: 8, y: -15}
+        - {x: 8, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2c74135a4829724aa05abcb2e500a75
+      internalID: 1339416941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_36
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      physicsShape:
+      - - {x: -7, y: 14}
+        - {x: -8, y: 13}
+        - {x: -8, y: -5}
+        - {x: -7, y: -13}
+        - {x: -6, y: -14}
+        - {x: 5, y: -14}
+        - {x: 8, y: -6}
+        - {x: 8, y: 12}
+        - {x: 4, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29f4f61089818b04093cc4f15379c1a2
+      internalID: -702357977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_37
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -3}
+        - {x: -7, y: -11}
+        - {x: -5, y: -13}
+        - {x: 7, y: -13}
+        - {x: 8, y: -10}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      physicsShape:
+      - - {x: -7, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -3}
+        - {x: -7, y: -11}
+        - {x: -5, y: -13}
+        - {x: 7, y: -13}
+        - {x: 8, y: -10}
+        - {x: 8, y: 13}
+        - {x: 4, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59639b85794e9c140911182cf9be69a2
+      internalID: 1162465625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_38
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      physicsShape:
+      - - {x: -3, y: 14}
+        - {x: -7, y: 12}
+        - {x: -7, y: -11}
+        - {x: -3, y: -14}
+        - {x: 8, y: -14}
+        - {x: 9, y: -13}
+        - {x: 9, y: 12}
+        - {x: 8, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: e65b83860442e2f4abebb9e1f18105f6
+      internalID: 145818379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_39
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 320
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -7, y: -13}
+        - {x: -2, y: -15}
+        - {x: 4, y: -15}
+        - {x: 8, y: -13}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 12}
+        - {x: -8, y: -4}
+        - {x: -7, y: -13}
+        - {x: -2, y: -15}
+        - {x: 4, y: -15}
+        - {x: 8, y: -13}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: afc3776b5cdf2f342a429468f61ca6b5
+      internalID: -773034758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78416fa459dbce94f8ac07856a58ca33
+      internalID: 863465091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_41
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 15}
+        - {x: -8, y: -13}
+        - {x: 8, y: -13}
+        - {x: 8, y: 14}
+        - {x: 3, y: 15}
+      physicsShape:
+      - - {x: -8, y: 15}
+        - {x: -8, y: -13}
+        - {x: 8, y: -13}
+        - {x: 8, y: 14}
+        - {x: 3, y: 15}
+      tessellationDetail: 0
+      bones: []
+      spriteID: b780c13a6ba07a94c9e6671453883578
+      internalID: 576361952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_42
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      physicsShape:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b1901f70f6e22f42b77f1b6716fab19
+      internalID: -1540593437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_43
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -14}
+        - {x: -7, y: -15}
+        - {x: 0, y: -15}
+        - {x: 6, y: -13}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -7, y: 13}
+        - {x: -8, y: 11}
+        - {x: -8, y: -14}
+        - {x: -7, y: -15}
+        - {x: 0, y: -15}
+        - {x: 6, y: -13}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37013a617031ba74eb21b9203b93e58b
+      internalID: 2113561957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_44
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      physicsShape:
+      - - {x: 4, y: 14}
+        - {x: -7, y: 14}
+        - {x: -8, y: 12}
+        - {x: -8, y: -9}
+        - {x: -2, y: -14}
+        - {x: 3, y: -14}
+        - {x: 7, y: -7}
+        - {x: 8, y: -2}
+        - {x: 8, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: e76273466e3335b47a77a927c4aa2448
+      internalID: -680374985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_45
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -6}
+        - {x: 8, y: 15}
+        - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+      physicsShape:
+      - - {x: -6, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -6}
+        - {x: 8, y: 15}
+        - {x: -5, y: 15}
+        - {x: -8, y: 13}
+        - {x: -8, y: -11}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6156116c72d87904980aa2b36a29e65f
+      internalID: -1749216934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_46
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      physicsShape:
+      - - {x: -4, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -12}
+        - {x: -7, y: -14}
+        - {x: 7, y: -14}
+        - {x: 7, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a217d7dbcdf11f749ad1da17c9eb2b1e
+      internalID: -2030348513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_47
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -13}
+        - {x: -6, y: -15}
+        - {x: -1, y: -15}
+        - {x: 6, y: -12}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      physicsShape:
+      - - {x: -6, y: 13}
+        - {x: -8, y: 10}
+        - {x: -8, y: -13}
+        - {x: -6, y: -15}
+        - {x: -1, y: -15}
+        - {x: 6, y: -12}
+        - {x: 8, y: -3}
+        - {x: 8, y: 11}
+        - {x: 4, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93b93c1321a5f0b4ba3a42798746c467
+      internalID: 49729496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      physicsShape:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 050226f7d9384c34e911eae581cc8b3f
+      internalID: 1655008595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_49
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      physicsShape:
+      - - {x: -8, y: 13}
+        - {x: -8, y: -10}
+        - {x: -5, y: -13}
+        - {x: 4, y: -13}
+        - {x: 8, y: -7}
+        - {x: 8, y: 12}
+        - {x: 6, y: 13}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36c67f7f3c7126a40bf8834605c2b89c
+      internalID: -859773020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -10}
+        - {x: -2, y: -13}
+        - {x: 6, y: -13}
+        - {x: 7, y: -12}
+        - {x: 7, y: 11}
+        - {x: 5, y: 14}
+      physicsShape:
+      - - {x: -5, y: 14}
+        - {x: -9, y: 13}
+        - {x: -9, y: -10}
+        - {x: -2, y: -13}
+        - {x: 6, y: -13}
+        - {x: 7, y: -12}
+        - {x: 7, y: 11}
+        - {x: 5, y: 14}
+      tessellationDetail: 0
+      bones: []
+      spriteID: a60805adf741c9e4fb487706dc1a527b
+      internalID: 35521859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTan_51
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 5, y: 14}
+        - {x: -5, y: 14}
+        - {x: -7, y: 11}
+        - {x: -7, y: -12}
+        - {x: -3, y: -13}
+        - {x: 3, y: -13}
+        - {x: 7, y: -7}
+        - {x: 9, y: -1}
+        - {x: 9, y: 12}
+      physicsShape:
+      - - {x: 5, y: 14}
+        - {x: -5, y: 14}
+        - {x: -7, y: 11}
+        - {x: -7, y: -12}
+        - {x: -3, y: -13}
+        - {x: 3, y: -13}
+        - {x: 7, y: -7}
+        - {x: 9, y: -1}
+        - {x: 9, y: 12}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a95c31c28902fb48bed56aa84eebef4
+      internalID: -1073087642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -91,7 +2055,59 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      SkinTan_40: 863465091
+      SkinTan_10: -95636731
+      SkinTan_27: 430749571
+      SkinTan_1: -2081342697
+      SkinTan_31: -1515822841
+      SkinTan_12: 2095797083
+      SkinTan_20: 82601017
+      SkinTan_51: -1073087642
+      SkinTan_18: -497859077
+      SkinTan_43: 2113561957
+      SkinTan_38: 145818379
+      SkinTan_46: -2030348513
+      SkinTan_0: 1051095537
+      SkinTan_8: 412365272
+      SkinTan_6: 379539999
+      SkinTan_45: -1749216934
+      SkinTan_17: -737115125
+      SkinTan_50: 35521859
+      SkinTan_16: 1733335257
+      SkinTan_32: 1044835922
+      SkinTan_41: 576361952
+      SkinTan_44: -680374985
+      SkinTan_23: -587911864
+      SkinTan_30: 1683929200
+      SkinTan_13: 2095915610
+      SkinTan_15: 771288808
+      SkinTan_24: 1138205582
+      SkinTan_19: -2013673047
+      SkinTan_25: 281816805
+      SkinTan_34: 30288730
+      SkinTan_28: -1358272318
+      SkinTan_3: 1190220586
+      SkinTan_26: -919741007
+      SkinTan_35: 1339416941
+      SkinTan_29: -1307454158
+      SkinTan_14: -372096061
+      SkinTan_7: 1755830015
+      SkinTan_2: -307640749
+      SkinTan_37: 1162465625
+      SkinTan_47: 49729496
+      SkinTan_4: -1265421102
+      SkinTan_11: 1719012035
+      SkinTan_42: -1540593437
+      SkinTan_49: -859773020
+      SkinTan_48: 1655008595
+      SkinTan_22: -1273621071
+      SkinTan_39: -773034758
+      SkinTan_33: 1811087795
+      SkinTan_5: 1709232312
+      SkinTan_9: 919860818
+      SkinTan_36: -702357977
+      SkinTan_21: -1930695240
   spritePackingTag: 
   pSDRemoveMatte: 0
   userData: 
