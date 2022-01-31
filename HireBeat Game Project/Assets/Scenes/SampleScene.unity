@@ -303,7 +303,7 @@ Animator:
   m_GameObject: {fileID: 1032208398}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 2819aff366a5a544ca9a7e959203d28d, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -381,7 +381,7 @@ Animator:
   m_GameObject: {fileID: 1107455062}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 8a851c09d075c7d488acc98f95c10e74, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -571,7 +571,7 @@ Animator:
   m_GameObject: {fileID: 1224412224}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: b8cc6bbd9915d934a99aeac522a5df90, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -654,8 +654,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1717694190}
-  - component: {fileID: 1717694193}
   - component: {fileID: 1717694192}
+  - component: {fileID: 1717694193}
   - component: {fileID: 1717694191}
   m_Layer: 0
   m_Name: Shoes
@@ -753,7 +753,7 @@ Animator:
   m_GameObject: {fileID: 1717694189}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 10b9616a0c1dd9443b07255b8b3a9c17, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -776,7 +776,7 @@ GameObject:
   - component: {fileID: 2075622129}
   - component: {fileID: 2075622130}
   m_Layer: 0
-  m_Name: HairStyle
+  m_Name: Hair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -859,7 +859,7 @@ Animator:
   m_GameObject: {fileID: 2075622126}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: cab8eee1ca7779344ba981ac7d79bde1, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -890,6 +890,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2120085320}
+  - component: {fileID: 2120085321}
   m_Layer: 0
   m_Name: PlayerSpriteComposition
   m_TagString: Untagged
@@ -918,3 +919,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2120085321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120085319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa8539f0be6d14a4385a0d80c1f64e70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinColor: Light
+  hasHair: 1
+  hairStyle: Pony
+  hairColor: Green
+  hasClothTop: 1
+  clothingTop: Overalls
+  clothingTopColor: Am
+  hasClothBot: 0
+  clothingBot: Skirt
+  clothingBotColor: Am
+  hasShoes: 0
+  shoesColor: Am
