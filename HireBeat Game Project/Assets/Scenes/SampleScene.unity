@@ -891,6 +891,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2120085320}
   - component: {fileID: 2120085321}
+  - component: {fileID: 2120085322}
   m_Layer: 0
   m_Name: PlayerSpriteComposition
   m_TagString: Untagged
@@ -933,7 +934,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinColor: Light
   hasHair: 1
-  hairStyle: Pony
+  hairStyle: Twin
   hairColor: Green
   hasClothTop: 1
   clothingTop: Overalls
@@ -941,5 +942,50 @@ MonoBehaviour:
   hasClothBot: 0
   clothingBot: Skirt
   clothingBotColor: Am
-  hasShoes: 0
+  hasShoes: 1
   shoesColor: Am
+--- !u!114 &2120085322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120085319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3044fa2f34c181e488545a19e1c4d1ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinToneColors:
+  - Brown
+  - Dark
+  - Light
+  - Pink
+  - Tan
+  - Template
+  hairStyleNames:
+  - Jojo
+  - Long
+  - Messy
+  - Pony
+  - ShldLen
+  - Short
+  - Slick
+  - Twin
+  hairColors:
+  - Am
+  - Black
+  - Blue
+  - Brown
+  - Gray
+  - Green
+  - Navy
+  - Orange
+  - Pink
+  - Purple
+  - Red
+  - Turq
+  - Yellow
+  sIndex: 0
+  hsIndex: 0
+  hcIndex: 0

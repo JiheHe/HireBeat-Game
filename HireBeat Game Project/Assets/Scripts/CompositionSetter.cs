@@ -36,6 +36,15 @@ public class CompositionSetter : MonoBehaviour
 
     }
 
+    public void updateChar()
+    {
+        CreateSkin();
+        CreateHair();
+        CreateTopWear();
+        CreateBotWear();
+        CreateShoes();
+    }
+
     private void CreateSkin()
     {
         string charSkin = "Animations/ThatCoolSprite/SkinTones/" + skinColor + "/" + skinColor + "Controller";
