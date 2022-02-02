@@ -33,9 +33,16 @@ public class AvatarCustomizationScript : MonoBehaviour
     public string[] clothBotColors;
     public string[] shoesColors;
 
+    public string charName;
+    public InputField field;
+
+    public GameObject playerObj;
+
     // Start is called before the first frame update
     void Start()
     {
+        playerObj = GameObject.FindGameObjectWithTag("Player");
+        playerObj.SetActive(false);
         hasNoHair(); //false...
         hasNoTopWear();
         hasNoBotWear();
@@ -172,5 +179,66 @@ public class AvatarCustomizationScript : MonoBehaviour
         setCurrBotWearColor(currBotWearColor);
         hasBasicShoes();
         setCurrShoesColor(currShoesColor);
+    }
+
+    public void CopyText()
+    {
+        charName = field.text;
+        if (charName.Trim(' ').Length == 0) charName = "Player"; //default to player
+        //could add a display of info and a confirmation, but no for now
+        sendInfo();
+        playerObj.SetActive(true);
+        closeWindow(); 
+    }
+
+    public void sendInfo()
+    {
+        playerObj.SetActive(true);
+        CompositionSetter mainComp = playerObj.GetComponent<CompositionSetter>();
+        mainComp.charName = charName;
+        mainComp.hasHair = hasHair;
+        mainComp.hasClothTop = hasTopWear;
+        mainComp.hasClothBot = hasBotWear;
+        mainComp.hasShoes = hasShoes;
+        mainComp.skinColor = currSkin;
+        mainComp.hairStyle = currHairStyle;
+        mainComp.hairColor = currHairColor;
+        mainComp.clothingTop = currTopWearStyle;
+        mainComp.clothingTopColor = currTopWearColor;
+        mainComp.clothingBot = currBotWearStyle;
+        mainComp.clothingBotColor = currBotWearColor;
+        mainComp.shoesColor = currShoesColor;
+        mainComp.updateChar();
+    }
+
+    public void closeWindow()
+    {
+        Destroy(gameObject.transform.parent.gameObject);
+        playerObj.SetActive(true);
+    }
+
+    public void grabFromMainComp()
+    {
+        playerObj.SetActive(true);
+        CompositionSetter mainComp = playerObj.GetComponent<CompositionSetter>();
+        field.text = mainComp.charName;
+        hasHair = mainComp.hasHair;
+        hasTopWear = mainComp.hasClothTop;
+        hasBotWear = mainComp.hasClothBot;
+        hasShoes = mainComp.hasShoes;
+        currSkin = mainComp.skinColor;
+        currHairStyle = mainComp.hairStyle;
+        currHairColor = mainComp.hairColor;
+        currTopWearStyle = mainComp.clothingTop;
+        currTopWearColor = mainComp.clothingTopColor;
+        currBotWearStyle = mainComp.clothingBot;
+        currBotWearColor = mainComp.clothingBotColor;
+        currShoesColor = mainComp.shoesColor;
+        setCurrSkin(currSkin);
+        gameObject.transform.GetChild(hairLayerIndex).gameObject.SetActive(hasHair);
+        gameObject.transform.GetChild(topWearLayerIndex).gameObject.SetActive(hasTopWear);
+        gameObject.transform.GetChild(botWearLayerIndex).gameObject.SetActive(hasBotWear);
+        gameObject.transform.GetChild(shoesLayerIndex).gameObject.SetActive(hasShoes);
+        playerObj.SetActive(false);
     }
 }

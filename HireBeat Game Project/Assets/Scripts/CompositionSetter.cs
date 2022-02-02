@@ -19,6 +19,9 @@ public class CompositionSetter : MonoBehaviour
     public string clothingBotColor;
     public bool hasShoes;
     public string shoesColor;
+    public string charName;
+
+    public GameObject customizationUI; //will move this to an NPC later
 
     void Start()
     {
@@ -32,7 +35,10 @@ public class CompositionSetter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Instantiate(customizationUI, new Vector3(0, 0, 0), Quaternion.identity); //will move this to an NPC later
+        }
 
     }
 
