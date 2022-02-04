@@ -165,7 +165,7 @@ public class AvatarCustomizationScript : MonoBehaviour
         currSkin = skinToneColors[Random.Range(0, 6)]; //inclusive, exclusive actually...
         currHairStyle = hairStyleNames[Random.Range(0, 8)];
         currHairColor = hairColors[Random.Range(0, 13)];
-        currTopWearStyle = clothTopNames[Random.Range(0, 3)]; //shirt not included
+        currTopWearStyle = clothTopNames[Random.Range(0, 4)]; 
         currTopWearColor = clothTopColors[Random.Range(0, 13)];
         currBotWearStyle = clothBotNames[Random.Range(0, 3)];
         currBotWearColor = clothBotColors[Random.Range(0, 13)];
@@ -240,5 +240,10 @@ public class AvatarCustomizationScript : MonoBehaviour
         gameObject.transform.GetChild(botWearLayerIndex).gameObject.SetActive(hasBotWear);
         gameObject.transform.GetChild(shoesLayerIndex).gameObject.SetActive(hasShoes);
         playerObj.SetActive(false);
+    }
+
+    public void scrollRectReset(ScrollRect rect)
+    {
+        rect.verticalNormalizedPosition = 1f;
     }
 }

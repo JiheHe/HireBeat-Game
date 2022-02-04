@@ -2502,8 +2502,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3040650372924763947}
   m_HandleRect: {fileID: 3040650372924763945}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.43676522
+  m_Value: 1
+  m_Size: 0.9999993
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4156,7 +4156,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0000052017, y: 0.00065487623}
+  m_AnchoredPosition: {x: -0.0000052017, y: -0.00089610106}
   m_SizeDelta: {x: 0.0007, y: 796.6}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3040650371174601300
@@ -5294,7 +5294,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3040650371215094644
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5343,7 +5343,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2116018754, guid: d9ea7be01c37ee249bc6fd81874bbc3e, type: 3}
+  m_Sprite: {fileID: -906358783, guid: 67e595426ec89c94b8f3920bd5e003d9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5409,7 +5409,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192.5, y: -205}
+  m_AnchoredPosition: {x: 537.5, y: -205}
   m_SizeDelta: {x: 325, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3040650371223280188
@@ -10839,7 +10839,7 @@ RectTransform:
   m_Father: {fileID: 3040650372097891386}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.28623366}
+  m_AnchorMin: {x: 0, y: 0.2862332}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
@@ -12383,6 +12383,18 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3040650371416516708}
+        m_TargetAssemblyTypeName: AvatarCustomizationScript, Assembly-CSharp
+        m_MethodName: scrollRectReset
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 3040650372536295302}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.ScrollRect, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -16690,8 +16702,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3040650371510845858}
   m_HandleRect: {fileID: 3040650371510845856}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.71376634
+  m_Value: 1.0000002
+  m_Size: 0.7137668
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19282,7 +19294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 537.5, y: -205}
+  m_AnchoredPosition: {x: 882.5, y: -205}
   m_SizeDelta: {x: 325, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3040650371916387990
@@ -19715,6 +19727,18 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3040650371416516708}
+        m_TargetAssemblyTypeName: AvatarCustomizationScript, Assembly-CSharp
+        m_MethodName: scrollRectReset
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 3040650371912231438}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.ScrollRect, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -22688,6 +22712,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 3040650371416516708}
+        m_TargetAssemblyTypeName: AvatarCustomizationScript, Assembly-CSharp
+        m_MethodName: scrollRectReset
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 3040650371585406596}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.ScrollRect, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &3040650372045179467
 GameObject:
@@ -25012,9 +25048,9 @@ RectTransform:
   m_Father: {fileID: 3040650372777788995}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 192.49995, y: 590.7786}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 192.5, y: -205}
   m_SizeDelta: {x: 325, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3040650372153363365
@@ -33766,7 +33802,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192.5, y: -575}
+  m_AnchoredPosition: {x: 537.5, y: -575}
   m_SizeDelta: {x: 325, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3040650372653787243
@@ -35657,7 +35693,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 882.5, y: -205}
+  m_AnchoredPosition: {x: 192.5, y: -575}
   m_SizeDelta: {x: 325, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3040650372776822640
@@ -35904,8 +35940,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00072201, y: 0.000030517578}
-  m_SizeDelta: {x: 0.0007, y: 795.7786}
+  m_AnchoredPosition: {x: 0.000029593, y: -0.000030518}
+  m_SizeDelta: {x: 0.001, y: 795.778}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3040650372777789020
 MonoBehaviour:
