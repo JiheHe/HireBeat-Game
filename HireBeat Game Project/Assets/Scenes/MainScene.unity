@@ -813,7 +813,7 @@ GameObject:
   - component: {fileID: 140549761}
   - component: {fileID: 140549763}
   - component: {fileID: 140549762}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: InnerWallMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3134,7 +3134,7 @@ GameObject:
   - component: {fileID: 590635024}
   - component: {fileID: 590635026}
   - component: {fileID: 590635025}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: OuterWallMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5885,9 +5885,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1032208398}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0395da3ec32ae7c42bb91371e6ffe37c, type: 3}
+  m_Script: {fileID: 11500000, guid: 730c876dc839b4045970560e5f9e7914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  solidObjectsLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1057293106
 GameObject:
   m_ObjectHideFlags: 0
@@ -8561,7 +8565,7 @@ GameObject:
   - component: {fileID: 1107455063}
   - component: {fileID: 1107455066}
   - component: {fileID: 1107455065}
-  - component: {fileID: 1107455064}
+  - component: {fileID: 1107455067}
   m_Layer: 0
   m_Name: ClothingTop
   m_TagString: Untagged
@@ -8584,18 +8588,6 @@ Transform:
   m_Father: {fileID: 2120085320}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1107455064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1107455062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0395da3ec32ae7c42bb91371e6ffe37c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &1107455065
 Animator:
   serializedVersion: 4
@@ -8668,6 +8660,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1107455067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107455062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730c876dc839b4045970560e5f9e7914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  solidObjectsLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1137367536
 GameObject:
   m_ObjectHideFlags: 0
@@ -8763,7 +8771,7 @@ GameObject:
   - component: {fileID: 1201616745}
   - component: {fileID: 1201616746}
   - component: {fileID: 1201616748}
-  - component: {fileID: 1201616747}
+  - component: {fileID: 1201616749}
   m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
@@ -8838,18 +8846,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1201616747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1201616744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0395da3ec32ae7c42bb91371e6ffe37c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &1201616748
 Animator:
   serializedVersion: 4
@@ -8870,6 +8866,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1201616749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201616744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730c876dc839b4045970560e5f9e7914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  solidObjectsLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1224412224
 GameObject:
   m_ObjectHideFlags: 0
@@ -8985,9 +8997,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1224412224}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0395da3ec32ae7c42bb91371e6ffe37c, type: 3}
+  m_Script: {fileID: 11500000, guid: 730c876dc839b4045970560e5f9e7914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  solidObjectsLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1261345391
 GameObject:
   m_ObjectHideFlags: 0
@@ -13767,7 +13783,7 @@ GameObject:
   - component: {fileID: 1717694190}
   - component: {fileID: 1717694192}
   - component: {fileID: 1717694193}
-  - component: {fileID: 1717694191}
+  - component: {fileID: 1717694194}
   m_Layer: 0
   m_Name: Shoes
   m_TagString: Untagged
@@ -13790,18 +13806,6 @@ Transform:
   m_Father: {fileID: 2120085320}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1717694191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1717694189}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0395da3ec32ae7c42bb91371e6ffe37c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &1717694192
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13874,6 +13878,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1717694194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717694189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730c876dc839b4045970560e5f9e7914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  solidObjectsLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1812446450
 GameObject:
   m_ObjectHideFlags: 0
@@ -14073,9 +14093,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2075622126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0395da3ec32ae7c42bb91371e6ffe37c, type: 3}
+  m_Script: {fileID: 11500000, guid: 730c876dc839b4045970560e5f9e7914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  solidObjectsLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &2120085319
 GameObject:
   m_ObjectHideFlags: 0
@@ -14311,7 +14335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3040650371174601307, guid: 9f0de67fd73755e4cb04e753bceed3d6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00055885315
+      value: 0.0005264282
       objectReference: {fileID: 0}
     - target: {fileID: 3040650371205238523, guid: 9f0de67fd73755e4cb04e753bceed3d6, type: 3}
       propertyPath: m_AnchorMax.y
