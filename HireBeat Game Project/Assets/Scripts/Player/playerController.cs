@@ -38,8 +38,8 @@ public class playerController : MonoBehaviour
                 animator.SetFloat("moveY", input.y);
 
                 var targetPos = transform.position;
-                targetPos.x += input.x;
-                targetPos.y += input.y;
+                targetPos.x += input.x / 5.0f; //+1 is too big to detect
+                targetPos.y += input.y / 5.0f;
 
                 if (IsWalkable(targetPos))
                     StartCoroutine(Move(targetPos));
