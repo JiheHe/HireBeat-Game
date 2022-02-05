@@ -13,7 +13,7 @@ public class playerController : MonoBehaviour
     private Animator animator;
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = transform.GetChild(0).GetComponent<Animator>();
     }
 
     private void Update()

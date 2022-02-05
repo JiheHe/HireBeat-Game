@@ -21,6 +21,13 @@ public class CompositionSetter : MonoBehaviour
     public string shoesColor;
     public string charName;
 
+    public GameObject dadSkin;
+    public GameObject dadHair;
+    public GameObject dadClothTop;
+    public GameObject dadClothBot;
+    public GameObject dadShoes;
+
+
     public GameObject customizationUI; //will move this to an NPC later
 
     void Start()
@@ -54,13 +61,13 @@ public class CompositionSetter : MonoBehaviour
     private void CreateSkin()
     {
         string charSkin = "Animations/ThatCoolSprite/SkinTones/" + skinColor + "/" + skinColor + "Controller";
-        GameObject skin = gameObject.transform.GetChild(1).gameObject; //index for skin is 1, can also do .FindChild("childName")
+        GameObject skin = dadSkin.transform.GetChild(0).gameObject; //index for skin is 1, can also do .FindChild("childName")
         skin.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charSkin) as RuntimeAnimatorController;
     }
 
     private void CreateHair()
     {
-        GameObject hair = gameObject.transform.GetChild(2).gameObject; //index for hair is 2
+        GameObject hair = dadHair.transform.GetChild(0).gameObject; //index for hair is 2
         if (hasHair)
         {
             hair.SetActive(true);
@@ -75,7 +82,7 @@ public class CompositionSetter : MonoBehaviour
 
     private void CreateTopWear()
     {
-        GameObject topWear = gameObject.transform.GetChild(3).gameObject; //index for topWear is 3
+        GameObject topWear = dadClothTop.transform.GetChild(0).gameObject; //index for topWear is 3
         if (hasClothTop)
         {
             topWear.SetActive(true);
@@ -90,7 +97,7 @@ public class CompositionSetter : MonoBehaviour
 
     private void CreateBotWear()
     {
-        GameObject botWear = gameObject.transform.GetChild(4).gameObject; //index for botWear is 4
+        GameObject botWear = dadClothBot.transform.GetChild(0).gameObject; //index for botWear is 4
         if (hasClothBot)
         {
             botWear.SetActive(true);
@@ -105,7 +112,7 @@ public class CompositionSetter : MonoBehaviour
 
     private void CreateShoes()
     {
-        GameObject shoes = gameObject.transform.GetChild(5).gameObject; //index for shoes is 5
+        GameObject shoes = dadShoes.transform.GetChild(0).gameObject; //index for shoes is 5
         if (hasShoes)
         {
             shoes.SetActive(true);
