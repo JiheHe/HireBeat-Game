@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class CompositionSetter : MonoBehaviour
 {
@@ -20,12 +21,15 @@ public class CompositionSetter : MonoBehaviour
     public bool hasShoes;
     public string shoesColor;
     public string charName;
+    public string charTitle;
 
     public GameObject skin;
     public GameObject hair;
     public GameObject topWear;
     public GameObject botWear;
     public GameObject shoes;
+    public TextMeshPro playerIGN;
+    public TextMeshPro playerTitle;
 
 
     public GameObject customizationUI; //will move this to an NPC later
@@ -37,6 +41,8 @@ public class CompositionSetter : MonoBehaviour
         CreateTopWear();
         CreateBotWear();
         CreateShoes();
+        playerIGN.text = charName;
+        playerTitle.text = charTitle;
     }
 
     // Update is called once per frame
@@ -56,6 +62,12 @@ public class CompositionSetter : MonoBehaviour
         CreateTopWear();
         CreateBotWear();
         CreateShoes();
+        playerIGN.text = charName;
+    }
+
+    public void updateTitle(string newTitle)
+    {
+        playerTitle.text = newTitle; //or something more than this: grab a unique material asset from Resource folder
     }
 
     private void CreateSkin()
