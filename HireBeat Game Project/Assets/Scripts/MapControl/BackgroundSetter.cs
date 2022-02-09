@@ -8,26 +8,22 @@ public class BackgroundSetter : MonoBehaviour
 
     public int skyIndex;
     public GameObject sky;
+    public GameObject backgroundUI;
     // Start is called before the first frame update
-    void Start()
-    {
-        SetBackground();
-    }
 
     // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.U))
         {
-            skyIndex++;
-            if (skyIndex > 10) skyIndex = 1;
-            SetBackground();
+            Instantiate(backgroundUI);
         }
     }
 
-    void SetBackground()
+    public void SetBackground()
     {
         string skyImg = "Backgrounds/Sky/" + "SkyAndCloud" + skyIndex;
         sky.GetComponent<Image>().sprite = Resources.Load<Sprite>(skyImg);
     }
+
 }
