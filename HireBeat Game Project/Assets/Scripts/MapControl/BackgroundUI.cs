@@ -9,6 +9,7 @@ public class BackgroundUI : MonoBehaviour
 
     public GameObject playerObj;
     public cameraController playerCamera;
+    public InGameUIController UIController;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,6 +18,7 @@ public class BackgroundUI : MonoBehaviour
         playerObj.SetActive(false);
         playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
         playerCamera.turnOnUICamera();
+        UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<InGameUIController>();
         skyIndex = background.GetComponent<BackgroundSetter>().skyIndex;
     }
 
@@ -38,6 +40,7 @@ public class BackgroundUI : MonoBehaviour
         Destroy(gameObject);
         playerCamera.turnOffUICamera();
         playerObj.SetActive(true);
+        UIController.hasOneOn = false;
     }
 
     public void setSkyIndex(int index)

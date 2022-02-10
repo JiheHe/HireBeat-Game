@@ -8,17 +8,17 @@ public class BackgroundSetter : MonoBehaviour
 
     public int skyIndex;
     public GameObject sky;
-    public GameObject backgroundUI;
+    //public GameObject backgroundUI;
     // Start is called before the first frame update
 
     // Update is called once per frame
-    void Update()
+    /*void Update()
     {
         if(Input.GetKeyDown(KeyCode.U))
         {
             Instantiate(backgroundUI);
         }
-    }
+    }*/
 
     public void SetBackground()
     {
