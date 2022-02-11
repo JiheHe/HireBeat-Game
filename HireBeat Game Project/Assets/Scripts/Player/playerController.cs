@@ -7,7 +7,7 @@ public class playerController : MonoBehaviour
     public float moveSpeed;
     public LayerMask solidObjectsLayer; //might use in the future for collision
 
-    private bool isMoving;
+    public bool isMoving;
     private Vector2 input;
 
     //private Animator animator;

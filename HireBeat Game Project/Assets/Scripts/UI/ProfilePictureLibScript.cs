@@ -56,10 +56,14 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     void Start()
     {
         playerObj = GameObject.FindGameObjectWithTag("Player");
-        playerObj.SetActive(false);
-        playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
-        playerCamera.turnOnUICamera();
+        playerObj.GetComponent<playerController>().enabled = false;
+        //playerObj.SetActive(false);
+        //playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
+        //playerCamera.turnOnUICamera();
         UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
+        playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
+        //the line above also works at start! No need for at the end ;D
+
 
         scrollRectReset(rect);
         rawImageImported = false;
@@ -354,9 +358,11 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     public void closeWindow()
     {
         Destroy(gameObject.transform.parent.gameObject);
-        playerCamera.turnOffUICamera();
-        playerObj.SetActive(true);
+        //playerCamera.turnOffUICamera();
+        //playerObj.SetActive(true);
+        playerObj.GetComponent<playerController>().enabled = true;
         UIController.hasOneOn = false;
+        //GameObject.FindGameObjectWithTag("Player").GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
     }
 
 

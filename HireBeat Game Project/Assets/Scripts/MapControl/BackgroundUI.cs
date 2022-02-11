@@ -41,6 +41,7 @@ public class BackgroundUI : MonoBehaviour
         playerCamera.turnOffUICamera();
         playerObj.SetActive(true);
         UIController.hasOneOn = false;
+        playerObj.GetComponent<playerController>().isMoving = false;
     }
 
     public void setSkyIndex(int index)
