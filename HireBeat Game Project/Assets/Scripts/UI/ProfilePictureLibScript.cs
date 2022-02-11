@@ -58,7 +58,8 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         playerObj = GameObject.FindGameObjectWithTag("Player");
         playerObj.GetComponent<playerController>().enabled = false;
         //playerObj.SetActive(false);
-        //playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
+        playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
+        playerCamera.enabled = false;
         //playerCamera.turnOnUICamera();
         UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
         playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
@@ -361,6 +362,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         //playerCamera.turnOffUICamera();
         //playerObj.SetActive(true);
         playerObj.GetComponent<playerController>().enabled = true;
+        playerCamera.enabled = true;
         UIController.hasOneOn = false;
         //GameObject.FindGameObjectWithTag("Player").GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
     }
