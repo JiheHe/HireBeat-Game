@@ -26,49 +26,77 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     float xDiff;
     float yDiff;
 
+    public int defaultWidth;
+    public int defaultHeight;
+    public Texture2D defaultTex;
+
     public GameObject testImage;
     public GameObject maskedRect;
 
-    //public Renderer screenGrabRenderer;
-    //private Texture2D destinationTexture;
     public RawImage targetRawImage;
 
     public RenderTexture rTex;
     public GameObject outputFinal;
+
+    public string imgFormat;
+    public GameObject format; //input field
+    public Animator warningMessage;
+    public Toggle sidePicker;
+
+    public FlexibleColorPicker fcp; //thank you
+    public Image backgroundImage;
+    public Image backgroundImage2;
 
     // Start is called before the first frame update
     void Start()
     {
         scrollRectReset(rect);
         rawImageImported = false;
-        
+
+        imgFormat = "png";
+        fcp.color = Color.white;
+ 
     }
 
     // Update is called once per frame
     void Update()
     {
-        string pfpImg = "ProfilePictures/PixelPortraits/" + "SkyAndCloud" + numToGender(pfpIndex);
+        string pfpImg = "ProfilePictures/PixelPortraits/" + numToGender(pfpIndex);
         scrollAdjustment();
 
         if (rawImageImported)
         {
+            backgroundImage2.color = fcp.color;
             scaleImage();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            //Texture2DCropper((Texture2D)rawImage.texture, 200, 200);
+            backgroundImage.color = fcp.color;
+            if(pfpIndex != -1)
+            {
+                rawImageImported = false;
+                targetRawImage.GetComponent<RectTransform>().localPosition = new Vector2(0, 0);
+                targetRawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(defaultWidth * 800/180, defaultHeight * 800/180);
+                targetRawImage.texture = Resources.Load<Texture>(pfpImg);
+            }
             Texture2D finalTex = ToTexture2D(rTex);
             Sprite newSprite = Sprite.Create((Texture2D)finalTex, new Rect(0, 0, finalTex.width, finalTex.height), new Vector2(0.5f, 0.5f));
             outputFinal.GetComponent<Image>().sprite = newSprite;
+
         }
 
-        
     }
 
-    public void setPfpIndex(int index)
+    public void setPfpIndex(int index) //if pfpIndex = -1, then that means user image is selected currently
     {
         pfpIndex = index;
+        if(rawImage.texture != defaultTex)
+        {
+            rawImageImported = false; //temp disable editing access until toggle is pressed
+            sidePicker.gameObject.SetActive(true);
+            sidePicker.isOn = false;
+        }
     }
 
     //doing this for fun
@@ -142,7 +170,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     //also some of my modification
     public void OpenFileExplorer()
     {
-        path = EditorUtility.OpenFilePanel("Show all images (.png)", "", "png"); //change third paraem to extension desired
+        path = EditorUtility.OpenFilePanel("Show all images (." + imgFormat + ")", "", imgFormat); //change third paraem to extension desired
         StartCoroutine(GetTexture());
     }
 
@@ -160,28 +188,44 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         }
         else
         {
-            Texture2D myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            float hToWRatio = (float)myTexture.height / myTexture.width;
-            imgWidth = rawImage.GetComponent<RectTransform>().rect.width;
-            imgHeight = rawImage.GetComponent<RectTransform>().rect.height;
-            if (hToWRatio > 1) //height dominates width, or equal  //is there a grab to grab rawImage.width/height directly?
-            {
-                rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth * (hToWRatio - 1), imgHeight);
-            }
-            else //width dominates height
-            {
-                rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth, imgHeight * hToWRatio);
-            }
-            
-            rawImage.texture = myTexture;
-            
-            rawImageImported = true;
-            imgWidth = rawImage.GetComponent<RectTransform>().rect.width;
-            imgHeight = rawImage.GetComponent<RectTransform>().rect.height;
+            imgWidth = defaultWidth;
+            imgHeight = defaultHeight;
+            rawImage.GetComponent<RectTransform>().localPosition = new Vector2(0, 0);
 
-            targetRawImage.GetComponent<RectTransform>().sizeDelta = rawImage.GetComponent<RectTransform>().sizeDelta * (float)800/180; //scale other obj up
-            targetRawImage.transform.localPosition = rawImage.transform.localPosition * (float)800 / 180;
-            targetRawImage.texture = rawImage.texture;
+            Texture2D myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            if (myTexture == null)
+            {
+                warningMessage.SetTrigger("Warning!"); //plays once then resets, convenient!
+                rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth, imgHeight);
+                rawImage.texture = defaultTex;
+                rawImageImported = false;
+            }
+            else
+            {
+                pfpIndex = -1;
+                sidePicker.isOn = true;
+                float hToWRatio = (float)myTexture.height / myTexture.width;
+
+                if (hToWRatio > 1) //height dominates width, or equal  //is there a grab to grab rawImage.width/height directly?
+                {
+                    rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth * (hToWRatio - 1), imgHeight);
+                }
+                else //width dominates height
+                {
+                    rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth, imgHeight * hToWRatio);
+                }
+
+                ratio = 1;
+                rawImage.texture = myTexture;
+
+                rawImageImported = true;
+                imgWidth = rawImage.GetComponent<RectTransform>().rect.width;
+                imgHeight = rawImage.GetComponent<RectTransform>().rect.height;
+
+                targetRawImage.GetComponent<RectTransform>().sizeDelta = rawImage.GetComponent<RectTransform>().sizeDelta * (float)800 / 180; //scale other obj up
+                targetRawImage.transform.localPosition = rawImage.transform.localPosition * (float)800 / 180;
+                targetRawImage.texture = rawImage.texture;
+            }
         }
     }
 
@@ -218,7 +262,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         RenderTexture.active = rTex;
         Camera.current.Render();
         // Create a new Texture2D and read the RenderTexture image into it
-        Texture2D tex = new Texture2D(rTex.width, rTex.height);
+        Texture2D tex = new Texture2D(rTex.width, rTex.height, TextureFormat.RGB24, false, true); //avoid additional gamma correction!
         tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
         tex.Apply();
         RenderTexture.active = currentActiveRT;
@@ -249,6 +293,51 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
 
         Sprite newSprite = Sprite.Create((Texture2D)m2Texture, new Rect(0, 0, m2Texture.width, m2Texture.height), new Vector2(0.5f, 0.5f));
         testImage.GetComponent<Image>().sprite = newSprite;
+    }
+
+    ////////////////////////////////////////////////////////////// (easier stuff)
+    public void OnDropDownChanged(Dropdown dropDown)
+    {
+        switch(dropDown.value)
+        {
+            case 0:
+                imgFormat = "png";
+                format.SetActive(false);
+                break;
+            case 1:
+                imgFormat = "jpg";
+                format.SetActive(false);
+                break;
+            case 2:
+                format.GetComponent<InputField>().text = "";
+                format.SetActive(true);
+                break;
+        }
+    }
+
+    public void GrabCurrentInputValue()
+    {
+        imgFormat = format.GetComponent<InputField>().text;
+    }
+
+    public void OnToggleChanged() 
+    {
+        if(sidePicker.isOn) 
+        {
+            rawImageImported = true;
+            pfpIndex = -1;
+            targetRawImage.GetComponent<RectTransform>().sizeDelta = rawImage.GetComponent<RectTransform>().sizeDelta * (float)800 / 180;
+            targetRawImage.transform.localPosition = rawImage.transform.localPosition * (float)800 / 180;
+            targetRawImage.texture = rawImage.texture;
+            fcp.color = backgroundImage2.color; //return prev color
+            Invoke("disableSidePicker", 0.25f);
+            
+        } 
+    }
+
+    private void disableSidePicker()
+    {
+        sidePicker.gameObject.SetActive(false);
     }
 
 
