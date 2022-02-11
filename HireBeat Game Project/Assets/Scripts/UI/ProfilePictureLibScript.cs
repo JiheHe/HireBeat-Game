@@ -50,20 +50,29 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     public GameObject playerObj;
     public cameraController playerCamera;
 
+    public InGameUIController playerZoneTab;
     public PlayerMenuUIController UIController;
 
     // Start is called before the first frame update
     void Start()
     {
         playerObj = GameObject.FindGameObjectWithTag("Player");
-        playerObj.GetComponent<playerController>().enabled = false;
+
+        GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
+
         //playerObj.SetActive(false);
-        playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
-        playerCamera.enabled = false;
+        playerCamera = cameraController.GetComponent<cameraController>();
+        
         //playerCamera.turnOnUICamera();
-        UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
-        playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
+        UIController = cameraController.GetComponent<PlayerMenuUIController>();
+        playerZoneTab = cameraController.GetComponent<InGameUIController>();
         //the line above also works at start! No need for at the end ;D
+
+        if (!playerZoneTab.hasOneOn) //prevents zone + UI
+        {
+            playerObj.GetComponent<playerController>().enabled = false;
+            playerCamera.enabled = false;
+        }
 
 
         scrollRectReset(rect);
@@ -361,10 +370,13 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         Destroy(gameObject.transform.parent.gameObject);
         //playerCamera.turnOffUICamera();
         //playerObj.SetActive(true);
-        playerObj.GetComponent<playerController>().enabled = true;
-        playerCamera.enabled = true;
+        if (!playerZoneTab.hasOneOn)
+        {
+            playerObj.GetComponent<playerController>().enabled = true;
+            playerCamera.enabled = true;
+            playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
+        }
         UIController.hasOneOn = false;
-        //GameObject.FindGameObjectWithTag("Player").GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
     }
 
 
