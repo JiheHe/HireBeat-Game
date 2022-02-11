@@ -26,6 +26,7 @@ public class InGameUIController : MonoBehaviour
                 }
                 break;
         }
+        
     }
 
     public void instantiateCharacterCustomization()

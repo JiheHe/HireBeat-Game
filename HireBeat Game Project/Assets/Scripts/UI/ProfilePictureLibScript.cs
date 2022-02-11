@@ -47,9 +47,20 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     public Image backgroundImage;
     public Image backgroundImage2;
 
+    public GameObject playerObj;
+    public cameraController playerCamera;
+
+    public PlayerMenuUIController UIController;
+
     // Start is called before the first frame update
     void Start()
     {
+        playerObj = GameObject.FindGameObjectWithTag("Player");
+        playerObj.SetActive(false);
+        playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
+        playerCamera.turnOnUICamera();
+        UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
+
         scrollRectReset(rect);
         rawImageImported = false;
 
@@ -338,6 +349,14 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     private void disableSidePicker()
     {
         sidePicker.gameObject.SetActive(false);
+    }
+
+    public void closeWindow()
+    {
+        Destroy(gameObject.transform.parent.gameObject);
+        playerCamera.turnOffUICamera();
+        playerObj.SetActive(true);
+        UIController.hasOneOn = false;
     }
 
 
