@@ -9,7 +9,7 @@ public class loadUiTestScene : MonoBehaviour
     void Start()
     {
         Debug.Log("debugger is working!");
-        SceneManager.LoadScene("uiTestScene");
+        SceneManager.LoadScene("loginMenuTestScene");
     }
 
     // Update is called once per frame

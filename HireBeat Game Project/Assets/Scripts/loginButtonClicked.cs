@@ -14,7 +14,7 @@ public class loginButtonClicked : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("hewwo");
+        
     }
 
     // Update is called once per frame
@@ -35,7 +35,8 @@ public class loginButtonClicked : MonoBehaviour
             Debug.Log("Username: " + unText);
             Debug.Log("Password: " + pwText);
             loginWindow.SetActive(false);
+
+            SceneManager.LoadScene("hudTestScene");
         }
-        //SceneManager.LoadScene("uiTestScene");
     }
 }
