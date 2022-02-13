@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -68,6 +68,42 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
+    maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -80,7 +116,763 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: RedLamp
+      rect:
+        serializedVersion: 2
+        x: 1797
+        y: 677
+        width: 21
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16568626}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7356baf7b4c3dd544ac93543c2e17d11
+      internalID: 39475832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueLamp
+      rect:
+        serializedVersion: 2
+        x: 1733
+        y: 677
+        width: 21
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16568626}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dd64aaefe0a36e49ae28353931370fd
+      internalID: 1905311357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: YellowLamp
+      rect:
+        serializedVersion: 2
+        x: 1765
+        y: 677
+        width: 21
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16568626}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db194280a0ad29249af2a958e80d0193
+      internalID: -464479544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformLeftBot
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7f02a2ec7d4eb8488b58380ca1f5657
+      internalID: -1098999325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformLeft
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f3e67f49fd13fc46a5bad339cd10014
+      internalID: -827436400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformLefTop
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 608
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bcc696c22d22dd429b9f839640a4489
+      internalID: 490486122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformTop
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 608
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1682d95f0a9c714e8b9fa55e530164f
+      internalID: -224901739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformRight
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d76a2c35fb1d644eaa279874e50cbba
+      internalID: 1899925587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformRightTop
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 608
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e28077610e1c8a64a86cf100b87b8855
+      internalID: 973972143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformRightBot
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e27adeac6c68994ea34c6a71842eb83
+      internalID: 1755194958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformBot
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c388fbbfdb2e84f44843964c390094cd
+      internalID: -2011568202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainPlatformCenter
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 707771cc266968d48b2e3b0b6ae891ad
+      internalID: 1767343519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarTopLeftLong
+      rect:
+        serializedVersion: 2
+        x: 2112
+        y: 686
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b781263b4cb82e468f86ba4a41a0b8e
+      internalID: 100189444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarTopLong
+      rect:
+        serializedVersion: 2
+        x: 2144
+        y: 686
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1479b1e5f356654a8dea3c5ae526fc2
+      internalID: -253181086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarTopRightLong
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 686
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea7675a5ab2c6af41a2ffa10e77fb5cf
+      internalID: 235471559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarBottomLeft
+      rect:
+        serializedVersion: 2
+        x: 2112
+        y: 672
+        width: 32
+        height: 14
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aea0192dac49c0e4a9fab9b6084a689e
+      internalID: -1190550550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarBottomRight
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 672
+        width: 32
+        height: 14
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb7a3ecced4efbb49a0c26f697611273
+      internalID: 1866386893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarRightEnd
+      rect:
+        serializedVersion: 2
+        x: 2208
+        y: 736
+        width: 32
+        height: 14
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7aa4bee710f28004fb549df4335e9c94
+      internalID: 1735408154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarLeftEnd
+      rect:
+        serializedVersion: 2
+        x: 2208
+        y: 704
+        width: 32
+        height: 14
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4adf82cf41b087a429471f4208707a82
+      internalID: 603325226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChair
+      rect:
+        serializedVersion: 2
+        x: 1728
+        y: 843
+        width: 30
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5744681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5553709aa09e86c438d4687ae8d852e5
+      internalID: 1040905698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainCompTable
+      rect:
+        serializedVersion: 2
+        x: 1909
+        y: 768
+        width: 54
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18181819}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6edc9ed9a17440847bbd605676714778
+      internalID: 182528656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainWaterMac
+      rect:
+        serializedVersion: 2
+        x: 1961
+        y: 564
+        width: 15
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.078947365}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9030b2380b7570346a2bcd5b9ce9ebd4
+      internalID: 18635826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainBarTopShort
+      rect:
+        serializedVersion: 2
+        x: 2144
+        y: 726
+        width: 32
+        height: 24
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74cef185d2a8d3c42bac31c072f53f6a
+      internalID: 384624827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TopLeftCornerWallTop
+      rect:
+        serializedVersion: 2
+        x: 2112
+        y: 544
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: -1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 093d1ee8e27f13f41bc2c670e45c304d
+      internalID: -498074587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeBotWall
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 673
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8118634f15ceab64aac830282aa8dd76
+      internalID: -913616303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeWallWinOpen
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 705
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 366fcdc9bc7179645b856e31c4980e6a
+      internalID: 1960436377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeWallWinClosed
+      rect:
+        serializedVersion: 2
+        x: 1248
+        y: 705
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0830d7a03c6226443adbcb9d2f9a4e6e
+      internalID: -143011450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeWallRightEnd
+      rect:
+        serializedVersion: 2
+        x: 1248
+        y: 609
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41b302b53628fef408ae1e4375674d93
+      internalID: -1431421400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeBotWallTop
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 480
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: -1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f987c264d0180642817caeab579fcbf
+      internalID: -1994391866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeWallTopDeco
+      rect:
+        serializedVersion: 2
+        x: 2112
+        y: 480
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: -1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d2b9ed38537837438d55b775dbbdf5b
+      internalID: -1430008587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeWallTopEntrance
+      rect:
+        serializedVersion: 2
+        x: 2144
+        y: 448
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: -1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7543c76b4a8666c44b532cfd3c3f96f3
+      internalID: -1905151608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeWallTopRight
+      rect:
+        serializedVersion: 2
+        x: 2208
+        y: 480
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: -1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68168987c8a87da41b482257bbf5f214
+      internalID: -565423148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BalcWallBlock
+      rect:
+        serializedVersion: 2
+        x: 2016
+        y: 864
+        width: 32
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0546875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca34e91b764ae1b4bb17546219fcc341
+      internalID: -888617147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BalcWallTop
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 864
+        width: 32
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0546875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68a69610a51fd0e4295ef2317d667b20
+      internalID: -1987967799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BecWallTop
+      rect:
+        serializedVersion: 2
+        x: 2144
+        y: 864
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: -1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a007f68748fff744f9f19d8980f873ce
+      internalID: 934161685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OfficeDoorFrame
+      rect:
+        serializedVersion: 2
+        x: 1248
+        y: 641
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 569c8f71f6ebaf34d83d2ee5d8fb3694
+      internalID: 2126200242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -91,7 +883,45 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      MainBarTopRightLong: 235471559
+      BlueLamp: 1905311357
+      YellowLamp: -464479544
+      MainTileMap_1: 1867549986
+      MainPlatformRightBot: 1755194958
+      OfficeWallRightEnd: -1431421400
+      BecWallTop: 934161685
+      MainCompTable: 182528656
+      OfficeWallTopEntrance: -1905151608
+      OfficeWallTopDeco: -1430008587
+      MainBarTopLeftLong: 100189444
+      TopLeftCornerWallTop: -498074587
+      MainPlatformLeft: -827436400
+      MainBarTopNorm: -1948237826
+      MainBarTopLong: -253181086
+      OfficeDoorFrame: 2126200242
+      MainPlatformCenter: 1767343519
+      MainPlatformTop: -224901739
+      MainWaterMac: 18635826
+      OfficeBotWall: -913616303
+      MainPlatformRightTop: 973972143
+      BalcWallTop: -1987967799
+      MainBarBottomLeft: -1190550550
+      MainPlatformBot: -2011568202
+      MainPlatformRight: 1899925587
+      MainChair: 1040905698
+      MainBarRightEnd: 1735408154
+      MainPlatformLefTop: 490486122
+      OfficeWallWinOpen: 1960436377
+      MainBarTopShort: 384624827
+      MainPlatformLeftBot: -1098999325
+      OfficeBotWallTop: -1994391866
+      MainBarBottomRight: 1866386893
+      OfficeWallTopRight: -565423148
+      OfficeWallWinClosed: -143011450
+      MainBarLeftEnd: 603325226
+      BalcWallBlock: -888617147
+      RedLamp: 39475832
   spritePackingTag: 
   pSDRemoveMatte: 0
   userData: 

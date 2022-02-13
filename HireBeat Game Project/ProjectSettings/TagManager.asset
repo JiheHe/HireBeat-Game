@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Exit
+  - Entrance
+  - PlayerCamera
+  - Background
+  - NPC
   layers:
   - Default
   - TransparentFX
@@ -40,4 +45,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: OverrideLayer
+    uniqueID: 3484145125
     locked: 0

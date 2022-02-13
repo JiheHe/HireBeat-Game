@@ -37,12 +37,18 @@ public class AvatarCustomizationScript : MonoBehaviour
     public InputField field;
 
     public GameObject playerObj;
+    public cameraController playerCamera;
+
+    public InGameUIController UIController;
 
     // Start is called before the first frame update
     void Start()
     {
         playerObj = GameObject.FindGameObjectWithTag("Player");
         playerObj.SetActive(false);
+        playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
+        playerCamera.turnOnUICamera();
+        UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<InGameUIController>();
         hasNoHair(); //false...
         hasNoTopWear();
         hasNoBotWear();
@@ -214,7 +220,10 @@ public class AvatarCustomizationScript : MonoBehaviour
     public void closeWindow()
     {
         Destroy(gameObject.transform.parent.gameObject);
+        playerCamera.turnOffUICamera();
         playerObj.SetActive(true);
+        UIController.hasOneOn = false;
+        playerObj.GetComponent<playerController>().isMoving = false;
     }
 
     public void grabFromMainComp()
