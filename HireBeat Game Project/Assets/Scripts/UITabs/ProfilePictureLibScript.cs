@@ -22,6 +22,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     float ratio = 1;
     float imgWidth;
     float imgHeight;
+    Sprite newSprite;
 
     float xDiff;
     float yDiff;
@@ -53,6 +54,8 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     public InGameUIController playerZoneTab;
     public PlayerMenuUIController UIController;
 
+    public changeReceiver playerHud;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -68,6 +71,8 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         playerZoneTab = cameraController.GetComponent<InGameUIController>();
         //the line above also works at start! No need for at the end ;D
 
+        playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>(); //does generation order matter...
+
         if (!playerZoneTab.hasOneOn) //prevents zone + UI
         {
             playerObj.GetComponent<playerController>().enabled = false;
@@ -80,6 +85,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
 
         imgFormat = "png";
         fcp.color = Color.white;
+        newSprite = null;
  
     }
 
@@ -106,7 +112,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
                 targetRawImage.texture = Resources.Load<Texture>(pfpImg);
             }
             Texture2D finalTex = ToTexture2D(rTex);
-            Sprite newSprite = Sprite.Create((Texture2D)finalTex, new Rect(0, 0, finalTex.width, finalTex.height), new Vector2(0.5f, 0.5f));
+            newSprite = Sprite.Create((Texture2D)finalTex, new Rect(0, 0, finalTex.width, finalTex.height), new Vector2(0.5f, 0.5f));
             outputFinal.GetComponent<Image>().sprite = newSprite;
 
         }
@@ -377,6 +383,16 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
             playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
         }
         UIController.hasOneOn = false;
+    }
+
+    public void sendInfo()
+    {
+        if(newSprite != null)
+        {
+            playerHud.changeProfilePicture(newSprite);
+            closeWindow();
+        }
+        
     }
 
 

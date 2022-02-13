@@ -12,19 +12,17 @@ public class opacityControl : MonoBehaviour
 
     public GameObject gameObj;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
         float mouseY = Input.mousePosition.y;
         float screenHeight = Screen.height;
 
-        float alphaProportion = ( (SCREEN_HEIGHT_PROPORTION * screenHeight - mouseY) / screenHeight) * MAX_ALPHA * SENSITIVITY;
+        //float mouseX = Input.mousePosition.x; //gonna ignore x zone for now
+        //float screenWidth = Screen.width;
+
+        float alphaProportion = ((SCREEN_HEIGHT_PROPORTION * screenHeight - mouseY) / screenHeight) * MAX_ALPHA * SENSITIVITY;
+            //* (((SCREEN_HEIGHT_PROPORTION * screenWidth - mouseX) / screenWidth) * MAX_ALPHA * SENSITIVITY); //make a separate prop to adjust zone
         if(alphaProportion < MIN_ALPHA) alphaProportion = MIN_ALPHA;
 
         Color myColor;
