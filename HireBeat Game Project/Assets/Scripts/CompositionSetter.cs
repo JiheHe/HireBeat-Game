@@ -42,7 +42,7 @@ public class CompositionSetter : MonoBehaviour
         CreateBotWear();
         CreateShoes();
         playerIGN.text = charName;
-        playerTitle.text = charTitle;
+        //playerTitle.text = charTitle;
     }
 
     // Update is called once per frame
