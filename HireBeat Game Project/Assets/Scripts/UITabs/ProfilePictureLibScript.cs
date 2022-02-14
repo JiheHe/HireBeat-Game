@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEditor;
-using UnityEngine.Networking;
+//using UnityEditor;
+//using UnityEngine.Networking;
+using System.Runtime.InteropServices;
 
 public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
@@ -56,6 +57,8 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
 
     public changeReceiver playerHud;
 
+    [DllImport("__Internal")] private static extern void getImageFromBrowser(string objectName, string callbackFuncName);
+
     // Start is called before the first frame update
     void Start()
     {
@@ -86,7 +89,6 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         imgFormat = "png";
         fcp.color = Color.white;
         newSprite = null;
- 
     }
 
     // Update is called once per frame
@@ -199,12 +201,89 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
 
     //THANK YOU https://www.youtube.com/watch?v=RuC-aU4Q7GA
     //also some of my modification
-    public void OpenFileExplorer()
+    /*public void OpenFileExplorer()
     {
         path = EditorUtility.OpenFilePanel("Show all images (." + imgFormat + ")", "", imgFormat); //change third paraem to extension desired
         StartCoroutine(GetTexture());
+    }*/
+
+    //source: https://stackoverflow.com/questions/35183253/unity3d-upload-a-image-from-pc-memory-to-webgl-app
+    static string s_dataUrlPrefix = "data:image/png;base64,";
+    public void ReceiveImage(string dataUrl)
+    {
+        if (dataUrl.StartsWith(s_dataUrlPrefix))
+        {
+            byte[] pngData = System.Convert.FromBase64String(dataUrl.Substring(s_dataUrlPrefix.Length));
+
+            // Create a new Texture (or use some old one?)
+            Texture2D myTexture = new Texture2D(1, 1); // does the size matter?
+
+            if (myTexture.LoadImage(pngData))
+            {
+                imgWidth = defaultWidth;
+                imgHeight = defaultHeight;
+                rawImage.GetComponent<RectTransform>().localPosition = new Vector2(0, 0);
+
+                //Texture2D myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                if (myTexture == null)
+                {
+                    warningMessage.SetTrigger("Warning!"); //plays once then resets, convenient!
+                    rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth, imgHeight);
+                    rawImage.texture = defaultTex;
+                    rawImageImported = false;
+                }
+                else
+                {
+                    pfpIndex = -1;
+                    sidePicker.isOn = true;
+                    float hToWRatio = (float)myTexture.height / myTexture.width;
+
+                    if (hToWRatio > 1) //height dominates width, or equal  //is there a grab to grab rawImage.width/height directly?
+                    {
+                        rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth * (hToWRatio - 1), imgHeight);
+                    }
+                    else //width dominates height
+                    {
+                        rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(imgWidth, imgHeight * hToWRatio);
+                    }
+
+                    ratio = 1;
+                    rawImage.texture = myTexture;
+
+                    rawImageImported = true;
+                    imgWidth = rawImage.GetComponent<RectTransform>().rect.width;
+                    imgHeight = rawImage.GetComponent<RectTransform>().rect.height;
+
+                    targetRawImage.GetComponent<RectTransform>().sizeDelta = rawImage.GetComponent<RectTransform>().sizeDelta * (float)800 / 180; //scale other obj up
+                    targetRawImage.transform.localPosition = rawImage.transform.localPosition * (float)800 / 180;
+                    targetRawImage.texture = rawImage.texture;
+                }
+            }
+            else
+            {
+                Debug.LogError("could not decode image");
+            }
+        }
+        else
+        {
+            Debug.LogError("Error getting image:" + dataUrl);
+        }
     }
 
+
+    static public void GetImageFromUserAsync(string objectName, string callbackFuncName)
+    {
+        getImageFromBrowser(objectName, callbackFuncName);
+    }
+
+    public void onButtonPress()
+    {
+        GetImageFromUserAsync(gameObject.name, "ReceiveImage");
+    }
+
+    //This is for using editor editing tool with local file retrieving.
+    //not useful for webGL, did the compression in jslib beforehand already
+    /*
     IEnumerator GetTexture()
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture("file:///" + path);
@@ -258,7 +337,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
                 targetRawImage.texture = rawImage.texture;
             }
         }
-    }
+    }*/
 
 
     public void OnDrag(PointerEventData eventData)

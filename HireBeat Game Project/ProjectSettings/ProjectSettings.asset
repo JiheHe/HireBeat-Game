@@ -580,7 +580,9 @@ PlayerSettings:
   webGLMemoryLinearGrowthStep: 16
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Standalone: VUPLEX_CCU
+    WebGL: VUPLEX_CCU
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

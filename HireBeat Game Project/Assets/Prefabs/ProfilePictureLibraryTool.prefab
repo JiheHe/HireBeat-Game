@@ -2447,7 +2447,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000029593, y: 2160.9592}
+  m_AnchoredPosition: {x: 0.000029593, y: 1799.282}
   m_SizeDelta: {x: 0.001, y: 3695.573}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &4799235210365502725
@@ -9440,8 +9440,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4799235211883256971}
   m_HandleRect: {fileID: 4799235211883256965}
   m_Direction: 2
-  m_Value: 0.09125724
-  m_Size: 0.3565367
+  m_Value: 0.24335244
+  m_Size: 0.35653672
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10505,19 +10505,20 @@ MonoBehaviour:
   m_Text: 'Welcome to the profile picture library!
 
     1. Click on a build-in avatar,
-    set a background color, and press <color=blue>"R"</color> key to see the visualization
-    on the bottom.
+    set a background color, and press <color=blue>"R"</color> key <color=blue>TWICE</color>
+    to see the visualization on the bottom.
 
-    2. Feel free to upload your own profile image: select a supported
-    image format and upload the image, <color=blue>drag and zoom (with left mouse
-    button and scroll wheel)</color> the image to set the desired view (only the
-    part in the square will be used), set a background color, and press <color=blue>"R"</color>
-    key to see the visualization!
+    2. Feel free to upload your own
+    profile image: select a supported image format and upload the image, <color=blue>drag
+    and zoom (with left mouse button and scroll wheel)</color> the image to set the
+    desired view (only the part in the square will be used), set a background color,
+    and press <color=blue>"R"</color> key to see the visualization!
 
-    3. When you select an avatar while having
-    a custom image imported, the image editor will go on pause and a checkbox will
-    appear: <color=blue>check the checkbox</color> to resume your work. Elements
-    in the editor window will be restored to the visualization window.'
+    3. When
+    you select an avatar while having a custom image imported, the image editor will
+    go on pause and a checkbox will appear: <color=blue>check the checkbox</color>
+    to resume your work. Elements in the editor window will be restored to the visualization
+    window.'
 --- !u!114 &4799235211350048329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15153,7 +15154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4799235211937757684
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15888,7 +15889,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3376409824612240014}
         m_TargetAssemblyTypeName: ProfilePictureLibScript, Assembly-CSharp
-        m_MethodName: OpenFileExplorer
+        m_MethodName: onButtonPress
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
