@@ -10,7 +10,7 @@ public class TitleController : MonoBehaviour
     void Start()
     {
         titleIndex = 0;
-        titles = new bool[20]; //curr only 20 titles
+        titles = new bool[24]; //curr only 24 titles
     }
 
     // Update is called once per frame
