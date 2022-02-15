@@ -10,7 +10,7 @@ public class TitleController : MonoBehaviour
     void Start()
     {
         titleIndex = 0;
-        titles = new bool[11]; //curr only 11 titles
+        titles = new bool[16]; //curr only 16 titles
     }
 
     // Update is called once per frame
@@ -19,7 +19,7 @@ public class TitleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.U))
         {
             int nextIndex = titleIndex + 1;
-            if (nextIndex > 10) nextIndex = 0;
+            if (nextIndex > titles.Length-1) nextIndex = 0;
 
             if (titles[nextIndex])
             {
