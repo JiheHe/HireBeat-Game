@@ -55,7 +55,6 @@ public class PlayerStatsScript : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.K))
         {
             gainExp(gainExpAmt);
-            lvUpMessage.SetTrigger("Warning!"); //plays once then resets, convenient!
         }
 
 
@@ -128,9 +127,10 @@ public class PlayerStatsScript : MonoBehaviour
 
     void rankUp(int nextRank, int nextRankExp) {
         //some particle system animation (diverse based on lv or nah?)
+        //idk about this... performance dude :(
 
         //some reward alert and text message showing new rank unlocked (diverse based on lv or nah?)
-        //lvUpMessage.SetTrigger("Warning!"); //plays once then resets, convenient!
+        lvUpMessage.SetTrigger("Display"); //plays once then resets, convenient!
 
         //unlock new rank
         titleController.AddDropDownOptions(nextRank - 1);
@@ -162,7 +162,14 @@ public class PlayerStatsScript : MonoBehaviour
     public void updateExpBar(int currAmount, int totalExp)
     {
         expBar.value = (float)currAmount / totalExp;
-        updateExpIndicator((int)((float)currAmount / totalExp * 100));
+        if (currAmount == totalExp) //since this is executed last, this is only possible at max rank
+        {
+            updateExpIndicator(120);
+        }
+        else
+        {
+            updateExpIndicator((int)((float)currAmount / totalExp * 100));
+        }
     }
 
     public void updateExpBarColor(Color32 color) //no need to resource.load, assign color to gray
@@ -178,5 +185,9 @@ public class PlayerStatsScript : MonoBehaviour
     public void updateExpIndicator(int percentage)
     {
         expBar.gameObject.transform.parent.Find("ExpIndicator").GetComponent<Text>().text = percentage + "%"; 
+        if(percentage > 100) //speical value
+        {
+            expBar.gameObject.transform.parent.Find("ExpIndicator").GetComponent<Text>().text = 9000 + "+ power lvl"; 
+        }
     }
 }
