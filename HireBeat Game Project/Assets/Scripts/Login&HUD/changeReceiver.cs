@@ -32,4 +32,19 @@ public class changeReceiver : MonoBehaviour
     {
         pui.instantiateProfilePicPicker();
     }
+
+    public void startSettingsTab()
+    {
+        pui.instantiateSettingsTab();
+    }
+
+    public void startQuestsTab()
+    {
+        pui.instantiateQuestsUI();
+    }
+
+    public void startSocialSystemTab()
+    {
+        pui.instantiateSocialSystemUI();
+    }
 }
