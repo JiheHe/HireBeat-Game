@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class opacityControl : MonoBehaviour
 {
     public const float SENSITIVITY = 0.01f;
-    public const float SCREEN_HEIGHT_PROPORTION = 0.5f;
+    public const float SCREEN_HEIGHT_PROPORTION = 0.55f;
     private const int MAX_ALPHA = 256;
     public const float MIN_ALPHA = 0.3f;
 
