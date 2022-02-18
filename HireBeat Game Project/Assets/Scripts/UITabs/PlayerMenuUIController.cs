@@ -64,11 +64,13 @@ public class PlayerMenuUIController : MonoBehaviour
         if (!hasOneOn)
         {
             hasOneOn = true;
-            GameObject settingsTab = Instantiate(socialSystemUI, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            /*GameObject settingsTab = Instantiate(socialSystemUI, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 
             settingsTab.transform.SetParent(GameObject.Find("hudCanvas").transform);
             settingsTab.transform.localPosition = new Vector2(0, 0);
-            settingsTab.transform.localScale = new Vector2(1, 1);
+            settingsTab.transform.localScale = new Vector2(1, 1);*/
+            socialSystemUI.SetActive(true); //want to keep data!
+            socialSystemUI.GetComponent<SocialSystemScript>().OnTabOpen();
         }
     }
 }
