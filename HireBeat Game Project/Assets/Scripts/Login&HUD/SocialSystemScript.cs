@@ -16,7 +16,7 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject outputFinal; //this is where img is stored on HUD, grab the image and put it in
     public Image targetProfileDisplayPic;
 
-    public ContentChangerScript usernameChanger;
+    public ContentChangerScript[] textChangers;
 
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
@@ -59,7 +59,11 @@ public class SocialSystemScript : MonoBehaviour
     public void CloseProfileEditor()
     {
         profileEditor.SetActive(false);
-        usernameChanger.OnCancelButtonPressed(); //turn off name editing if happening
+        foreach (ContentChangerScript textChanger in textChangers)
+        {
+            textChanger.OnCancelButtonPressed(); //turn off name editing if happening
+        }
+        
     }
 
     //On tab open, updates current display pic with the current profile pic in HUD
