@@ -116,7 +116,6 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
             Texture2D finalTex = ToTexture2D(rTex);
             newSprite = Sprite.Create((Texture2D)finalTex, new Rect(0, 0, finalTex.width, finalTex.height), new Vector2(0.5f, 0.5f));
             outputFinal.GetComponent<Image>().sprite = newSprite;
-
         }
 
     }
@@ -468,6 +467,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     {
         if(newSprite != null)
         {
+            playerObj.transform.Find("PlayerStats").GetComponent<PlayerDataManager>().changeSprite(newSprite);
             playerHud.changeProfilePicture(newSprite);
             closeWindow();
         }

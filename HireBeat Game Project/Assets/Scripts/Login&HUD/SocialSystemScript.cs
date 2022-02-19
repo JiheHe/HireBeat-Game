@@ -53,6 +53,7 @@ public class SocialSystemScript : MonoBehaviour
     public void OpenProfileEditor()
     {
         //targetProfileDisplayPic.sprite = outputFinal.GetComponent<Image>().sprite;
+        profileEditor.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1; //resets position
         profileEditor.SetActive(true);
     }
 
