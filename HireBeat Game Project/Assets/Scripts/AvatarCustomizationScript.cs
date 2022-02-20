@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; //need this line!!
+using Photon.Pun;
 
 public class AvatarCustomizationScript : MonoBehaviour
 {
@@ -44,7 +45,17 @@ public class AvatarCustomizationScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerObj = GameObject.FindGameObjectWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine
+            {
+                playerObj = player;
+                break;
+            }
+        }
+
+        //playerObj = GameObject.FindGameObjectWithTag("Player");
         playerObj.SetActive(false);
         playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
         playerCamera.turnOnUICamera();
