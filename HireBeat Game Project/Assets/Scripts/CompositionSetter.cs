@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Photon.Pun;
 
 public class CompositionSetter : MonoBehaviour
 {
     // Start is called before the first frame update
 
     //public bool hasSkin; //if not use ghost figure, an easteregg
-    public string skinColor; 
+    public string skinColor;
     public bool hasHair;
     public string hairStyle;
     public string hairColor;
@@ -31,9 +32,6 @@ public class CompositionSetter : MonoBehaviour
     public TextMeshPro playerIGN;
     public TextMeshPro playerTitle;
 
-
-    //public GameObject customizationUI; //will move this to an NPC later
-
     void Start()
     {
         CreateSkin();
@@ -41,19 +39,9 @@ public class CompositionSetter : MonoBehaviour
         CreateTopWear();
         CreateBotWear();
         CreateShoes();
-        playerIGN.text = charName;
+        UpdateName();
         //playerTitle.text = charTitle;
     }
-
-    // Update is called once per frame
-    /*void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Instantiate(customizationUI, new Vector3(0, 0, 0), Quaternion.identity); //will move this to an NPC later
-        }
-
-    }*/
 
     public void updateChar()
     {
@@ -62,79 +50,43 @@ public class CompositionSetter : MonoBehaviour
         CreateTopWear();
         CreateBotWear();
         CreateShoes();
-        playerIGN.text = charName;
+        UpdateName();
+        //view.RPC("updateCharRPC", RpcTarget.All); //this doesn't work, need to try individual component..
     }
 
-    public void updateTitle(string newTitle)
+    public void updateTitle(string newTitle) //I don't think this function's ever called LOL, title system handles all
     {
         playerTitle.text = newTitle; //or something more than this: grab a unique material asset from Resource folder
     }
 
+    private void UpdateName()
+    {
+        playerIGN.gameObject.GetComponent<ChangeObjectAnimator>().UpdateName(charName);
+    }
+
     private void CreateSkin()
     {
-        string charSkin = "Animations/ThatCoolSprite/SkinTones/" + skinColor + "/" + skinColor + "Controller";
-        //GameObject skin = dadSkin.transform.GetChild(0).gameObject; //index for skin is 1, can also do .FindChild("childName")
-        skin.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charSkin) as RuntimeAnimatorController;
+        skin.GetComponent<ChangeObjectAnimator>().CreateSkin(skinColor);
     }
 
     private void CreateHair()
     {
-        //GameObject hair = dadHair.transform.GetChild(0).gameObject; //index for hair is 2
-        if (hasHair)
-        {
-            hair.SetActive(true);
-            string charHair = "Animations/ThatCoolSprite/HairStyles/" + hairStyle + "/" + hairColor + "/" + hairStyle + hairColor + "Controller";
-            hair.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charHair) as RuntimeAnimatorController;
-        }
-        else
-        {
-            hair.SetActive(false);
-        }
+        hair.GetComponent<ChangeObjectAnimator>().CreateHair(hasHair, hairStyle, hairColor);
     }
 
     private void CreateTopWear()
     {
-        //GameObject topWear = dadClothTop.transform.GetChild(0).gameObject; //index for topWear is 3
-        if (hasClothTop)
-        {
-            topWear.SetActive(true);
-            string charTop = "Animations/ThatCoolSprite/Clothes/" + clothingTop + "/" + clothingTopColor + "/" + clothingTop + clothingTopColor + "Controller";
-            topWear.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charTop) as RuntimeAnimatorController;
-        }
-        else
-        {
-            topWear.SetActive(false);
-        }
+        topWear.GetComponent<ChangeObjectAnimator>().CreateTopWear(hasClothTop, clothingTop, clothingTopColor);
     }
 
     private void CreateBotWear()
     {
-        //GameObject botWear = dadClothBot.transform.GetChild(0).gameObject; //index for botWear is 4
-        if (hasClothBot)
-        {
-            botWear.SetActive(true);
-            string charBot = "Animations/ThatCoolSprite/Clothes/" + clothingBot + "/" + clothingBotColor + "/" + clothingBot + clothingBotColor + "Controller";
-            botWear.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charBot) as RuntimeAnimatorController;
-        }
-        else
-        {
-            botWear.SetActive(false);
-        }
+        botWear.GetComponent<ChangeObjectAnimator>().CreateBotWear(hasClothBot, clothingBot, clothingBotColor);
     }
 
     private void CreateShoes()
     {
-        //GameObject shoes = dadShoes.transform.GetChild(0).gameObject; //index for shoes is 5
-        if (hasShoes)
-        {
-            shoes.SetActive(true);
-            string charShoes = "Animations/ThatCoolSprite/Clothes/Shoes/" + shoesColor + "/Shoes" + shoesColor + "Controller";
-            shoes.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charShoes) as RuntimeAnimatorController;
-        }
-        else
-        {
-            shoes.SetActive(false);
-        }
+        shoes.GetComponent<ChangeObjectAnimator>().CreateShoes(hasShoes, shoesColor);
     }
 
 }
