@@ -1613,7 +1613,7 @@ Animator:
   m_GameObject: {fileID: 285832552247888614}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: c6d088b8197a53540a3cff2c5dd4024c, type: 2}
+  m_Controller: {fileID: 22100000, guid: 4d5ce7a3fabe80d4c832d57cfa0085dc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1815,18 +1815,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skinColor: Template
-  hasHair: 1
-  hairStyle: Messy
-  hairColor: Green
-  hasClothTop: 1
-  clothingTop: ArmorTop
-  clothingTopColor: Purple
-  hasClothBot: 1
-  clothingBot: Pants
-  clothingBotColor: Purple
-  hasShoes: 1
-  shoesColor: Navy
-  charName: Jokester
+  hasHair: 0
+  hairStyle: 
+  hairColor: 
+  hasClothTop: 0
+  clothingTop: 
+  clothingTopColor: 
+  hasClothBot: 0
+  clothingBot: 
+  clothingBotColor: 
+  hasShoes: 0
+  shoesColor: 
+  charName: Username
   charTitle: 
   skin: {fileID: 285832553552235667}
   hair: {fileID: 285832553651542326}
@@ -1986,11 +1986,6 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 7246068893763064099}
   - {fileID: 2674348290202084839}
-  - {fileID: 1317114825800452682}
-  - {fileID: 7269363048320594507}
-  - {fileID: 6248719761590802370}
-  - {fileID: 8153365951522982631}
-  - {fileID: 1826480829539518733}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -2125,7 +2120,7 @@ Animator:
   m_GameObject: {fileID: 285832552340121213}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 076effeafa184f74a8f67c56601a6c58, type: 2}
+  m_Controller: {fileID: 22100000, guid: 4052e271860b8d34891567301f2157eb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2180,7 +2175,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 6248719761590802370}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -2664,7 +2660,7 @@ Animator:
   m_GameObject: {fileID: 285832552506708250}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: bda2494e8ba1fd04ca8eef37af94aaae, type: 2}
+  m_Controller: {fileID: 22100000, guid: ddd4e1749e2e3934dba39945a9a050e4, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2719,7 +2715,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 8153365951522982631}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -3308,7 +3305,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Name
+  m_text: 'Name
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 19e43d992ba00024489ebcba1095ba00, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 356d7946370b3884c94bc0c5a83894cb, type: 2}
@@ -5950,7 +5949,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 1317114825800452682}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -6434,7 +6434,7 @@ Animator:
   m_GameObject: {fileID: 285832553651542326}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: bee8e8f1d876f2e4c9d563e243f9a4ca, type: 2}
+  m_Controller: {fileID: 22100000, guid: cff18a01492eb274ea83efa99a9fdc32, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -6489,7 +6489,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 7269363048320594507}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

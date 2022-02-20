@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 
-public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
+public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourcallbacks matters
 {
     PhotonView view;
     // Start is called before the first frame update 
@@ -15,13 +15,13 @@ public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
 
     }
 
-    public void CreateSkin(string skinColor)
+    public void CreateSkin(string skinColor) 
     {
-        view.RPC("CreateSkinRPC", RpcTarget.All, skinColor);
+        view.RPC("CreateSkinRPC", RpcTarget.AllBuffered, skinColor);
     }
 
     [PunRPC]
-    void CreateSkinRPC(string skinColor)
+    void CreateSkinRPC(string skinColor) 
     {
         string charSkin = "Animations/ThatCoolSprite/SkinTones/" + skinColor + "/" + skinColor + "Controller";
         gameObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charSkin) as RuntimeAnimatorController;
@@ -29,7 +29,7 @@ public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
 
     public void CreateHair(bool hasHair, string hairStyle, string hairColor)
     {
-        view.RPC("CreateHairRPC", RpcTarget.All, hasHair, hairStyle, hairColor);
+        view.RPC("CreateHairRPC", RpcTarget.AllBuffered, hasHair, hairStyle, hairColor);
     }
 
     [PunRPC]
@@ -49,7 +49,7 @@ public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
 
     public void CreateTopWear(bool hasClothTop, string clothingTop, string clothingTopColor)
     {
-        view.RPC("CreateTopWearRPC", RpcTarget.All, hasClothTop, clothingTop, clothingTopColor);
+        view.RPC("CreateTopWearRPC", RpcTarget.AllBuffered, hasClothTop, clothingTop, clothingTopColor);
     }
 
     [PunRPC]
@@ -69,7 +69,7 @@ public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
 
     public void CreateBotWear(bool hasClothBot, string clothingBot, string clothingBotColor)
     {
-        view.RPC("CreateBotWearRPC", RpcTarget.All, hasClothBot, clothingBot, clothingBotColor);
+        view.RPC("CreateBotWearRPC", RpcTarget.AllBuffered, hasClothBot, clothingBot, clothingBotColor);
     }
 
     [PunRPC]
@@ -89,7 +89,7 @@ public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
 
     public void CreateShoes(bool hasShoes, string shoesColor)
     {
-        view.RPC("CreateShoesRPC", RpcTarget.All, hasShoes, shoesColor);
+        view.RPC("CreateShoesRPC", RpcTarget.AllBuffered, hasShoes, shoesColor);
     }
 
     [PunRPC]
@@ -109,7 +109,7 @@ public class ChangeObjectAnimator : MonoBehaviourPunCallbacks
 
     public void UpdateName(string newName)
     {
-        view.RPC("UpdateNameRPC", RpcTarget.All, newName);
+        view.RPC("UpdateNameRPC", RpcTarget.AllBuffered, newName);
     }
 
     [PunRPC]

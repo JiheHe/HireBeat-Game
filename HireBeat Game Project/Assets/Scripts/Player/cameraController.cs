@@ -1,14 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class cameraController : MonoBehaviour
+public class cameraController : MonoBehaviourPunCallbacks
 {
     public float scrollSpeed = 10;
     public float minSize;
     public float maxSize;
     public GameObject UICamera;
     public Camera zoomCamera;
+
+
+    //from testing, this object exists separately and locally on two different platforms, so we chilling
+    void Start()
+    {
+        
+    }
 
     // Update is called once per frame
     void Update()
@@ -34,4 +43,19 @@ public class cameraController : MonoBehaviour
     {
         UICamera.SetActive(false);
     }
+
+    //no need for this, can directly assign at player spawn
+    public void AssignCamera()
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine
+            {
+                zoomCamera = player.transform.Find("PlayerCamera").GetComponent<Camera>();
+                break;
+            }
+        }
+    }
+
 }

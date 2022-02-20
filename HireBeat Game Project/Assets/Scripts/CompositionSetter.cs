@@ -32,15 +32,26 @@ public class CompositionSetter : MonoBehaviour
     public TextMeshPro playerIGN;
     public TextMeshPro playerTitle;
 
-    void Start()
+    //Rip start
+    //Can't do it directly, need to wait some time for char to load in
+    //can prob use this for the tool optimization too ;D
+    public void RetrieveCharInfo(string charName, bool hasHair, bool hasTopWear, bool hasBotWear, bool hasShoes,
+        string currSkin, string currHairStyle, string currHairColor, string currTopWearStyle, string currTopWearColor, 
+        string currBotWearStyle, string currBotWearColor, string currShoesColor)
     {
-        CreateSkin();
-        CreateHair();
-        CreateTopWear();
-        CreateBotWear();
-        CreateShoes();
-        UpdateName();
-        //playerTitle.text = charTitle;
+            this.charName = charName;
+            this.hasHair = hasHair;
+            hasClothTop = hasTopWear;
+            hasClothBot = hasBotWear;
+            this.hasShoes = hasShoes;
+            skinColor = currSkin;
+            hairStyle = currHairStyle;
+            hairColor = currHairColor;
+            clothingTop = currTopWearStyle;
+            clothingTopColor = currTopWearColor;
+            clothingBot = currBotWearStyle;
+            clothingBotColor = currBotWearColor;
+            shoesColor = currShoesColor;
     }
 
     public void updateChar()
