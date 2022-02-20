@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class playerController : MonoBehaviour
 {
@@ -14,47 +15,64 @@ public class playerController : MonoBehaviour
 
     public Animator[] animators;
 
-    private void Awake()
+    public PhotonView view;
+    public Camera cam;
+
+    private void Start()
     {
-        //animator = transform.GetChild(0).GetComponent<Animator>();
+        view = GetComponent<PhotonView>();
+
+        //thanks to info gamer's eletrax video!
+        //this prevents camera overwrite in multiplayers
+        cam = transform.Find("PlayerCamera").GetComponent<Camera>();
+        if (!view.IsMine)
+        {
+            Destroy(cam.gameObject); //i mean might as well.. bye to audio too
+            //cam.enabled = false;
+        }
+
     }
 
     private void Update()
     {
-        if (!isMoving)
+        if (view.IsMine)
         {
-            input.x = Input.GetAxisRaw("Horizontal");
-            input.y = Input.GetAxisRaw("Vertical");
-
-            /*
-            // removes diagonal inputs if unwanted
-            if (input.x != 0)
+            if (!isMoving)
             {
-                input.y = 0;
-            }
-            */
+                input.x = Input.GetAxisRaw("Horizontal");
+                input.y = Input.GetAxisRaw("Vertical");
+                input = input.normalized; //so diag movement speed the same
 
-
-            if (input != Vector2.zero)
-            {
-
-                foreach (Animator animator in animators)
+                /*
+                // removes diagonal inputs if unwanted
+                if (input.x != 0)
                 {
-                    animator.SetFloat("moveX", input.x);
-                    animator.SetFloat("moveY", input.y);
+                    input.y = 0;
                 }
+                */
 
-                var targetPos = transform.position;
-                targetPos.x += input.x / 5.0f; //+1 is too big to detect
-                targetPos.y += input.y / 5.0f;
 
-                if (IsWalkable(targetPos))
-                    StartCoroutine(Move(targetPos));
+                if (input != Vector2.zero)
+                {
+
+                    foreach (Animator animator in animators)
+                    {
+                        animator.SetFloat("moveX", input.x);
+                        animator.SetFloat("moveY", input.y);
+                    }
+
+                    var targetPos = transform.position;
+                    targetPos.x += input.x / 5.0f; //+1 is too big to detect
+                    targetPos.y += input.y / 5.0f;
+
+                    if (IsWalkable(targetPos))
+                        StartCoroutine(Move(targetPos));
+                }
             }
-        }
-        foreach (Animator animator in animators)
-        {
-            animator.SetBool("isMoving", isMoving);
+            foreach (Animator animator in animators)
+            {
+                animator.SetBool("isMoving", isMoving);
+            }
         }
     }
 
