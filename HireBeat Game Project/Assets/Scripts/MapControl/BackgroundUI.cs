@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class BackgroundUI : MonoBehaviour
 {
@@ -13,8 +14,18 @@ public class BackgroundUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        background = GameObject.FindGameObjectWithTag("Background");
-        playerObj = GameObject.FindGameObjectWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine
+            {
+                playerObj = player;
+                break;
+            }
+        }
+
+        background = GameObject.FindGameObjectWithTag("Background"); //no need to worry, since background is local, only 1
+        //playerObj = GameObject.FindGameObjectWithTag("Player");
         playerObj.SetActive(false);
         playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
         playerCamera.turnOnUICamera();

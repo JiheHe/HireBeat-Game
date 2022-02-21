@@ -10,6 +10,7 @@ public class SpawnPlayers : MonoBehaviour
     public float minX, minY, maxX, maxY;
 
     public GameObject manager;
+    public GameObject background; //also unique to individual
 
     //THIS IS TO INDIVIDUAL AS WELL!
     //probably is?
@@ -29,6 +30,9 @@ public class SpawnPlayers : MonoBehaviour
 
         //assign the camera to the current, local manager
         manager.GetComponent<cameraController>().zoomCamera = newPlayer.transform.Find("PlayerCamera").GetComponent<Camera>();
+        
+        //assign background's camera to point towards the new player's
+        background.GetComponent<Canvas>().worldCamera = newPlayer.transform.Find("PlayerCamera").GetComponent<Camera>();
     }
 
     // Update is called once per frame
