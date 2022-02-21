@@ -254,6 +254,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 2094730251}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &5090082
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2343,6 +2345,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 2120723060}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &53251848
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2762,6 +2766,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 427666711}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &64555853
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7885,6 +7891,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1582215343}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &157261909
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8567,6 +8575,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1305564291}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 826429695}
 --- !u!61 &174758624
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8692,6 +8702,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1798437974}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 1623697864}
 --- !u!61 &181576793
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13369,6 +13381,76 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &338056061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 338056062}
+  - component: {fileID: 338056063}
+  - component: {fileID: 338056064}
+  m_Layer: 0
+  m_Name: AlphaReducerController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &338056062
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338056061}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 481548807}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &338056063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338056061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccf24f377cf8ab945b2cd0b28bcd9872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zones: []
+  counts: 
+  view: {fileID: 0}
+--- !u!114 &338056064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338056061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 8
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &349740675
 GameObject:
   m_ObjectHideFlags: 0
@@ -18482,6 +18564,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 338056062}
   - {fileID: 1812070361}
   - {fileID: 1189691612}
   - {fileID: 826429699}
@@ -26884,6 +26967,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 2051469393}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!66 &606111296
 CompositeCollider2D:
   m_ObjectHideFlags: 0
@@ -36525,6 +36610,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1858662178}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &791785617
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -38499,6 +38586,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1305564291}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 174758621}
 --- !u!61 &826429697
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -53740,6 +53829,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1176515838}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &1185350807
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -55380,6 +55471,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 819397373}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 1812070359}
 --- !u!61 &1189691614
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -57199,6 +57292,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1726773415}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &1263639157
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -73849,6 +73944,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1798437974}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 181576790}
 --- !u!61 &1623697867
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -74236,6 +74333,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1395409261}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &1648051908
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -77985,6 +78084,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 819397373}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 1189691611}
 --- !u!1 &1812446450
 GameObject:
   m_ObjectHideFlags: 0
@@ -88544,6 +88645,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1358195720}
+  controller: {fileID: 0}
+  relatedZone: {fileID: 0}
 --- !u!61 &2132381553
 BoxCollider2D:
   m_ObjectHideFlags: 0

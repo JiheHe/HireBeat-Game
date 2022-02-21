@@ -5,25 +5,27 @@ using UnityEngine;
 public class AlphaReducer : MonoBehaviour
 {
     public GameObject wall;
-    private int count = 0;
+    public WallZonesController controller;
+    public GameObject relatedZone; //this is for 2 zones that share a same wall, like door frame ones!
+
+    public void Start()
+    {
+        controller = FindObjectOfType<WallZonesController>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        changeAlpha(0.4f);
-        count++;
+        controller.OnZoneEntry(gameObject.name);
+        if(relatedZone != null) controller.OnZoneEntry(relatedZone.name); //treat them as one
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        count--;
-        if(count == 0)
-        {
-            changeAlpha(1.0f);
-        }
-        
+        controller.OnZoneExit(gameObject.name);
+        if (relatedZone != null) controller.OnZoneExit(relatedZone.name);
     }
 
-    private void changeAlpha(float val)
+    public void changeAlpha(float val)
     {
         foreach (SpriteRenderer child in wall.GetComponentsInChildren<SpriteRenderer>())
         {
