@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerDataManager : MonoBehaviour
 {
-    public SpriteRenderer playerPfpSprite;
+    //this kinda centralizes important data
+
+    public ProfileUpdater playerPfpSprite;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,9 +19,11 @@ public class PlayerDataManager : MonoBehaviour
         
     }
 
-    public void changeSprite(Sprite sprite)
+    //yh though you don't need to do that for most stuff unless both clients don't have the same media
+    //there's probably a limit to the size of the rpc data too but you could likely split the byte array easily enough if needed
+    public void changeSprite(Texture2D tex) //kinda redundant LOL, w/e
     {
-        playerPfpSprite.sprite = sprite;
-        playerPfpSprite.transform.localScale = new Vector2(0.85f, 0.85f);
+        byte[] imgByteArr = tex.EncodeToPNG();
+        playerPfpSprite.changeSprite(imgByteArr);
     }
 }

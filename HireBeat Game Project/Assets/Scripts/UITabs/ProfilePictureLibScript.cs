@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 //using UnityEditor;
 //using UnityEngine.Networking;
 using System.Runtime.InteropServices;
+using Photon.Pun;
 
 public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
@@ -62,7 +63,17 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     // Start is called before the first frame update
     void Start()
     {
-        playerObj = GameObject.FindGameObjectWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine
+            {
+                playerObj = player;
+                break;
+            }
+        }
+
+        //playerObj = GameObject.FindGameObjectWithTag("Player");
 
         GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
 
@@ -467,7 +478,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     {
         if(newSprite != null)
         {
-            playerObj.transform.Find("PlayerStats").GetComponent<PlayerDataManager>().changeSprite(newSprite);
+            playerObj.transform.Find("PlayerStats").GetComponent<PlayerDataManager>().changeSprite(newSprite.texture);
             playerHud.changeProfilePicture(newSprite);
             closeWindow();
         }
