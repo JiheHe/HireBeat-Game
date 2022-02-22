@@ -36,9 +36,17 @@ public class ProfileUpdater : MonoBehaviour
         SpriteRenderer newSprite = GetComponent<SpriteRenderer>(); 
         Texture2D myTexture = new Texture2D(newSprite.sprite.texture.width, newSprite.sprite.texture.height, TextureFormat.RGB24, false, true); //or use constants
         myTexture.LoadImage(imgByteArr);
-        newSprite.sprite = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
+        Sprite spriteImg = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
+        newSprite.sprite = spriteImg;
+        SetProfileDisplaySprite(spriteImg);
         gameObject.transform.localScale = new Vector2(0.85f, 0.85f);
         //gameObject.GetComponent<SpriteRenderer>().sprite = newSprite;
         //
+    }
+
+    void SetProfileDisplaySprite(Sprite newSprite)
+    {
+        gameObject.transform.parent.transform.parent.GetComponent<OnMouseOverObject>().UpdatePfpImage(newSprite);
+
     }
 }

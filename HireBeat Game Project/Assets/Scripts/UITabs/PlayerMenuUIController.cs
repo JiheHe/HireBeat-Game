@@ -73,4 +73,14 @@ public class PlayerMenuUIController : MonoBehaviour
             socialSystemUI.GetComponent<SocialSystemScript>().OnTabOpen();
         }
     }
+
+    public void instantiateProfileViewer(GameObject obj)
+    {
+        if (!hasOneOn)
+        {
+            hasOneOn = true;
+            obj.SetActive(true);
+            obj.transform.parent.GetComponent<OnMouseOverObject>().OnTabOpen();
+        }
+    }
 }

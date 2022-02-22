@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class SocialSystemScript : MonoBehaviour
 {
@@ -21,7 +22,17 @@ public class SocialSystemScript : MonoBehaviour
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
-        playerObj = GameObject.FindGameObjectWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine
+            {
+                playerObj = player;
+                break;
+            }
+        }
+        //playerObj = GameObject.FindGameObjectWithTag("Player");
+
         GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
         playerCamera = cameraController.GetComponent<cameraController>();
         UIController = cameraController.GetComponent<PlayerMenuUIController>();
