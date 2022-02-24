@@ -10,19 +10,18 @@ using UnityEngine.SceneManagement;
 //In the future, change the login to login with HireBeat's data info
 public class PlayFabController : MonoBehaviour
 {
-    public static PlayFabController PFC; //singleton
-
     #region LoginVariables
     public LoginPageScripts loginMenu;
     private string userEmail;
     private string userPassword;
     private string username;
     #endregion LoginVariables
-
+    private string myID;
+    PersistentData PD;
     
     private void OnEnable() //making sure only 1 playfab controller
     {
-        if(PlayFabController.PFC == null)
+        /*if(PlayFabController.PFC == null)
         {
             PlayFabController.PFC = this;
         }
@@ -32,12 +31,14 @@ public class PlayFabController : MonoBehaviour
             {
                 Destroy(this.gameObject);
             }
-        }
+        }*/ //cant use damn signleton in multiplayer
         DontDestroyOnLoad(this.gameObject);
     }
 
     public void Start()
     {
+        PD = GameObject.Find("PersistentData").GetComponent<PersistentData>();
+
         if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
         {
             /*
@@ -68,6 +69,8 @@ public class PlayFabController : MonoBehaviour
         loginMenu = null;
         GetStats();
 
+        myID = result.PlayFabId; //this is the unique ID!!!
+        PD.RetrieveUserData();
     }
 
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
@@ -80,6 +83,8 @@ public class PlayFabController : MonoBehaviour
         GetStats(); //player shouldn't have any values at this point
         //maybe set up a default stats value later
 
+        myID = result.PlayFabId;
+        PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend
     }
 
     private void OnLoginFailure(PlayFabError error)
@@ -129,7 +134,10 @@ public class PlayFabController : MonoBehaviour
     #endregion Login 
 
     //need to be 32 bit ints
-    public int playerExp; //for example
+    public int playerScoreTotal; //for example
+
+    //https://www.youtube.com/watch?v=Xo9zRhzfb24&list=PLWeGoBm1YHVgi6ZcwWGt27Y4NHUAG5smX&index=8
+    //Skipped cloud scripts and leaderboards (will implement in the future for important variables, not sure yet)
 
     #region PlayerStats
 
@@ -141,7 +149,7 @@ public class PlayFabController : MonoBehaviour
         {
             // request.Statistics is a list, so multiple StatisticUpdate objects can be defined if required.
             Statistics = new List<StatisticUpdate> {
-                new StatisticUpdate { StatisticName = "PlayerExp", Value = playerExp },
+                new StatisticUpdate { StatisticName = "PlayerScoreTotal", Value = playerScoreTotal },
                 /*new StatisticUpdate { StatisticName = "OtherName", Value = variableName },
                 new StatisticUpdate { StatisticName = "PlayerExp", Value = playerExp },
                 new StatisticUpdate { StatisticName = "PlayerExp", Value = playerExp },*/
@@ -168,8 +176,8 @@ public class PlayFabController : MonoBehaviour
             Debug.Log("Statistic (" + eachStat.StatisticName + "): " + eachStat.Value);
             switch(eachStat.StatisticName)
             {
-                case "PlayerExp":
-                    playerExp = eachStat.Value;
+                case "PlayerScoreTotal":
+                    playerScoreTotal = eachStat.Value;
                     break;
                 /*case "PlayerExp": //same idea! add more and update vars
                     playerExp = eachStat.Value;
@@ -182,5 +190,67 @@ public class PlayFabController : MonoBehaviour
     }
 
     #endregion PlayerStats
+
+    //Currently I'm thinking getting all saved data on login, and set new data as you go. So really, you only need to retrieve data once...
+    //So you can add more properties!
+    #region PlayerData
+    public void GetPlayerData()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest()
+        {
+            PlayFabId = myID,
+            Keys = null //setting this to null returns all the player data
+            //else giving it a string returns specific, respective data
+        }, SetCharProperties, OnUserDataFailed);
+    }
+
+    //updates the retrieved all data result to PD
+    void SetCharProperties(GetUserDataResult result) //this one populates character setup, should make mulitple copies and call ig
+    {
+        if (result.Data == null)
+        {
+            Debug.Log("result is null!");
+        }
+        else
+        {
+            for (int i = 0; i < PD.charProperties.Length; i++)
+            {
+                string varName = PD.charProperties[i];
+                if (!result.Data.ContainsKey(varName))
+                {
+                    Debug.Log(varName + " not set");
+                }
+                else
+                {
+                    //this sets the "key"-named variable in PD to the value of the return Data
+                    PD.GetType().GetField(varName).SetValue(PD, result.Data[varName].Value);
+                }
+            }
+        }
+    }
+
+
+    void OnUserDataFailed(PlayFabError error)
+    {
+        Debug.LogError(error.GenerateErrorReport());
+    }
+
+    public void SetUserData(string key, string value)
+    {
+        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
+        {
+            Data = new Dictionary<string, string>()
+            {
+                {key, value}
+            }
+        }, SetDataSuccess, OnUserDataFailed);
+    }
+
+    void SetDataSuccess(UpdateUserDataResult result)
+    {
+        //Debug.Log(result.DataVersion);
+    }
+
+    #endregion PlayerData
 
 }

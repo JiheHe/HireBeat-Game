@@ -42,6 +42,8 @@ public class AvatarCustomizationScript : MonoBehaviour
 
     public InGameUIController UIController;
 
+    PlayFabController PFC;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -54,6 +56,8 @@ public class AvatarCustomizationScript : MonoBehaviour
                 break;
             }
         }
+
+        PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
 
         //playerObj = GameObject.FindGameObjectWithTag("Player");
         playerObj.SetActive(false);
@@ -226,6 +230,20 @@ public class AvatarCustomizationScript : MonoBehaviour
         mainComp.clothingBotColor = currBotWearColor;
         mainComp.shoesColor = currShoesColor;
         mainComp.updateChar();
+
+        PFC.SetUserData("charName", charName);
+        PFC.SetUserData("skinColor", currSkin);
+        PFC.SetUserData("hasHair", PersistentData.boolToStr(hasHair));
+        PFC.SetUserData("hairStyle", currHairStyle);
+        PFC.SetUserData("hairColor", currHairColor);
+        PFC.SetUserData("hasTopWear", PersistentData.boolToStr(hasTopWear));
+        PFC.SetUserData("topWearStyle", currTopWearStyle);
+        PFC.SetUserData("topWearColor", currTopWearColor);
+        PFC.SetUserData("hasBotWear", PersistentData.boolToStr(hasBotWear));
+        PFC.SetUserData("botWearStyle", currBotWearStyle);
+        PFC.SetUserData("botWearColor", currBotWearColor);
+        PFC.SetUserData("hasShoes", PersistentData.boolToStr(hasShoes));
+        PFC.SetUserData("shoesColor", currShoesColor);
     }
 
     public void closeWindow()

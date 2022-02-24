@@ -26,7 +26,7 @@ public class SpawnPlayers : MonoBehaviour
         Debug.Log("A new player has joined!");
 
         //shouldn't be on the same frame else null, give it some time to spawn in then change
-        StartCoroutine(InstantiateAppearence(newPlayer, 0.0001f));
+        StartCoroutine(InstantiateAppearence(newPlayer, 0.000001f));
 
         //assign the camera to the current, local manager
         manager.GetComponent<cameraController>().zoomCamera = newPlayer.transform.Find("PlayerCamera").GetComponent<Camera>();
@@ -46,9 +46,11 @@ public class SpawnPlayers : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
 
+        var p = GameObject.Find("PersistentData").GetComponent<PersistentData>(); //shorthand
         //render your data
-        newPlayer.GetComponent<CompositionSetter>().RetrieveCharInfo("Jokester", true, true, true, true, "Dark",
-            "Jojo", "Green", "ArmorTop", "Purple", "Pants", "Purple", "Navy"); //can grab these from char info data base
+        newPlayer.GetComponent<CompositionSetter>().RetrieveCharInfo(p.charName, PersistentData.strToBool(p.hasHair), PersistentData.strToBool(p.hasTopWear),
+            PersistentData.strToBool(p.hasBotWear), PersistentData.strToBool(p.hasShoes), p.skinColor, p.hairStyle, p.hairColor, p.topWearStyle, p.topWearColor,
+            p.botWearStyle, p.botWearColor, p.shoesColor); //can grab these from char info data base
         newPlayer.GetComponent<CompositionSetter>().updateChar();
     }
 }
