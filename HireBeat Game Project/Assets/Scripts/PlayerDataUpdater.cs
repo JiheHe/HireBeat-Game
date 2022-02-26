@@ -26,6 +26,10 @@ public class PlayerDataUpdater : MonoBehaviour, IPunInstantiateMagicCallback
         string imgString = SpawnPlayers.ConnectArrayOfSubstrings((string[])instanceData[13]); //need to break img string down to n parts, else too long
         byte[] pfpByteArr = Convert.FromBase64String(imgString);
         updater.changeSpriteRPC(pfpByteArr);
+        OnMouseOverObject textUpdater = gameObject.transform.Find("PlayerMouseDetector").GetComponent<OnMouseOverObject>();
+        textUpdater.UpdateUsernameRPC((string)instanceData[14]);
+        textUpdater.UpdateSignatureRPC((string)instanceData[15]);
+        textUpdater.uniqueID.text = "Unique ID: " + (string)instanceData[16];
 
         gameObject.GetComponent<CompositionSetter>().RetrieveCharInfo(
             (string)instanceData[0],

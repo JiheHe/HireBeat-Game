@@ -70,6 +70,7 @@ public class PlayFabController : MonoBehaviour
         GetStats();
 
         myID = result.PlayFabId; //this is the unique ID!!!
+        SetUserData("acctID", myID);
         PD.RetrieveUserData();
     }
 
@@ -84,7 +85,8 @@ public class PlayFabController : MonoBehaviour
         //maybe set up a default stats value later
 
         myID = result.PlayFabId;
-        PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend
+        SetUserData("acctID", myID);
+        PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend (cuz mostly will be null!)
     }
 
     private void OnLoginFailure(PlayFabError error)

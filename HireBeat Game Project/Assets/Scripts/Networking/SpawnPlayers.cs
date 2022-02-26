@@ -51,21 +51,27 @@ public class SpawnPlayers : MonoBehaviour
     {
         var p = GameObject.Find("PersistentData").GetComponent<PersistentData>(); //shorthand
 
+        changeReceiver hudCentralControl = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>();
         byte[] pfpByteArr = Convert.FromBase64String(p.pfpImage);
-        Image newSprite = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("profilePicture").transform.Find("placeholderImage").gameObject.GetComponent<Image>();
+        //Image newSprite = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("profilePicture").transform.Find("placeholderImage").gameObject.GetComponent<Image>();
+        Image newSprite = hudCentralControl.hudProfilePicture;
         myTexture = new Texture2D(newSprite.sprite.texture.width, newSprite.sprite.texture.height, TextureFormat.RGB24, false, true); //or use constants
         myTexture.LoadImage(pfpByteArr);
         Sprite spriteImg = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
         newSprite.sprite = spriteImg;
-    }
+        hudCentralControl.hudAccountName.text = p.acctName;
+        hudCentralControl.accountNameInEditor.text = p.acctName;
+        hudCentralControl.accountSignatureInEditor.text = p.acctSignature;
+        hudCentralControl.uniqueIDinEditor.text = "Unique ID: " + p.acctID;
+}
 
     object[] InitializePlayerInformation()
     {
         var p = GameObject.Find("PersistentData").GetComponent<PersistentData>();
 
-        object[] instanceData = new object[14];
+        object[] instanceData = new object[17];
         //0 - 12 are for char appearence
-        //13 - ? are for profile
+        //13 - 16 are for profile
 
         instanceData[0] = p.charName;
         instanceData[1] = p.hasHair;
@@ -80,7 +86,11 @@ public class SpawnPlayers : MonoBehaviour
         instanceData[10] = p.botWearStyle;
         instanceData[11] = p.botWearColor;
         instanceData[12] = p.shoesColor;
+
         instanceData[13] = DivideStringIntoSub(p.pfpImage, 10000);
+        instanceData[14] = p.acctName;
+        instanceData[15] = p.acctSignature;
+        instanceData[16] = p.acctID;
 
         return instanceData;
     }

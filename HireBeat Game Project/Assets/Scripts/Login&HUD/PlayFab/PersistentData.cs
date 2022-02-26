@@ -28,9 +28,12 @@ public class PersistentData : MonoBehaviour
 
     //these are profile huds
     public string pfpImage;
+    public string acctName;
+    public string acctSignature;
+    public string acctID;
 
     public string[] charProperties = {"charName", "skinColor", "hasHair", "hairStyle", "hairColor", "hasTopWear", "topWearStyle", "topWearColor", "hasBotWear",
-        "botWearStyle", "botWearColor", "hasShoes", "shoesColor", "pfpImage" }; //var names
+        "botWearStyle", "botWearColor", "hasShoes", "shoesColor", "pfpImage", "acctName", "acctSignature", "acctID" }; //var names
 
     private void OnEnable() //making sure only 1 playfab controller
     {

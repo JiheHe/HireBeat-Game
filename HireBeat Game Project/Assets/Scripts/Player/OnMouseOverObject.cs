@@ -13,6 +13,7 @@ public class OnMouseOverObject : MonoBehaviour
     public Text username;
     public Text signature;
     public Image profileSprite;
+    public Text uniqueID;
 
     public GameObject playerObj;
     public cameraController playerCamera;
@@ -91,7 +92,7 @@ public class OnMouseOverObject : MonoBehaviour
     }
 
     [PunRPC]
-    void UpdateUsernameRPC(string newName)
+    public void UpdateUsernameRPC(string newName)
     {
         username.text = newName;
     }
@@ -102,7 +103,7 @@ public class OnMouseOverObject : MonoBehaviour
     }
 
     [PunRPC]
-    void UpdateSignatureRPC(string newSignature)
+    public void UpdateSignatureRPC(string newSignature)
     {
         signature.text = newSignature;
     }

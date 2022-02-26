@@ -18,6 +18,8 @@ public class ContentChangerScript : MonoBehaviour
     public GameObject playerObj;
     OnMouseOverObject playerDataDisplay;
 
+    PlayFabController PFC;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +33,8 @@ public class ContentChangerScript : MonoBehaviour
             }
         }
         playerDataDisplay = playerObj.transform.Find("PlayerMouseDetector").GetComponent<OnMouseOverObject>();
+
+        PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
     }
 
     // Update is called once per frame
@@ -57,8 +61,16 @@ public class ContentChangerScript : MonoBehaviour
         {
             textSpot.text = newInput.text;
             if(UITextTarget != null) UITextTarget.text = newInput.text;
-            if (!canLeftEmpty) playerDataDisplay.UpdateUsername(newInput.text); //rn username cannot be left empty, and signature can. Use that to distinguish
-            else playerDataDisplay.UpdateSignature(newInput.text);
+            if (!canLeftEmpty)
+            {
+                playerDataDisplay.UpdateUsername(newInput.text); //rn username cannot be left empty, and signature can. Use that to distinguish
+                PFC.SetUserData("acctName", newInput.text);
+            }
+            else
+            {
+                playerDataDisplay.UpdateSignature(newInput.text);
+                PFC.SetUserData("acctSignature", newInput.text);
+            }
             originalDisplay.SetActive(true);
             editorDisplay.SetActive(false);
         }
