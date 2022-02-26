@@ -9,6 +9,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     PhotonView view;
     // Start is called before the first frame update 
     //every obj needs a photon view else it bugs!
+    //since RPC scripts are attached to the object, if disable the object then script doesn't work anymore! So better to make transparent
     void Start()
     {
         view = GetComponent<PhotonView>();
@@ -35,15 +36,16 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     [PunRPC]
     public void CreateHairRPC(bool hasHair, string hairStyle, string hairColor)
     {
+        SpriteRenderer rend = gameObject.GetComponent<SpriteRenderer>();
         if (hasHair)
         {
-            gameObject.SetActive(true);
+            changeAlpha(rend, 1f);
             string charHair = "Animations/ThatCoolSprite/HairStyles/" + hairStyle + "/" + hairColor + "/" + hairStyle + hairColor + "Controller";
             gameObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charHair) as RuntimeAnimatorController;
         }
         else
         {
-            gameObject.SetActive(false);
+            changeAlpha(rend, 0f);
         }
     }
 
@@ -55,15 +57,16 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     [PunRPC]
     public void CreateTopWearRPC(bool hasClothTop, string clothingTop, string clothingTopColor)
     {
+        SpriteRenderer rend = gameObject.GetComponent<SpriteRenderer>();
         if (hasClothTop)
         {
-            gameObject.SetActive(true);
+            changeAlpha(rend, 1f);
             string charTop = "Animations/ThatCoolSprite/Clothes/" + clothingTop + "/" + clothingTopColor + "/" + clothingTop + clothingTopColor + "Controller";
             gameObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charTop) as RuntimeAnimatorController;
         }
         else
         {
-            gameObject.SetActive(false);
+            changeAlpha(rend, 0f);
         }
     }
 
@@ -75,15 +78,16 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     [PunRPC]
     public void CreateBotWearRPC(bool hasClothBot, string clothingBot, string clothingBotColor)
     {
+        SpriteRenderer rend = gameObject.GetComponent<SpriteRenderer>();
         if (hasClothBot)
         {
-            gameObject.SetActive(true);
+            changeAlpha(rend, 1f);
             string charBot = "Animations/ThatCoolSprite/Clothes/" + clothingBot + "/" + clothingBotColor + "/" + clothingBot + clothingBotColor + "Controller";
             gameObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charBot) as RuntimeAnimatorController;
         }
         else
         {
-            gameObject.SetActive(false);
+            changeAlpha(rend, 0f);
         }
     }
 
@@ -95,15 +99,16 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     [PunRPC]
     public void CreateShoesRPC(bool hasShoes, string shoesColor)
     {
+        SpriteRenderer rend = gameObject.GetComponent<SpriteRenderer>();
         if (hasShoes)
         {
-            gameObject.SetActive(true);
+            changeAlpha(rend, 1f);
             string charShoes = "Animations/ThatCoolSprite/Clothes/Shoes/" + shoesColor + "/Shoes" + shoesColor + "Controller";
             gameObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charShoes) as RuntimeAnimatorController;
         }
         else
         {
-            gameObject.SetActive(false);
+            changeAlpha(rend, 0f);
         }
     }
 
@@ -116,5 +121,12 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     public void UpdateNameRPC(string newName)
     {
         gameObject.GetComponent<TextMeshPro>().text = newName;
+    }
+
+    void changeAlpha(SpriteRenderer rend, float val)
+    {
+        Color tmp = rend.color;
+        tmp.a = val;
+        rend.color = tmp;
     }
 }
