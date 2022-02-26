@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 //using UnityEngine.Networking;
 using System.Runtime.InteropServices;
 using Photon.Pun;
+using System;
+using System.Text;
 
 public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
@@ -58,6 +60,8 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
 
     public changeReceiver playerHud;
 
+    PlayFabController PFC;
+
     [DllImport("__Internal")] private static extern void getImageFromBrowser(string objectName, string callbackFuncName);
 
     // Start is called before the first frame update
@@ -74,6 +78,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         }
 
         //playerObj = GameObject.FindGameObjectWithTag("Player");
+        PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
 
         GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
 
@@ -478,14 +483,14 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     {
         if(newSprite != null)
         {
-            playerObj.transform.Find("PlayerStats").GetComponent<PlayerDataManager>().changeSprite(newSprite.texture);
+            PFC.SetUserData("pfpImage", Convert.ToBase64String(newSprite.texture.EncodeToPNG())); //order matters! do this first cuz faster
+            playerObj.transform.Find("PlayerStats").GetComponent<PlayerDataManager>().changeSprite(newSprite.texture); //then you do this, slower
             playerHud.changeProfilePicture(newSprite);
+            //need to do this to separate out photon RPC channel and database http channel
             closeWindow();
         }
         
     }
-
-
 
     //Maybe I could grab sprites directly from the button icon's image component... w/e i'm too lazy
 }

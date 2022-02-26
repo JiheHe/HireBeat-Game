@@ -21,7 +21,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     }
 
     [PunRPC]
-    void CreateSkinRPC(string skinColor) 
+    public void CreateSkinRPC(string skinColor) 
     {
         string charSkin = "Animations/ThatCoolSprite/SkinTones/" + skinColor + "/" + skinColor + "Controller";
         gameObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load(charSkin) as RuntimeAnimatorController;
@@ -33,7 +33,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     }
 
     [PunRPC]
-    void CreateHairRPC(bool hasHair, string hairStyle, string hairColor)
+    public void CreateHairRPC(bool hasHair, string hairStyle, string hairColor)
     {
         if (hasHair)
         {
@@ -53,7 +53,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     }
 
     [PunRPC]
-    void CreateTopWearRPC(bool hasClothTop, string clothingTop, string clothingTopColor)
+    public void CreateTopWearRPC(bool hasClothTop, string clothingTop, string clothingTopColor)
     {
         if (hasClothTop)
         {
@@ -73,7 +73,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     }
 
     [PunRPC]
-    void CreateBotWearRPC(bool hasClothBot, string clothingBot, string clothingBotColor)
+    public void CreateBotWearRPC(bool hasClothBot, string clothingBot, string clothingBotColor)
     {
         if (hasClothBot)
         {
@@ -93,7 +93,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     }
 
     [PunRPC]
-    void CreateShoesRPC(bool hasShoes, string shoesColor)
+    public void CreateShoesRPC(bool hasShoes, string shoesColor)
     {
         if (hasShoes)
         {
@@ -113,7 +113,7 @@ public class ChangeObjectAnimator : MonoBehaviour //I don't think monobehaviourc
     }
 
     [PunRPC]
-    void UpdateNameRPC(string newName)
+    public void UpdateNameRPC(string newName)
     {
         gameObject.GetComponent<TextMeshPro>().text = newName;
     }

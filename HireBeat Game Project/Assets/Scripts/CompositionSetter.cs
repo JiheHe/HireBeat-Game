@@ -65,6 +65,16 @@ public class CompositionSetter : MonoBehaviour
         //view.RPC("updateCharRPC", RpcTarget.All); //this doesn't work, need to try individual component..
     }
 
+    public void initializeCharData()
+    {
+        skin.GetComponent<ChangeObjectAnimator>().CreateSkinRPC(skinColor);
+        hair.GetComponent<ChangeObjectAnimator>().CreateHairRPC(hasHair, hairStyle, hairColor);
+        topWear.GetComponent<ChangeObjectAnimator>().CreateTopWearRPC(hasClothTop, clothingTop, clothingTopColor);
+        botWear.GetComponent<ChangeObjectAnimator>().CreateBotWearRPC(hasClothBot, clothingBot, clothingBotColor);
+        shoes.GetComponent<ChangeObjectAnimator>().CreateShoesRPC(hasShoes, shoesColor);
+        playerIGN.gameObject.GetComponent<ChangeObjectAnimator>().UpdateNameRPC(charName);
+    }
+
     public void updateTitle(string newTitle) //I don't think this function's ever called LOL, title system handles all
     {
         playerTitle.text = newTitle; //or something more than this: grab a unique material asset from Resource folder

@@ -31,9 +31,9 @@ public class ProfileUpdater : MonoBehaviour
     //encoding and decoding!
     //basically that's how data stream works. Can send other img files etc too!
     [PunRPC]
-    void changeSpriteRPC(byte[] imgByteArr)
+    public void changeSpriteRPC(byte[] imgByteArr)
     {
-        SpriteRenderer newSprite = GetComponent<SpriteRenderer>(); 
+        SpriteRenderer newSprite = GetComponent<SpriteRenderer>();
         Texture2D myTexture = new Texture2D(newSprite.sprite.texture.width, newSprite.sprite.texture.height, TextureFormat.RGB24, false, true); //or use constants
         myTexture.LoadImage(imgByteArr);
         Sprite spriteImg = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
@@ -47,6 +47,5 @@ public class ProfileUpdater : MonoBehaviour
     void SetProfileDisplaySprite(Sprite newSprite)
     {
         gameObject.transform.parent.transform.parent.GetComponent<OnMouseOverObject>().UpdatePfpImage(newSprite);
-
     }
 }
