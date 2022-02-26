@@ -123,11 +123,11 @@ public class titleSelectorScript : MonoBehaviour
 
     public void turnOffTitle()
     {
-        playerTitleController.SetActive(false);
+        playerTitleController.GetComponent<TitleController>().SetTitleOnOff(1);  
     }
 
     public void turnOnTitle()
     {
-        playerTitleController.SetActive(true);
+        playerTitleController.GetComponent<TitleController>().SetTitleOnOff(0);
     }
 }
