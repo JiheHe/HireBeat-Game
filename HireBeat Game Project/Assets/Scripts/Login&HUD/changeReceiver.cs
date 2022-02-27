@@ -15,6 +15,9 @@ public class changeReceiver : MonoBehaviour
     public Image hudProfilePicture;
     public Text hudAccountName;
     public Text uniqueIDinEditor;
+    public Transform friendsList;
+    public Transform requesterList;
+    public Transform requesteeList;
 
     PlayerMenuUIController pui;
 

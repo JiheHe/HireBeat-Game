@@ -65,6 +65,7 @@ public class ContentChangerScript : MonoBehaviour
             {
                 playerDataDisplay.UpdateUsername(newInput.text); //rn username cannot be left empty, and signature can. Use that to distinguish
                 PFC.SetUserData("acctName", newInput.text);
+                PFC.UpdateUserDisplayName(newInput.text); //also update Display name -> acct name is linked
             }
             else
             {

@@ -19,6 +19,13 @@ public class SocialSystemScript : MonoBehaviour
 
     public ContentChangerScript[] textChangers;
 
+    //gonna centralize some controls here
+    public GameObject addFriendSearchBar;
+    public InputField friendsSearchBarInput;
+    public GameObject requestsList;
+
+    PlayFabController PFC;
+
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
@@ -32,6 +39,8 @@ public class SocialSystemScript : MonoBehaviour
             }
         }
         //playerObj = GameObject.FindGameObjectWithTag("Player");
+
+        PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
 
         GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
         playerCamera = cameraController.GetComponent<cameraController>();
@@ -59,6 +68,11 @@ public class SocialSystemScript : MonoBehaviour
             playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
         }
         UIController.hasOneOn = false;
+
+        //turn off all open stuff
+        addFriendSearchBar.SetActive(false);
+        friendsSearchBarInput.text = ""; //only clear at closing
+        requestsList.SetActive(false);
     }
 
     public void OpenProfileEditor()
@@ -81,6 +95,12 @@ public class SocialSystemScript : MonoBehaviour
     //On tab open, updates current display pic with the current profile pic in HUD
     //thought this is more convenient, a more efficient method would be to update the PDP as soon as
     //the HUD image is changed, from avatar custom script. But i'm too lazy soo... plus it's w/e LOL
+
+    //also grabs friends list from system
+    //I think that refreshing friends list every time when tab starts might be inefficient?
+    //we'll see if we need to transition into a better mode in the future: keep prev and just add new addition
+    //The aboce can probably be achieved with a bool array to check if there's new friend
+    //Need to edit GetFriends function to achieve that.
     public void OnTabOpen()
     {
         targetProfileDisplayPic.sprite = outputFinal.GetComponent<Image>().sprite;
@@ -88,7 +108,32 @@ public class SocialSystemScript : MonoBehaviour
         {
             playerObj.GetComponent<playerController>().enabled = false;
             playerCamera.enabled = false;
+            PFC.GetFriends();
         }
+    }
+
+    //Start not active, when leave set to not active
+    //So when clicked once, !not = true, so active! click again then false.
+    public void OnAddFriendPressed()
+    {
+        addFriendSearchBar.SetActive(!addFriendSearchBar.activeSelf);
+    }
+
+    public void OnRequestsListPressed()
+    {
+        requestsList.SetActive(!requestsList.activeSelf);
+        if(requestsList.activeSelf) PFC.GetFriends();
+    }
+
+
+
+    public void OnSearchFriendPressed()
+    {
+        Debug.Log("Searching for: " + friendsSearchBarInput.text);
+        //PFC.InputFriendID(friendsSearchBarInput.text);
+        PFC.StartCloudSendFriendRequest(friendsSearchBarInput.text);
+        //PFC.SubmitFriendRequest();
+        //PFC.RunWaitFunction(); //wait for 2 seconds, then add your friend ;D
     }
 }
 
