@@ -27,6 +27,7 @@ public class SceneListener : MonoBehaviour
             GetComponent<PlayFabController>().friendsList = playerHUD.GetComponent<changeReceiver>().friendsList;
             GetComponent<PlayFabController>().requesterList = playerHUD.GetComponent<changeReceiver>().requesterList;
             GetComponent<PlayFabController>().requesteeList = playerHUD.GetComponent<changeReceiver>().requesteeList;
+            GetComponent<PlayFabController>().GetFriends(); //update friends immediately upon entering
         }
     }
 }

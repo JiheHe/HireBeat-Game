@@ -405,13 +405,26 @@ public class PlayFabController : MonoBehaviour
                         //Destroy request type prefab
                         Destroy(userTab);
                         //constructing confirmed prefab
-                        GameObject listing = Instantiate(listingPrefab, friendsList);
-                        FriendsListing tempListing = listing.GetComponent<FriendsListing>();
-                        //probably need to set display name for it to work
-                        tempListing.playerName.text = f.TitleDisplayName;
-                        tempListing.playerID = f.FriendPlayFabId;
-                        tempListing.PFC = this;
-                        tempListing.type = "confirmed";
+                        bool alreadyExists = false;
+                        foreach (GameObject existingTab in userTabs) //can probably optimize this in the future with a central controller
+                        {
+                            if(existingTab.GetComponent<FriendsListing>().type == "confirmed" &&
+                                existingTab.GetComponent<FriendsListing>().playerID == f.FriendPlayFabId)
+                            {
+                                alreadyExists = true;
+                                break;
+                            } //if the confirmed tab already exists, then don't add
+                        }
+                        if(!alreadyExists)
+                        {
+                            GameObject listing = Instantiate(listingPrefab, friendsList);
+                            FriendsListing tempListing = listing.GetComponent<FriendsListing>();
+                            //probably need to set display name for it to work
+                            tempListing.playerName.text = f.TitleDisplayName;
+                            tempListing.playerID = f.FriendPlayFabId;
+                            tempListing.PFC = this;
+                            tempListing.type = "confirmed";
+                        }
                     }
                     break; //no other cases, we good. Move onto next userTab
                 }
