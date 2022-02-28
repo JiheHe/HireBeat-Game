@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 6221491603897389707}
   m_Layer: 5
   m_Name: Requester
-  m_TagString: Untagged
+  m_TagString: UserTab
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -352,7 +352,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6221491603897389709}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6221491603897389707}
+        m_TargetAssemblyTypeName: FriendsListing, Assembly-CSharp
+        m_MethodName: OnProfileClicked
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &6221491603897389711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +402,7 @@ MonoBehaviour:
   playerOnStatus: {fileID: 0}
   playerID: 
   PFC: {fileID: 0}
+  playerInfoCard: {fileID: 876043906289167914, guid: e2f100c41c6c486458a346694d42cc11, type: 3}
 --- !u!1 &6221491604288788565
 GameObject:
   m_ObjectHideFlags: 0

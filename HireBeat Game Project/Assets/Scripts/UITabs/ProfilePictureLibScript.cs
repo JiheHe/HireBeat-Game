@@ -483,7 +483,7 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
     {
         if(newSprite != null)
         {
-            PFC.SetUserData("pfpImage", Convert.ToBase64String(newSprite.texture.EncodeToPNG())); //order matters! do this first cuz faster
+            PFC.SetUserData("pfpImage", Convert.ToBase64String(newSprite.texture.EncodeToPNG()), "Public"); //order matters! do this first cuz faster
             playerObj.transform.Find("PlayerStats").GetComponent<PlayerDataManager>().changeSprite(newSprite.texture); //then you do this, slower
             playerHud.changeProfilePicture(newSprite);
             //need to do this to separate out photon RPC channel and database http channel

@@ -9,12 +9,6 @@ public class OnMouseOverObject : MonoBehaviour
     public GameObject hoverIndicator;
     public GameObject pfpDisplay;
 
-    public GameObject playerInfoCardDisplay;
-    public Text username;
-    public Text signature;
-    public Image profileSprite;
-    public Text uniqueID;
-
     public GameObject playerObj;
     public cameraController playerCamera;
     public InGameUIController playerZoneTab;
@@ -22,6 +16,10 @@ public class OnMouseOverObject : MonoBehaviour
     public changeReceiver playerHud;
 
     PhotonView view;
+
+    //only need these 2
+    public string PlayFabID;
+    public GameObject playerInfoCard;
 
     void Start()
     {
@@ -45,29 +43,42 @@ public class OnMouseOverObject : MonoBehaviour
     }
 
     // Start is called before the first frame update
+    GameObject info;
     void OnMouseOver()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !view.IsMine) //doing so disable user interacting on himself
         {
-            UIController.instantiateProfileViewer(playerInfoCardDisplay);
+            //UIController.instantiateProfileViewer(playerInfoCardDisplay); //this is like the one window thing //info card shouldn't be controlled by it...
+            if(info != null) //object self destructs into null on tab close
+            {
+                Destroy(info.gameObject);
+            }
+            info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //need to make new instance! else gonna overwrite prefab
+            info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(PlayFabID, 0); //lobby click
         }
     }
 
     private void OnMouseEnter()
     {
-        hoverIndicator.SetActive(true);
-        pfpDisplay.SetActive(true);
+        if(!view.IsMine)
+        {
+            hoverIndicator.SetActive(true);
+            pfpDisplay.SetActive(true);
+        }
     }
 
     void OnMouseExit()
     {
-        hoverIndicator.SetActive(false);
-        pfpDisplay.SetActive(false);
+        if (!view.IsMine)
+        {
+            hoverIndicator.SetActive(false);
+            pfpDisplay.SetActive(false);
+        }
     }
 
-    public void closeWindow()
+    //these two are currently uses since I'm not using a saved card with UI controller. It's a prefab!
+    /*public void closeWindow()
     {
-        playerInfoCardDisplay.SetActive(false); //want to keep data!
         if (!playerZoneTab.hasOneOn)
         {
             playerObj.GetComponent<playerController>().enabled = true;
@@ -84,33 +95,7 @@ public class OnMouseOverObject : MonoBehaviour
             playerObj.GetComponent<playerController>().enabled = false;
             playerCamera.enabled = false;
         }
-    }
+    }*/
 
-    public void UpdateUsername(string newName)
-    {
-        view.RPC("UpdateUsernameRPC", RpcTarget.AllBuffered, newName);
-    }
-
-    [PunRPC]
-    public void UpdateUsernameRPC(string newName)
-    {
-        username.text = newName;
-    }
-
-    public void UpdateSignature(string newSignature)
-    {
-        view.RPC("UpdateSignatureRPC", RpcTarget.AllBuffered, newSignature);
-    }
-
-    [PunRPC]
-    public void UpdateSignatureRPC(string newSignature)
-    {
-        signature.text = newSignature;
-    }
-
-    //It's RPC is called in the profile updater
-    public void UpdatePfpImage(Sprite newSprite)
-    {
-        profileSprite.sprite = newSprite;
-    }
+    //No need for RPC update functions! grab directly from data base
 }

@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using PlayFab.Json;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Linq;
 
 
 //https://docs.microsoft.com/en-us/gaming/playfab/sdks/unity3d/quickstart#finish-and-execute copy pasta!
@@ -20,7 +21,7 @@ public class PlayFabController : MonoBehaviour
     private string userPassword;
     private string username;
     #endregion LoginVariables
-    private string myID;
+    public string myID;
     PersistentData PD;
 
     //use these as default internal error report
@@ -85,7 +86,7 @@ public class PlayFabController : MonoBehaviour
         GetStats();
 
         myID = result.PlayFabId; //this is the unique ID!!!
-        SetUserData("acctID", myID);
+        SetUserData("acctID", myID, "Public");
         PD.RetrieveUserData();
 
         //StartCloudDenyFriendRequest("7A98A976DE472605"); this is for testing purposes
@@ -103,8 +104,8 @@ public class PlayFabController : MonoBehaviour
 
         myID = result.PlayFabId;
         UpdateUserDisplayName(username);
-        SetUserData("acctName", username); //acctName is the data version of display name
-        SetUserData("acctID", myID);
+        SetUserData("acctName", username, "Public"); //acctName is the data version of display name
+        SetUserData("acctID", myID, "Public");
         PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend (cuz mostly will be null!)
     }
 
@@ -152,10 +153,19 @@ public class PlayFabController : MonoBehaviour
      * We pass RequestPhotonToken as a callback to be our next step, if
      * authentication was successful.
      */
+    int type; //0 is login, 1 is register
     public void OnClickLogin()
     {
+        type = 0;
         var request = new LoginWithEmailAddressRequest { Email = userEmail, Password = userPassword };
         PlayFabClientAPI.LoginWithEmailAddress(request, RequestPhotonToken, OnLoginFailure); //not OnLoginSuccess anymore
+    }
+
+    public void OnClickRegister()
+    {
+        type = 1;
+        var registerRequest = new RegisterPlayFabUserRequest { Email = userEmail, Password = userPassword, Username = username };
+        PlayFabClientAPI.RegisterPlayFabUser(registerRequest, RequestPhotonToken, OnRegisterFailure);
     }
 
     /*
@@ -169,11 +179,25 @@ public class PlayFabController : MonoBehaviour
     * We pass in AuthenticateWithPhoton as a callback to be our next step, if
     * we have acquired token successfully
     */
-    LoginResult result;
+    LoginResult result; //can prob use var
     private void RequestPhotonToken(LoginResult obj)
     {
         Debug.Log("PlayFab authenticated. Requesting photon token...");
         result = obj; //keep a record of playfab login result
+
+        //We can player PlayFabId. This will come in handy during next step
+        _playFabPlayerIdCache = obj.PlayFabId;
+
+        PlayFabClientAPI.GetPhotonAuthenticationToken(new GetPhotonAuthenticationTokenRequest()
+        {
+            PhotonApplicationId = "a3518642-79f5-47cb-bb62-0439b7f63136" //PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat
+        }, AuthenticateWithPhoton, DisplayPlayFabError);
+    }
+    RegisterPlayFabUserResult registerResult;
+    private void RequestPhotonToken(RegisterPlayFabUserResult obj) //overloading
+    {
+        Debug.Log("PlayFab authenticated. Requesting photon token...");
+        registerResult = obj; //keep a record of playfab login result
 
         //We can player PlayFabId. This will come in handy during next step
         _playFabPlayerIdCache = obj.PlayFabId;
@@ -204,13 +228,8 @@ public class PlayFabController : MonoBehaviour
         //We finally tell Photon to use this authentication parameters throughout the entire application.
         PhotonNetwork.AuthValues = customAuth;
 
-        OnLoginSuccess(result);
-    }
-
-    public void OnClickRegister()
-    {
-        var registerRequest = new RegisterPlayFabUserRequest { Email = userEmail, Password = userPassword, Username = username };
-        PlayFabClientAPI.RegisterPlayFabUser(registerRequest, OnRegisterSuccess, OnRegisterFailure);
+        if (type == 0) OnLoginSuccess(result);
+        else OnRegisterSuccess(registerResult);
     }
 
     private void SetPlayerLoginPrefs() //email and password for now
@@ -322,16 +341,16 @@ public class PlayFabController : MonoBehaviour
         Debug.LogError(error.GenerateErrorReport());
     }
 
-    public void SetUserData(string key, string value)
+    public void SetUserData(string key, string value, string permission)
     {
-        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
-        {
-            Data = new Dictionary<string, string>()
-            {
-                {key, value}
-            }
-        }, SetDataSuccess, OnUserDataFailed);
+        UpdateUserDataRequest request = new UpdateUserDataRequest();
+        request.Data = new Dictionary<string, string>() { { key, value } }; //can have multiple
+        if (permission == "Public") request.Permission = UserDataPermission.Public;
+        else request.Permission = UserDataPermission.Private;
+        PlayFabClientAPI.UpdateUserData(request, SetDataSuccess, OnUserDataFailed);
     }
+
+    
 
     void SetDataSuccess(UpdateUserDataResult result)
     {
@@ -352,16 +371,55 @@ public class PlayFabController : MonoBehaviour
     public Transform friendsList;
     public Transform requesterList;
     public Transform requesteeList;
-    List<PlayFab.ClientModels.FriendInfo> myFriends;
+    public List<PlayFab.ClientModels.FriendInfo> myFriends;
     bool requestAccepted = false; //upon request accepted, update
 
     //Last function in the process, you decide how you wanna show it ;D
     void DisplayFriends(List<PlayFab.ClientModels.FriendInfo> friendsCache)
     {
+        
         //when displaying, only display friends tagged with CONFIRMED in the list
         //if it's a requestee (you are requesting), then it will be displayed on a separate window
         //if it's a requestor (requesting to you), then it will be displayed on a separate window
         Debug.Log("Updating friends lists");
+
+        //WAIT, CHECK EACH USER TAB TO SEE IF IT NEEDS TO EXIST!!!!!! (if no more friends connection, then should be gone forever)
+        //if tag changes, then change tab: ex- (examples need another user's input to execute)
+        //if prefab type was requester, and other player accept, so tag changes to confirmed -> destroy requester prefab and make a confirmed prefab
+        //^ basically any requester/requestee to confirmed results in destruction of requester/requestee and construction of confirmed
+        //in any other chases, if a prefab no longer has ANY connection to EITHER friend list (should be), then destroy that prefab on both end
+
+        GameObject[] userTabs = GameObject.FindGameObjectsWithTag("UserTab");
+        foreach (GameObject userTab in userTabs) //try to merge the two big loops later, trying now it works! (nvm it doesn't feel efficient to merge)
+        {
+            bool isConnectedFriend = false; //check case 2
+            foreach (PlayFab.ClientModels.FriendInfo f in friendsCache)
+            {
+                if (userTab.GetComponent<FriendsListing>().playerID == f.FriendPlayFabId) //find matching friend list first
+                {
+                    isConnectedFriend = true; //still have some connections, so keep as it is
+                    //check cases
+                    if((userTab.GetComponent<FriendsListing>().type == "requester" || userTab.GetComponent<FriendsListing>().type == "requestee")
+                        && f.Tags[0] == "confirmed") //this is case 1
+                    {
+                        //Destroy request type prefab
+                        Destroy(userTab);
+                        //constructing confirmed prefab
+                        GameObject listing = Instantiate(listingPrefab, friendsList);
+                        FriendsListing tempListing = listing.GetComponent<FriendsListing>();
+                        //probably need to set display name for it to work
+                        tempListing.playerName.text = f.TitleDisplayName;
+                        tempListing.playerID = f.FriendPlayFabId;
+                        tempListing.PFC = this;
+                        tempListing.type = "confirmed";
+                    }
+                    break; //no other cases, we good. Move onto next userTab
+                }
+            }
+            if (!isConnectedFriend) Destroy(userTab); //no connections at all, so destroy
+        }
+
+        //The below checks for if there's any new info
         foreach (PlayFab.ClientModels.FriendInfo f in friendsCache)
         {
             bool isFound = false;
@@ -370,7 +428,7 @@ public class PlayFabController : MonoBehaviour
             {
                 foreach (PlayFab.ClientModels.FriendInfo g in myFriends)
                 {
-                    if (f.FriendPlayFabId == g.FriendPlayFabId)
+                    if (f.FriendPlayFabId == g.FriendPlayFabId) //if there are duplicates (f is the new list, g is the old list)
                     {
                         isFound = true;
                         break;
@@ -379,6 +437,7 @@ public class PlayFabController : MonoBehaviour
             }
             
             //making sure to not add duplicated friends
+            //if there are new friends from data base. This is an elem from the new list that's not in the old list
             if(isFound == false)
             {
                 switch (f.Tags[0]) //might be mmultple for 2 way?
@@ -390,6 +449,7 @@ public class PlayFabController : MonoBehaviour
                         tempListing.playerName.text = f.TitleDisplayName;
                         tempListing.playerID = f.FriendPlayFabId;
                         tempListing.PFC = this;
+                        tempListing.type = "confirmed";
                         break;
                     case "requester":
                         GameObject requesterListing = Instantiate(requesterPrefab, requesterList);
@@ -398,6 +458,7 @@ public class PlayFabController : MonoBehaviour
                         requesterTempListing.playerName.text = f.TitleDisplayName;
                         requesterTempListing.playerID = f.FriendPlayFabId;
                         requesterTempListing.PFC = this;
+                        requesterTempListing.type = "requester";
                         break;
                     case "requestee":
                         GameObject requesteeListing = Instantiate(requesteePrefab, requesteeList);
@@ -406,6 +467,7 @@ public class PlayFabController : MonoBehaviour
                         requesteeTempListing.playerName.text = f.TitleDisplayName;
                         requesteeTempListing.playerID = f.FriendPlayFabId;
                         requesteeTempListing.PFC = this;
+                        requesteeTempListing.type = "requestee";
                         break;
                 }
                 //Debug.Log("Friend type is: " + f.Tags[0]);
@@ -499,8 +561,19 @@ public class PlayFabController : MonoBehaviour
     }*/
 
     //Cloud script is retired...NVM JK I GOT SCAMMED THANK GOD
+    //Before send cloud friend request, check to see if you two are already friended, and the requestee (him) is a requester (to you)
     public void StartCloudSendFriendRequest(string friendPlayFabID)
     {
+        GetFriends(); //make sure myFriends data is most up to date
+        foreach (PlayFab.ClientModels.FriendInfo f in myFriends)
+        {
+            if(f.FriendPlayFabId == friendPlayFabID && f.Tags[0] == "requester")
+            {
+                StartCloudAcceptFriendRequest(friendPlayFabID);
+                return;
+            }
+        }
+        //else send a friend request
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "SendFriendRequest", // Arbitrary function name

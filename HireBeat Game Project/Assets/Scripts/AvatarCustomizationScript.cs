@@ -231,19 +231,19 @@ public class AvatarCustomizationScript : MonoBehaviour
         mainComp.shoesColor = currShoesColor;
         mainComp.updateChar();
 
-        PFC.SetUserData("charName", charName);
-        PFC.SetUserData("skinColor", currSkin);
-        PFC.SetUserData("hasHair", PersistentData.boolToStr(hasHair));
-        PFC.SetUserData("hairStyle", currHairStyle);
-        PFC.SetUserData("hairColor", currHairColor);
-        PFC.SetUserData("hasTopWear", PersistentData.boolToStr(hasTopWear));
-        PFC.SetUserData("topWearStyle", currTopWearStyle);
-        PFC.SetUserData("topWearColor", currTopWearColor);
-        PFC.SetUserData("hasBotWear", PersistentData.boolToStr(hasBotWear));
-        PFC.SetUserData("botWearStyle", currBotWearStyle);
-        PFC.SetUserData("botWearColor", currBotWearColor);
-        PFC.SetUserData("hasShoes", PersistentData.boolToStr(hasShoes));
-        PFC.SetUserData("shoesColor", currShoesColor);
+        PFC.SetUserData("charName", charName, "Private");
+        PFC.SetUserData("skinColor", currSkin, "Private");
+        PFC.SetUserData("hasHair", PersistentData.boolToStr(hasHair), "Private");
+        PFC.SetUserData("hairStyle", currHairStyle, "Private");
+        PFC.SetUserData("hairColor", currHairColor, "Private");
+        PFC.SetUserData("hasTopWear", PersistentData.boolToStr(hasTopWear), "Private");
+        PFC.SetUserData("topWearStyle", currTopWearStyle, "Private");
+        PFC.SetUserData("topWearColor", currTopWearColor, "Private");
+        PFC.SetUserData("hasBotWear", PersistentData.boolToStr(hasBotWear), "Private");
+        PFC.SetUserData("botWearStyle", currBotWearStyle, "Private");
+        PFC.SetUserData("botWearColor", currBotWearColor, "Private");
+        PFC.SetUserData("hasShoes", PersistentData.boolToStr(hasShoes), "Private");
+        PFC.SetUserData("shoesColor", currShoesColor, "Private");
     }
 
     public void closeWindow()

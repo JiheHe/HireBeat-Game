@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 3719048314140354724}
   m_Layer: 5
   m_Name: Friend
-  m_TagString: Untagged
+  m_TagString: UserTab
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -193,7 +193,7 @@ RectTransform:
   - {fileID: 3719048313919499350}
   - {fileID: 3719048314052481482}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -281,7 +281,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3719048314140354722}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3719048314140354724}
+        m_TargetAssemblyTypeName: FriendsListing, Assembly-CSharp
+        m_MethodName: OnProfileClicked
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &3719048314140354720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,6 +329,9 @@ MonoBehaviour:
   playerName: {fileID: 3719048313919499351}
   playerAvatar: {fileID: 3719048314814833276}
   playerOnStatus: {fileID: 3719048314052481483}
+  playerID: 
+  PFC: {fileID: 0}
+  playerInfoCard: {fileID: 876043906289167914, guid: e2f100c41c6c486458a346694d42cc11, type: 3}
 --- !u!1 &3719048314744796194
 GameObject:
   m_ObjectHideFlags: 0

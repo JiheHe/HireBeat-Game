@@ -12,7 +12,6 @@ public class cameraController : MonoBehaviourPunCallbacks
     public GameObject UICamera;
     public Camera zoomCamera;
 
-
     //from testing, this object exists separately and locally on two different platforms, so we chilling
     void Start()
     {

@@ -24,6 +24,8 @@ public class SocialSystemScript : MonoBehaviour
     public InputField friendsSearchBarInput;
     public GameObject requestsList;
 
+    public GameObject playerInfoCard;
+
     PlayFabController PFC;
 
     // Start is called before the first frame update
@@ -73,10 +75,12 @@ public class SocialSystemScript : MonoBehaviour
         addFriendSearchBar.SetActive(false);
         friendsSearchBarInput.text = ""; //only clear at closing
         requestsList.SetActive(false);
+        PFC.GetFriends();
     }
 
     public void OpenProfileEditor()
     {
+        PFC.GetFriends();
         //targetProfileDisplayPic.sprite = outputFinal.GetComponent<Image>().sprite;
         profileEditor.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1; //resets position
         profileEditor.SetActive(true);
@@ -84,12 +88,12 @@ public class SocialSystemScript : MonoBehaviour
 
     public void CloseProfileEditor()
     {
+        PFC.GetFriends();
         profileEditor.SetActive(false);
         foreach (ContentChangerScript textChanger in textChangers)
         {
             textChanger.OnCancelButtonPressed(); //turn off name editing if happening
         }
-        
     }
 
     //On tab open, updates current display pic with the current profile pic in HUD
@@ -117,23 +121,29 @@ public class SocialSystemScript : MonoBehaviour
     public void OnAddFriendPressed()
     {
         addFriendSearchBar.SetActive(!addFriendSearchBar.activeSelf);
+        PFC.GetFriends();
     }
 
     public void OnRequestsListPressed()
     {
         requestsList.SetActive(!requestsList.activeSelf);
-        if(requestsList.activeSelf) PFC.GetFriends();
+        //if(requestsList.activeSelf) PFC.GetFriends();
+        PFC.GetFriends(); //GET UPDATE AS MUCH AS POSSSIBLEEEE
     }
 
 
-
+    GameObject info;
     public void OnSearchFriendPressed()
     {
+        PFC.GetFriends(); //lol gonna run it once here too
         Debug.Log("Searching for: " + friendsSearchBarInput.text);
-        //PFC.InputFriendID(friendsSearchBarInput.text);
-        PFC.StartCloudSendFriendRequest(friendsSearchBarInput.text);
-        //PFC.SubmitFriendRequest();
-        //PFC.RunWaitFunction(); //wait for 2 seconds, then add your friend ;D
+        if (info != null) //object self destructs into null on tab close
+        {
+            Destroy(info.gameObject);
+        }
+        info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
+        info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
+        //PFC.StartCloudSendFriendRequest(friendsSearchBarInput.text);
     }
 }
 

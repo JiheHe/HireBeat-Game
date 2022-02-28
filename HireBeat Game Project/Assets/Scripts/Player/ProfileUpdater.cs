@@ -38,14 +38,7 @@ public class ProfileUpdater : MonoBehaviour
         myTexture.LoadImage(imgByteArr);
         Sprite spriteImg = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
         newSprite.sprite = spriteImg;
-        SetProfileDisplaySprite(spriteImg);
         gameObject.transform.localScale = new Vector2(0.85f, 0.85f);
-        //gameObject.GetComponent<SpriteRenderer>().sprite = newSprite;
-        //
-    }
-
-    void SetProfileDisplaySprite(Sprite newSprite)
-    {
-        gameObject.transform.parent.transform.parent.GetComponent<OnMouseOverObject>().UpdatePfpImage(newSprite);
+        //ANy function that's executed in rpc will be executed on all, so can safely add others
     }
 }

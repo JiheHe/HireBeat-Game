@@ -27,9 +27,7 @@ public class PlayerDataUpdater : MonoBehaviour, IPunInstantiateMagicCallback
         byte[] pfpByteArr = Convert.FromBase64String(imgString);
         updater.changeSpriteRPC(pfpByteArr);
         OnMouseOverObject textUpdater = gameObject.transform.Find("PlayerMouseDetector").GetComponent<OnMouseOverObject>();
-        textUpdater.UpdateUsernameRPC((string)instanceData[14]);
-        textUpdater.UpdateSignatureRPC((string)instanceData[15]);
-        textUpdater.uniqueID.text = "Unique ID: " + (string)instanceData[16];
+        textUpdater.PlayFabID = (string)instanceData[16]; //just need this, in theory
 
         gameObject.GetComponent<CompositionSetter>().RetrieveCharInfo(
             (string)instanceData[0],

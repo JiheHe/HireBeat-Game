@@ -63,14 +63,13 @@ public class ContentChangerScript : MonoBehaviour
             if(UITextTarget != null) UITextTarget.text = newInput.text;
             if (!canLeftEmpty)
             {
-                playerDataDisplay.UpdateUsername(newInput.text); //rn username cannot be left empty, and signature can. Use that to distinguish
-                PFC.SetUserData("acctName", newInput.text);
+                //rn username cannot be left empty, and signature can. Use that to distinguish
+                PFC.SetUserData("acctName", newInput.text, "Public");
                 PFC.UpdateUserDisplayName(newInput.text); //also update Display name -> acct name is linked
             }
             else
             {
-                playerDataDisplay.UpdateSignature(newInput.text);
-                PFC.SetUserData("acctSignature", newInput.text);
+                PFC.SetUserData("acctSignature", newInput.text, "Public");
             }
             originalDisplay.SetActive(true);
             editorDisplay.SetActive(false);
