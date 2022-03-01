@@ -31,7 +31,7 @@ public class SocialSystemScript : MonoBehaviour
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player"); 
         foreach (GameObject player in players)
         {
             if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine

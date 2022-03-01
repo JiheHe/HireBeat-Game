@@ -23,6 +23,7 @@ public class PlayerInfoCardUpdater : MonoBehaviour
     public GameObject loadingImage;
 
     public GameObject buttonController;
+    public GameObject friendRemovalConfirmationTab;
 
     public int type; //0 = lobby click / search bar result, 1 = friend list,  2 = request list
     PlayFabController PFC;
@@ -120,10 +121,10 @@ public class PlayerInfoCardUpdater : MonoBehaviour
         switch (type)
         {
             case 0: //lobby click or search bar result, add/already/req sent
-                if (PFC.myFriends != null) //this is updated, due to get friend call in the beginning
+                if (PFC._friends != null) //this is updated, due to get friend call in the beginning
                 {
                     bool foundButton = false;
-                    foreach (FriendInfo f in PFC.myFriends) //check if the user is your friend
+                    foreach (FriendInfo f in PFC._friends) //check if the user is your friend
                     {
                         if (acctID == f.FriendPlayFabId) //he's either your friend, a requester, or a requestee
                         {
@@ -169,19 +170,63 @@ public class PlayerInfoCardUpdater : MonoBehaviour
         buttonController.transform.GetChild(buttonIndex).gameObject.SetActive(true);
     }
 
+    //before send, check for possible relationships?
+    //Before add, check for whether the person you are requesting is already requesting you
+    //if a person sends a request, then presses cancel before two way add friend goes through, then cancel takes pres...
+    //because in this case, two way just became one way, so.... :(
     public void OnAddFriendPressed() //This is NOT accept! Just a friend request
     {
-        PFC.StartCloudSendFriendRequest(acctID);
-        buttonController.transform.GetChild(0).gameObject.SetActive(false); //turn off add friend button
-        SetButtonType(3); //turn on request sent button to show user success
-        PFC.GetFriends();
+        PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+        {
+            IncludeSteamFriends = false,
+            IncludeFacebookFriends = false,
+            XboxToken = null
+        }, result => {
+            List<FriendInfo> friends = result.Friends;
+            foreach (FriendInfo f in friends)
+            {
+                if (f.FriendPlayFabId == acctID && f.Tags[0] == "requester") //if they are already related, then just change tags!
+                {
+                    PFC.StartCloudAcceptFriendRequest(acctID);
+                    buttonController.transform.GetChild(0).gameObject.SetActive(false); //turn off add friend button
+                    SetButtonType(2);
+                    return;
+                }
+            }
+
+            PFC.StartCloudSendFriendRequest(acctID);
+            buttonController.transform.GetChild(0).gameObject.SetActive(false); //turn off add friend button
+            SetButtonType(3); //turn on request sent button to show user success
+        }, DisplayPlayFabError);
+    }
+
+    void DisplayPlayFabError(PlayFabError error)
+    {
+        Debug.Log(error.GenerateErrorReport());
     }
 
     public void OnRemoveFriendPressed() //gonna do a confirmation first, then remove, but gonna direct now for testing purpose
     {
+        friendRemovalConfirmationTab.transform.GetChild(2).GetComponent<Text>().text = "Username: " + acctName;
+        friendRemovalConfirmationTab.SetActive(true);
+    }
+
+    //before send, check for possible relationships?
+    //No need for this one. If player B removes A and A removes B at same time, then bad things won't happen.
+    public void OnConfirmRemovalPressed()
+    {
+        if(listingObject != null)
+        {
+            Destroy(listingObject); //"unfriended"
+        }
         PFC.StartCloudDenyFriendRequest(acctID);
-        Destroy(listingObject); //"unfriended"
         CloseTab();
+        PFC.GetFriends();
+    }
+
+    public void OnCancelRemovalPressed()
+    {
+        friendRemovalConfirmationTab.SetActive(false);
         PFC.GetFriends();
     }
 

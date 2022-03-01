@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using PlayFab.ClientModels;
+using PlayFab;
 
 public class FriendsListing : MonoBehaviour
 {
@@ -17,16 +19,64 @@ public class FriendsListing : MonoBehaviour
     public GameObject playerInfoCard;
     public string type; //use this to tell the system which mode it's in
 
+    //Some brainstormed scenarios (same tab delay, just in case... this is only possible in FriendsListing):
+    //User A sends a request to B, user B declines, then A cancels (done)
+    //User A sends a request to B, user B accepts, then A cancels (then in this case, cancel should NOT go through)
+    //User A sends a request to B, user A cancels, then B accepts (then in this case, accept should go through)
+    //So accepts have power over cancel! so before cancel, check if they are friends (if they are then don't cancel). 
+    //(if two players are already friends, then a friend request won't be generated (connections)
+
     public void OnRequestAccept()
     {
-        PFC.StartCloudAcceptFriendRequest(playerID);
-        Destroy(gameObject);
+        PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+        {
+            IncludeSteamFriends = false,
+            IncludeFacebookFriends = false,
+            XboxToken = null
+        }, result => {
+            List<FriendInfo> friends = result.Friends;
+            foreach (FriendInfo f in friends) //_friends is the most updated list, then it's data is being thrown into display friends.
+            {
+                if (f.FriendPlayFabId == playerID) //if they are already friends, then nice! just need to change tags to accept
+                {
+                    Destroy(gameObject);
+                    PFC.StartCloudAcceptFriendRequest(playerID);
+                    return;
+                }
+            }
+            //else FORCE THEM TO BE FRIENDS >:), first by connecting them and change their tags to confirmed! (another cloud script)
+            Destroy(gameObject);
+            PFC.StartCloudAddAndAcceptFriendRequest(playerID);
+        }, DisplayPlayFabError);
     }
 
     public void OnRequestDeny()
     {
-        PFC.StartCloudDenyFriendRequest(playerID);
-        Destroy(gameObject);
+        PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+        {
+            IncludeSteamFriends = false,
+            IncludeFacebookFriends = false,
+            XboxToken = null
+        }, result => {
+            List<FriendInfo> friends = result.Friends;
+            foreach(FriendInfo f in friends) 
+            {
+                if (f.FriendPlayFabId == playerID && f.Tags[0] == "confirmed")
+                {
+                    Destroy(gameObject); //this is important! GetFriends check for these
+                    PFC.StartCloudAcceptFriendRequest(playerID); //this should just serve as a local list updater
+                    return;
+                }
+            }
+            //else
+            Destroy(gameObject);
+            PFC.StartCloudDenyFriendRequest(playerID);
+        }, DisplayPlayFabError);
+    }
+
+    void DisplayPlayFabError(PlayFabError error)
+    {
+        Debug.Log(error.GenerateErrorReport());
     }
 
     GameObject info;

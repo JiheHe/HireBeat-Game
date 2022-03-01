@@ -371,13 +371,12 @@ public class PlayFabController : MonoBehaviour
     public Transform friendsList;
     public Transform requesterList;
     public Transform requesteeList;
-    public List<PlayFab.ClientModels.FriendInfo> myFriends;
+    List<PlayFab.ClientModels.FriendInfo> myFriends;
     bool requestAccepted = false; //upon request accepted, update
 
     //Last function in the process, you decide how you wanna show it ;D
     void DisplayFriends(List<PlayFab.ClientModels.FriendInfo> friendsCache)
     {
-        
         //when displaying, only display friends tagged with CONFIRMED in the list
         //if it's a requestee (you are requesting), then it will be displayed on a separate window
         //if it's a requestor (requesting to you), then it will be displayed on a separate window
@@ -388,8 +387,28 @@ public class PlayFabController : MonoBehaviour
         //if prefab type was requester, and other player accept, so tag changes to confirmed -> destroy requester prefab and make a confirmed prefab
         //^ basically any requester/requestee to confirmed results in destruction of requester/requestee and construction of confirmed
         //in any other chases, if a prefab no longer has ANY connection to EITHER friend list (should be), then destroy that prefab on both end
+        int numFriends = friendsList.childCount; 
+        int numRequesters = requesterList.childCount;
+        int numRequestees = requesteeList.childCount;
+        GameObject[] userTabs = new GameObject[numFriends + numRequesters + numRequestees];
+        int currIndex = 0;
+        for(int i = 0; i < numFriends; i++)
+        {
+            userTabs[currIndex] = friendsList.GetChild(i).gameObject;
+            currIndex++;
+        }
+        for (int i = 0; i < numRequesters; i++)
+        {
+            userTabs[currIndex] = requesterList.GetChild(i).gameObject;
+            currIndex++;
+        }
+        for (int i = 0; i < numRequestees; i++)
+        {
+            userTabs[currIndex] = requesteeList.GetChild(i).gameObject;
+            currIndex++;
+        }
 
-        GameObject[] userTabs = GameObject.FindGameObjectsWithTag("UserTab");
+        //GameObject[] userTabs = GameObject.FindGameObjectsWithTag("UserTab"); //this is not efficient, also can't find inactive objects...
         foreach (GameObject userTab in userTabs) //try to merge the two big loops later, trying now it works! (nvm it doesn't feel efficient to merge)
         {
             bool isConnectedFriend = false; //check case 2
@@ -398,32 +417,27 @@ public class PlayFabController : MonoBehaviour
                 if (userTab.GetComponent<FriendsListing>().playerID == f.FriendPlayFabId) //find matching friend list first
                 {
                     isConnectedFriend = true; //still have some connections, so keep as it is
+
+                    //updates display acct name if it has been updated by the user (going to update on status like this too, somehow)
+                    if(userTab.GetComponent<FriendsListing>().playerName.text != f.TitleDisplayName)
+                    {
+                        userTab.GetComponent<FriendsListing>().playerName.text = f.TitleDisplayName;
+                    }
+
                     //check cases
-                    if((userTab.GetComponent<FriendsListing>().type == "requester" || userTab.GetComponent<FriendsListing>().type == "requestee")
+                    if ((userTab.GetComponent<FriendsListing>().type == "requester" || userTab.GetComponent<FriendsListing>().type == "requestee")
                         && f.Tags[0] == "confirmed") //this is case 1
                     {
                         //Destroy request type prefab
                         Destroy(userTab);
-                        //constructing confirmed prefab
-                        bool alreadyExists = false;
-                        foreach (GameObject existingTab in userTabs) //can probably optimize this in the future with a central controller
+
+                        foreach (PlayFab.ClientModels.FriendInfo g in myFriends) //hard coding remove
                         {
-                            if(existingTab.GetComponent<FriendsListing>().type == "confirmed" &&
-                                existingTab.GetComponent<FriendsListing>().playerID == f.FriendPlayFabId)
+                            if (f.FriendPlayFabId == g.FriendPlayFabId) //if there are duplicates (f is the new list, g is the old list)
                             {
-                                alreadyExists = true;
+                                myFriends.Remove(g);
                                 break;
-                            } //if the confirmed tab already exists, then don't add
-                        }
-                        if(!alreadyExists)
-                        {
-                            GameObject listing = Instantiate(listingPrefab, friendsList);
-                            FriendsListing tempListing = listing.GetComponent<FriendsListing>();
-                            //probably need to set display name for it to work
-                            tempListing.playerName.text = f.TitleDisplayName;
-                            tempListing.playerID = f.FriendPlayFabId;
-                            tempListing.PFC = this;
-                            tempListing.type = "confirmed";
+                            }
                         }
                     }
                     break; //no other cases, we good. Move onto next userTab
@@ -456,13 +470,16 @@ public class PlayFabController : MonoBehaviour
                 switch (f.Tags[0]) //might be mmultple for 2 way?
                 {
                     case "confirmed":
-                        GameObject listing = Instantiate(listingPrefab, friendsList);
-                        FriendsListing tempListing = listing.GetComponent<FriendsListing>();
-                        //probably need to set display name for it to work
-                        tempListing.playerName.text = f.TitleDisplayName;
-                        tempListing.playerID = f.FriendPlayFabId;
-                        tempListing.PFC = this;
-                        tempListing.type = "confirmed";
+                        if (!requestAccepted) //if confirmed, then will make it. But request accepted also makes another one... avoids dup
+                        {
+                            GameObject listing = Instantiate(listingPrefab, friendsList);
+                            FriendsListing tempListing = listing.GetComponent<FriendsListing>();
+                            //probably need to set display name for it to work
+                            tempListing.playerName.text = f.TitleDisplayName;
+                            tempListing.playerID = f.FriendPlayFabId;
+                            tempListing.PFC = this;
+                            tempListing.type = "confirmed";
+                        }
                         break;
                     case "requester":
                         GameObject requesterListing = Instantiate(requesterPrefab, requesterList);
@@ -511,9 +528,9 @@ public class PlayFabController : MonoBehaviour
         StartCoroutine(WaitForFriend());
     }
 
-    List<PlayFab.ClientModels.FriendInfo> _friends = null; //friend result saved in there
+    public List<PlayFab.ClientModels.FriendInfo> _friends = null; //friend result saved in there
 
-    public void GetFriends() //set to public so can be used with buttons
+    public void GetFriends() //set to public so can be used with buttons 
     {
         PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
         {
@@ -573,20 +590,12 @@ public class PlayFabController : MonoBehaviour
         friendPanel.SetActive(!friendPanel.activeInHierarchy); //inversing
     }*/
 
+    //ACCEPT REQUEST ONLY CHANGE TAGS!!!!! THEY NEED TO BE FRIENDS THROUGH FRIEND REQUEST FIRST!!!!!!
+
     //Cloud script is retired...NVM JK I GOT SCAMMED THANK GOD
     //Before send cloud friend request, check to see if you two are already friended, and the requestee (him) is a requester (to you)
     public void StartCloudSendFriendRequest(string friendPlayFabID)
     {
-        GetFriends(); //make sure myFriends data is most up to date
-        foreach (PlayFab.ClientModels.FriendInfo f in myFriends)
-        {
-            if(f.FriendPlayFabId == friendPlayFabID && f.Tags[0] == "requester")
-            {
-                StartCloudAcceptFriendRequest(friendPlayFabID);
-                return;
-            }
-        }
-        //else send a friend request
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "SendFriendRequest", // Arbitrary function name
@@ -603,8 +612,10 @@ public class PlayFabController : MonoBehaviour
         jsonResult.TryGetValue("messageValue", out messageValue);
         Debug.Log((string)messageValue);*/
         Debug.Log("Friend Request sent!");
+        GetFriends();
     }
 
+    //This version sets the tags of two users into confirmed friends
     public void StartCloudAcceptFriendRequest(string friendPlayFabID)
     {
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
@@ -614,6 +625,18 @@ public class PlayFabController : MonoBehaviour
             GeneratePlayStreamEvent = false
         }, OnCloudAcceptFriendRequest, DisplayPlayFabError);
     }
+
+    //This version adds the two players into friends and sets their tags to confirmed, if they are not friends already
+    public void StartCloudAddAndAcceptFriendRequest(string friendPlayFabID)
+    {
+        PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+        {
+            FunctionName = "AddAndAcceptFriendRequest", // Arbitrary function name
+            FunctionParameter = new { FriendPlayFabId = friendPlayFabID },
+            GeneratePlayStreamEvent = false
+        }, OnCloudAcceptFriendRequest, DisplayPlayFabError);
+    }
+
 
     private void OnCloudAcceptFriendRequest(ExecuteCloudScriptResult result)
     {
@@ -637,6 +660,7 @@ public class PlayFabController : MonoBehaviour
         Debug.Log("Friend Request denied!");
         GetFriends();
     }
+
 
 
 
