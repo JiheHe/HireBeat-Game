@@ -435,7 +435,7 @@ public class PlayFabController : MonoBehaviour
                         {
                             if (f.FriendPlayFabId == g.FriendPlayFabId) //if there are duplicates (f is the new list, g is the old list)
                             {
-                                myFriends.Remove(g);
+                                myFriends.Remove(g); //remove and prep for construction
                                 break;
                             }
                         }

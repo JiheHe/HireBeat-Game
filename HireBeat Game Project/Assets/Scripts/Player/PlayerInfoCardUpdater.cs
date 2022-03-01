@@ -118,47 +118,57 @@ public class PlayerInfoCardUpdater : MonoBehaviour
     //PFC is local, so PFC.myID is my ID!
     private void ConfigureTopButton()
     {
-        switch (type)
+        PFC.GetFriends();
+        PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
         {
-            case 0: //lobby click or search bar result, add/already/req sent
-                if (PFC._friends != null) //this is updated, due to get friend call in the beginning
-                {
-                    bool foundButton = false;
-                    foreach (FriendInfo f in PFC._friends) //check if the user is your friend
+            IncludeSteamFriends = false,
+            IncludeFacebookFriends = false,
+            XboxToken = null
+        }, result => {
+            List<FriendInfo> friends = result.Friends;
+            switch (type)
+            {
+                case 0: //lobby click or search bar result, add/already/req sent
+                    if (friends != null) //this is updated, due to get friend call in the beginning
                     {
-                        if (acctID == f.FriendPlayFabId) //he's either your friend, a requester, or a requestee
+                        bool foundButton = false;
+                        foreach (FriendInfo f in friends) //check if the user is your friend
                         {
-                            switch (f.Tags[0])
+                            if (acctID == f.FriendPlayFabId) //he's either your friend, a requester, or a requestee
                             {
-                                case "confirmed": //actual friends!
-                                    SetButtonType(2); //so already friend
-                                    foundButton = true;
-                                    break;
-                                case "requester": //he's the requester, you are the requestee, so he's trying to add you!
-                                    SetButtonType(0); //just do add friend, doesn't matter
-                                    foundButton = true;
-                                    break;
-                                case "requestee": //you have sent him a request before, but no response yet
-                                    SetButtonType(3); //request sent :)
-                                    foundButton = true;
-                                    break;
+                                switch (f.Tags[0])
+                                {
+                                    case "confirmed": //actual friends!
+                                        SetButtonType(2); //so already friend
+                                        foundButton = true;
+                                        break;
+                                    case "requester": //he's the requester, you are the requestee, so he's trying to add you!
+                                        SetButtonType(0); //just do add friend, doesn't matter
+                                        foundButton = true;
+                                        break;
+                                    case "requestee": //you have sent him a request before, but no response yet
+                                        SetButtonType(3); //request sent :)
+                                        foundButton = true;
+                                        break;
+                                }
                             }
+                            if (foundButton) break;
                         }
+                        //if there's no relationship between two of you, then add friend only option
+                        if (!foundButton && acctID != PFC.myID) SetButtonType(0); //and it is not yourself
                     }
-                    //if there's no relationship between two of you, then add friend only option
-                    if(!foundButton && acctID != PFC.myID) SetButtonType(0); //and it is not yourself
-                }
-                else
-                {
-                    if(acctID != PFC.myID) SetButtonType(0); //add friend if you have no friends... obvious
-                }
-                break;
-            case 1: //friend list, remove friend only
-                SetButtonType(1);
-                break;
-            case 2: //request list, show nothing
-                break;
-        }
+                    else
+                    {
+                        if (acctID != PFC.myID) SetButtonType(0); //add friend if you have no friends... obvious
+                    }
+                    break;
+                case 1: //friend list, remove friend only
+                    SetButtonType(1);
+                    break;
+                case 2: //request list, show nothing
+                    break;
+            }
+        }, DisplayPlayFabError);
     }
 
     private void SetButtonType(int buttonIndex) //Set a button active!
@@ -176,6 +186,7 @@ public class PlayerInfoCardUpdater : MonoBehaviour
     //because in this case, two way just became one way, so.... :(
     public void OnAddFriendPressed() //This is NOT accept! Just a friend request
     {
+        PFC.GetFriends();
         PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
         {
             IncludeSteamFriends = false,
