@@ -19,6 +19,9 @@ public class FriendsListing : MonoBehaviour
     public GameObject playerInfoCard;
     public string type; //use this to tell the system which mode it's in
 
+    public Image status;
+    public bool isOnline = false;
+
     //Some brainstormed scenarios (same tab delay, just in case... this is only possible in FriendsListing):
     //User A sends a request to B, user B declines, then A cancels (done)
     //User A sends a request to B, user B accepts, then A cancels (then in this case, cancel should NOT go through)
@@ -91,5 +94,19 @@ public class FriendsListing : MonoBehaviour
         if (type == 1) info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 1); //friend list click
         else info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 2); //request list click
         
+    }
+
+    public void changeOnStatus(bool isOn)
+    {
+        if(isOn)
+        {
+            isOnline = true;
+            status.color = new Color32(67, 180, 106, 255);
+        }
+        else
+        {
+            isOnline = false;
+            status.color = new Color32(216, 99, 42, 255);
+        }
     }
 }

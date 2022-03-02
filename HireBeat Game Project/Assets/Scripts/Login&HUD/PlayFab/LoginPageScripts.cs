@@ -8,10 +8,11 @@ public class LoginPageScripts : MonoBehaviour
     public GameObject loginButton;
     public GameObject registerButton;
     public GameObject usernameInputField;
+    public GameObject emailInputField;
     public GameObject toRegisterTabButton;
     public GameObject toLoginTabButton;
 
-    public GameObject emailInputField;
+    public GameObject usernameOrEmailInputField;
     public GameObject passwordInputField;
 
     public GameObject loginErrorText;
@@ -29,7 +30,9 @@ public class LoginPageScripts : MonoBehaviour
     {
         loginButton.SetActive(true);
         registerButton.SetActive(false);
+        usernameOrEmailInputField.SetActive(true);
         usernameInputField.SetActive(false);
+        emailInputField.SetActive(false);
         toRegisterTabButton.SetActive(true);
         toLoginTabButton.SetActive(false);
         registerErrorText.SetActive(false);
@@ -39,7 +42,9 @@ public class LoginPageScripts : MonoBehaviour
     {
         loginButton.SetActive(false);
         registerButton.SetActive(true);
+        usernameOrEmailInputField.SetActive(false);
         usernameInputField.SetActive(true);
+        emailInputField.SetActive(true);
         toRegisterTabButton.SetActive(false);
         toLoginTabButton.SetActive(true);
         loginErrorText.SetActive(false);
@@ -63,9 +68,9 @@ public class LoginPageScripts : MonoBehaviour
         StartCoroutine(WaitUntilClose(errorTextObj, 4f)); //no disappearing animation for now.
     }
 
-    public void DisplayEmailAndPassword(string email, string password)
+    public void DisplayEmailAndPassword(string usernameOrEmail, string password)
     {
-        emailInputField.GetComponent<InputField>().text = email;
+        usernameOrEmailInputField.GetComponent<InputField>().text = usernameOrEmail;
         passwordInputField.GetComponent<InputField>().text = password;
     }
 }

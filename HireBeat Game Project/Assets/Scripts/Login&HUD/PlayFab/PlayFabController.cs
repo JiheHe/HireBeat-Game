@@ -9,6 +9,7 @@ using PlayFab.Json;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
+using System;
 
 
 //https://docs.microsoft.com/en-us/gaming/playfab/sdks/unity3d/quickstart#finish-and-execute copy pasta!
@@ -20,6 +21,7 @@ public class PlayFabController : MonoBehaviour
     private string userEmail;
     private string userPassword;
     private string username;
+    private string usernameOrEmail;
     #endregion LoginVariables
     public string myID;
     PersistentData PD;
@@ -63,11 +65,11 @@ public class PlayFabController : MonoBehaviour
             PlayFabSettings.staticSettings.TitleId = "BC556"; //I have, so I'll let it go
         }
 
-        if (PlayerPrefs.HasKey("EMAIL")) //if remembered, but don't just login... input user data and for them to click the button ig
+        if (PlayerPrefs.HasKey("USERNAMEOREMAIL")) //if remembered, but don't just login... input user data and for them to click the button ig
         {
-            userEmail = PlayerPrefs.GetString("EMAIL");
+            usernameOrEmail = PlayerPrefs.GetString("USERNAMEOREMAIL");
             userPassword = PlayerPrefs.GetString("PASSWORD");
-            loginMenu.DisplayEmailAndPassword(userEmail, userPassword);
+            loginMenu.DisplayEmailAndPassword(usernameOrEmail, userPassword);
             //var request = new LoginWithEmailAddressRequest { Email = userEmail, Password = userPassword }; //these two lines are auto login lines, not sure if good idea
             //PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLoginFailure);
         }
@@ -146,6 +148,11 @@ public class PlayFabController : MonoBehaviour
         username = usernameIn;
     }
 
+    public void GetUsernameOrEmail(string usernameOrEmailIn)
+    {
+        usernameOrEmail = usernameOrEmailIn;
+    }
+
     /*
      * Step 1
      * We authenticate current PlayFab user normally.
@@ -157,8 +164,30 @@ public class PlayFabController : MonoBehaviour
     public void OnClickLogin()
     {
         type = 0;
+        if(usernameOrEmail.Contains('@')) //username is alphanumeric, so won't contain @
+        {
+            userEmail = usernameOrEmail;
+            LoginWithEmail();
+        }
+        else
+        {
+            username = usernameOrEmail;
+            LoginWithUsername();
+        }
+    }
+
+    private void LoginWithEmail()
+    {
+        Debug.Log("login to Playfab using" + userEmail);
         var request = new LoginWithEmailAddressRequest { Email = userEmail, Password = userPassword };
         PlayFabClientAPI.LoginWithEmailAddress(request, RequestPhotonToken, OnLoginFailure); //not OnLoginSuccess anymore
+    }
+
+    private void LoginWithUsername()
+    {
+        Debug.Log("Login to Playfab as " + username);
+        var request = new LoginWithPlayFabRequest { Username = username, Password = userPassword };
+        PlayFabClientAPI.LoginWithPlayFab(request, RequestPhotonToken, OnLoginFailure);
     }
 
     public void OnClickRegister()
@@ -234,7 +263,7 @@ public class PlayFabController : MonoBehaviour
 
     private void SetPlayerLoginPrefs() //email and password for now
     {
-        PlayerPrefs.SetString("EMAIL", userEmail);
+        PlayerPrefs.SetString("USERNAMEOREMAIL", usernameOrEmail);
         PlayerPrefs.SetString("PASSWORD", userPassword);
     }
     #endregion Login 
@@ -373,6 +402,21 @@ public class PlayFabController : MonoBehaviour
     public Transform requesteeList;
     List<PlayFab.ClientModels.FriendInfo> myFriends;
     bool requestAccepted = false; //upon request accepted, update
+
+    /*private void Awake()
+    {
+        PhotonConnector.GetPhotonFriends += HandleGetFriends;
+    }
+
+    private void OnDestroy()
+    {
+        PhotonConnector.GetPhotonFriends -= HandleGetFriends;
+    }
+
+    private void HandleGetFriends()
+    {
+        GetFriends();
+    }*/
 
     //Last function in the process, you decide how you wanna show it ;D
     void DisplayFriends(List<PlayFab.ClientModels.FriendInfo> friendsCache)
@@ -530,6 +574,9 @@ public class PlayFabController : MonoBehaviour
 
     public List<PlayFab.ClientModels.FriendInfo> _friends = null; //friend result saved in there
 
+    //allow other scripts to subscribe to this action
+    //public static Action<List<PlayFab.ClientModels.FriendInfo>> OnFriendListUpdated = delegate { };
+
     public void GetFriends() //set to public so can be used with buttons 
     {
         PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
@@ -539,9 +586,49 @@ public class PlayFabController : MonoBehaviour
             XboxToken = null
         }, result => {
             _friends = result.Friends;
+            //UpdatePhotonFriendsList(result); //this ultimatelly leads to the calling of updatefriendliststatus //nvm this doesn't work...
             DisplayFriends(_friends); // triggers your UI
+            //OnFriendsListSuccess(result);
         }, DisplayPlayFabError);
     }
+
+    //nvm cannot call FindFriends in a room, gotta use Photon Chat...
+    //an idea: returns an array of bool
+    /*private void UpdatePhotonFriendsList(GetFriendsListResult result)
+    {
+        var users = result.Friends;
+        List<string> friendIDs = new List<string>();
+        foreach (PlayFab.ClientModels.FriendInfo user in users)
+        {
+            if (user.Tags[0] == "confirmed")
+            {
+                friendIDs.Add(user.FriendPlayFabId);
+            }
+        }
+        PhotonNetwork.FindFriends(friendIDs.ToArray()); //every time this function is called, OnFriendListUpdate in photon connector responds
+    }
+
+    public void UpdateFriendListStatus(Dictionary<string, bool> friendListStatus)
+    {
+        int numFriends = 0; //this is for the initialization case
+        if(friendsList != null) numFriends = friendsList.childCount;
+        for(int i = 0; i < numFriends; i++)
+        {
+            FriendsListing currFriend = friendsList.GetChild(i).GetComponent<FriendsListing>();
+            bool updatedStatus = friendListStatus[currFriend.playerID];
+            if (currFriend.isOnline != updatedStatus) //if on status has changed, then change on status
+            {
+                currFriend.changeOnStatus(updatedStatus);
+            }
+        }
+    }*/
+
+    //could probably be condensed, will try later
+    /*private void OnFriendsListSuccess(GetFriendsListResult result)
+    {
+        //letting PHOTON know when it should update friends list internally
+        OnFriendListUpdated?.Invoke(result.Friends);
+    }*/
 
     enum FriendIdType { PlayFabId, Username, Email, DisplayName };
 
