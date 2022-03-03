@@ -28,6 +28,8 @@ public class SceneListener : MonoBehaviour
             GetComponent<PlayFabController>().requesterList = playerHUD.GetComponent<changeReceiver>().requesterList;
             GetComponent<PlayFabController>().requesteeList = playerHUD.GetComponent<changeReceiver>().requesteeList;
             GetComponent<PlayFabController>().GetFriends(); //update friends immediately upon entering
+            GetComponent<PhotonChatManager>().socialSystem = playerHUD.transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+            GetComponent<PhotonChatManager>().ConnectChat(); //make sure social system is ready, then connect
         }
     }
 }

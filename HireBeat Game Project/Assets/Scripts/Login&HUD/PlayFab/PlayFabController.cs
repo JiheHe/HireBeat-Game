@@ -176,6 +176,7 @@ public class PlayFabController : MonoBehaviour
         }
     }
 
+    //when logging in, also use the login info for the chat login
     private void LoginWithEmail()
     {
         Debug.Log("login to Playfab using" + userEmail);
@@ -214,12 +215,15 @@ public class PlayFabController : MonoBehaviour
         Debug.Log("PlayFab authenticated. Requesting photon token...");
         result = obj; //keep a record of playfab login result
 
+        //try logging Photon Chat in too
+        GetComponent<PhotonChatManager>().RequestPhotonToken(obj);
+
         //We can player PlayFabId. This will come in handy during next step
         _playFabPlayerIdCache = obj.PlayFabId;
 
         PlayFabClientAPI.GetPhotonAuthenticationToken(new GetPhotonAuthenticationTokenRequest()
         {
-            PhotonApplicationId = "a3518642-79f5-47cb-bb62-0439b7f63136" //PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat
+            PhotonApplicationId = "a3518642-79f5-47cb-bb62-0439b7f63136" 
         }, AuthenticateWithPhoton, DisplayPlayFabError);
     }
     RegisterPlayFabUserResult registerResult;
@@ -487,7 +491,24 @@ public class PlayFabController : MonoBehaviour
                     break; //no other cases, we good. Move onto next userTab
                 }
             }
-            if (!isConnectedFriend) Destroy(userTab); //no connections at all, so destroy
+            if (!isConnectedFriend)
+            {
+                if(userTab.GetComponent<FriendsListing>().chatPanel != null) //null in general, unless friends
+                {
+                    var chatPanelz = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").
+                        GetComponent<SocialSystemScript>();
+                    Destroy(chatPanelz.chatPanels[userTab.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
+                    chatPanelz.chatPanels.Remove(userTab.GetComponent<FriendsListing>().playerID);
+                    chatPanelz.currentChatPanel = null; //don't null, turn to next friend
+                    if(chatPanelz.chatPanels.Count > 0)
+                    {
+                        friendsList.GetChild(1).gameObject.GetComponent<FriendsListing>().OnProfileClicked(1); //go to next friend
+                        //get 1 because 0th child is destroyed after
+                    } //if there are still friends, then turn to next panel
+                    chatPanelz.NoCurrentChat();
+                }
+                Destroy(userTab); //no connections at all, so destroy
+            }
         }
 
         //The below checks for if there's any new info
@@ -523,6 +544,7 @@ public class PlayFabController : MonoBehaviour
                             tempListing.playerID = f.FriendPlayFabId;
                             tempListing.PFC = this;
                             tempListing.type = "confirmed";
+                            tempListing.createChatPanel();
                         }
                         break;
                     case "requester":
@@ -555,6 +577,7 @@ public class PlayFabController : MonoBehaviour
                 tempListing.playerName.text = f.TitleDisplayName;
                 tempListing.playerID = f.FriendPlayFabId;
                 tempListing.PFC = this;
+                tempListing.createChatPanel();
                 requestAccepted = false;
             }
         }

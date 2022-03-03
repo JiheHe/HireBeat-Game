@@ -27,6 +27,15 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject playerInfoCard;
 
     PlayFabController PFC;
+    PhotonChatManager PCM;
+
+    public GameObject chatPanel; //this stores the prefab
+    public GameObject msgViewPort; //this stores the local viewport
+    public GameObject currentChatPanel = null;
+    public Dictionary<string, GameObject> chatPanels = new Dictionary<string, GameObject>();
+    public string message;
+    public InputField messageField;
+    public GameObject noChatOnSymbol;
 
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
@@ -43,6 +52,7 @@ public class SocialSystemScript : MonoBehaviour
         //playerObj = GameObject.FindGameObjectWithTag("Player");
 
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
+        PCM = GameObject.Find("PlayFabController").GetComponent<PhotonChatManager>();
 
         GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
         playerCamera = cameraController.GetComponent<cameraController>();
@@ -50,6 +60,7 @@ public class SocialSystemScript : MonoBehaviour
         playerZoneTab = cameraController.GetComponent<InGameUIController>();
         playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
 
+        NoCurrentChat();
         //OnTabOpen shouldbe auto called so chilling
     }
 
@@ -144,6 +155,30 @@ public class SocialSystemScript : MonoBehaviour
         info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
         info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
         //PFC.StartCloudSendFriendRequest(friendsSearchBarInput.text);
+    }
+
+    public void GetMessage(string input)
+    {
+        message = input;
+    }
+
+    public void SendPrivateMessage()
+    {
+        Debug.Log("PCM sends message to " + currentChatPanel.GetComponent<MsgContentController>().listing.playerID);
+        if (currentChatPanel != null)
+        {
+            PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, message);
+            currentChatPanel.GetComponent<MsgContentController>().AddMessage("You", "12:00", message, true);
+        }
+        else Debug.Log("No one is selected.");
+        messageField.text = "";
+        message = "";
+    }
+
+    public void NoCurrentChat()
+    {
+        if (currentChatPanel == null) noChatOnSymbol.SetActive(true);
+        else noChatOnSymbol.SetActive(false);
     }
 }
 
