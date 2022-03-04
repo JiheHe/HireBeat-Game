@@ -42,6 +42,8 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject publicRoomChatPanel; //same
     public bool isPrivate;
 
+    public GameObject currentInfoCardOpened = null; //starts null, set throughout
+
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
@@ -91,6 +93,7 @@ public class SocialSystemScript : MonoBehaviour
         addFriendSearchBar.SetActive(false);
         friendsSearchBarInput.text = ""; //only clear at closing
         requestsList.SetActive(false);
+        if (currentInfoCardOpened != null) Destroy(currentInfoCardOpened);
         PFC.GetFriends();
     }
 
@@ -129,6 +132,12 @@ public class SocialSystemScript : MonoBehaviour
             playerObj.GetComponent<playerController>().enabled = false;
             playerCamera.enabled = false;
             PFC.GetFriends();
+        }
+
+        //Two options: 1. set curr chat panel to null upon exiting. 2. upon on opening generating curr chat panel's info card (using 2 for now)
+        if(currentChatPanel != null && currentChatPanel.GetComponent<MsgContentController>().listing != null) //if it's a private convo
+        {
+            currentChatPanel.GetComponent<MsgContentController>().listing.OnProfileClicked(1); //friends list
         }
     }
 
@@ -242,6 +251,8 @@ public class SocialSystemScript : MonoBehaviour
         publicRoomChatPanel.SetActive(true);
         //reset scroll view, will do later.
         currentChatPanel = publicRoomChatPanel;
+        Destroy(currentInfoCardOpened);
+        currentInfoCardOpened = null;
         NoCurrentChat();
     }
 }

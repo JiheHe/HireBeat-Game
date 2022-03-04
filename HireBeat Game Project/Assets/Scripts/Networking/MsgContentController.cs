@@ -9,7 +9,7 @@ public class MsgContentController : MonoBehaviour
     public string tempName;
 
     int MAX_MSG = 50; //hmmm
-    public FriendsListing listing;
+    public FriendsListing listing = null; //can use this to help decide whether public or private
     List<GameObject> messages = new List<GameObject>();
 
     void Start()

@@ -83,19 +83,20 @@ public class FriendsListing : MonoBehaviour
         Debug.Log(error.GenerateErrorReport());
     }
 
-    GameObject info;
     public void OnProfileClicked(int type) //1 = friend list,  2 = request list
     {
-        if (info != null) //object self destructs into null on tab close
+        var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        if (socialSystem.currentInfoCardOpened != null) //object self destructs into null on tab close
         {
-            Destroy(info.gameObject);
+            Destroy(socialSystem.currentInfoCardOpened);
         }
-        info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
+        GameObject info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
+        info.transform.GetChild(0).transform.localPosition = new Vector2(-243, 0); //shift x to the left, of this generated card
         info.GetComponent<PlayerInfoCardUpdater>().listingObject = gameObject; //binding
+        socialSystem.currentInfoCardOpened = info;
         if (type == 1)
         {
             info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 1); //friend list click
-            var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
             socialSystem.isPrivate = true;
             if(socialSystem.currentChatPanel != null) socialSystem.currentChatPanel.SetActive(false);
             chatPanel.SetActive(true);
