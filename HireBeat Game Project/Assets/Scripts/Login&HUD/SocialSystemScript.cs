@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using System;
 
 public class SocialSystemScript : MonoBehaviour
 {
@@ -166,8 +167,11 @@ public class SocialSystemScript : MonoBehaviour
     {
         if (currentChatPanel != null)
         {
-            PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, message);
-            currentChatPanel.GetComponent<MsgContentController>().AddMessage("You", "12:00", message, true);
+            DateTime sentTime = DateTime.UtcNow;
+            PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, 
+                new string[] { message, sentTime.ToBinary().ToString()});
+            currentChatPanel.GetComponent<MsgContentController>().AddMessage("You", 
+                TimeZoneInfo.ConvertTimeBySystemTimeZoneId(sentTime, TimeZoneInfo.Local.Id).ToString(), message, true);
         }
         else Debug.Log("No one is selected.");
         messageField.text = "";

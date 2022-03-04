@@ -7,6 +7,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using ExitGames.Client.Photon;
 using System.Linq;
+using System;
 
 public class PhotonChatManager : MonoBehaviour, IChatClientListener
 {
@@ -26,7 +27,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     {
         Debug.Log("ChatRoom connected");
         AddPhotonChatFriends();
-        chatClient.Subscribe(new string[] { "RegionChannel" }); //this is for public
+        chatClient.Subscribe(new string[] { "RegionChannel" }); //this is for public        
         //throw new System.NotImplementedException();
     }
 
@@ -51,18 +52,22 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //solution: upon receiving, if such panel doesn't exist, then create the panel now!
         if(sender != GetComponent<PlayFabController>().myID) //watch out! also sends a copy to yourself
         {
-            if(socialSystem.chatPanels.ContainsKey(sender))
+            string msg = ((string[])message)[0];
+            DateTime dt = DateTime.FromBinary(long.Parse(((string[])message)[1]));
+            string sentTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dt, TimeZoneInfo.Local.Id).ToString();
+            //no need for this i think, since local conv. TimeZoneInfo.Local.StandardName
+            if (socialSystem.chatPanels.ContainsKey(sender))
             {
                 GameObject receivingPanel = socialSystem.chatPanels[sender];
                 if(receivingPanel.GetComponent<MsgContentController>().listing != null) //listing's set, so display username
                 {
                     receivingPanel.GetComponent<MsgContentController>().AddMessage(receivingPanel.GetComponent<MsgContentController>().listing.playerName.text,
-                    "12:00", (string)message, false); //haven't configurated time yet
+                    sentTime, msg, false); //haven't configurated time yet
                 }
                 else
                 {
                     receivingPanel.GetComponent<MsgContentController>().AddMessage(receivingPanel.GetComponent<MsgContentController>().tempName, //gonna keep using id when sent 
-                   "12:00", (string)message, false);
+                   sentTime, msg, false);
                 }
                 
             }
@@ -79,8 +84,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     Keys = new List<string>() { "acctName" } //just acct name
                 }, result => {
                     tempPanel.GetComponent<MsgContentController>().tempName = result.Data["acctName"].Value;
-                    tempPanel.GetComponent<MsgContentController>().AddMessage(tempPanel.GetComponent<MsgContentController>().tempName, 
-                    "12:00", (string)message, false);
+                    tempPanel.GetComponent<MsgContentController>().AddMessage(tempPanel.GetComponent<MsgContentController>().tempName,
+                    sentTime, msg, false);
                 }, (error) => {
                     Debug.Log("Got error retrieving user data:");
                     Debug.Log(error.GenerateErrorReport());
