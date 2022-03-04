@@ -38,6 +38,10 @@ public class SocialSystemScript : MonoBehaviour
     public InputField messageField;
     public GameObject noChatOnSymbol;
 
+    public string currentPublicRoomChatName; //this is set upon room joining / connecting
+    public GameObject publicRoomChatPanel; //same
+    public bool isPrivate;
+
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
@@ -163,19 +167,45 @@ public class SocialSystemScript : MonoBehaviour
         message = input;
     }
 
-    public void SendPrivateMessage()
+    public void SendChatMessage()
     {
         if (currentChatPanel != null)
         {
-            DateTime sentTime = DateTime.UtcNow;
-            PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, 
-                new string[] { message, sentTime.ToBinary().ToString()});
-            currentChatPanel.GetComponent<MsgContentController>().AddMessage("You", 
-                TimeZoneInfo.ConvertTimeBySystemTimeZoneId(sentTime, TimeZoneInfo.Local.Id).ToString(), message, true);
+            if (isPrivate)
+            {
+                SendPrivateMessage();
+            }
+            else
+            {
+                SendPublicMessage();
+            }
+            messageField.text = "";
+            message = "";
+            messageField.Select(); //this blinks caret cuz select ;D (screen needs to be big enought to see caret... or make thicker)
+            messageField.ActivateInputField(); //this makes sure that user can keep typing ;D
         }
-        else Debug.Log("No one is selected.");
-        messageField.text = "";
-        message = "";
+        else Debug.Log("No chat is selected.");
+        //messageField.text = ""; //don't wanna undo their stuff if they misselect lol
+        //message = "";
+    }
+
+    private void SendPrivateMessage()
+    {
+        DateTime sentTime = DateTime.UtcNow;
+        PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, 
+            new string[] { message, sentTime.ToBinary().ToString()});
+        currentChatPanel.GetComponent<MsgContentController>().AddMessage("You", 
+            TimeZoneInfo.ConvertTimeBySystemTimeZoneId(sentTime, TimeZoneInfo.Local.Id).ToString(), message, true);
+    }
+
+    private void SendPublicMessage()
+    {
+        DateTime sentTime = DateTime.UtcNow;
+        string senderName = transform.parent.GetChild(2).GetChild(0).GetComponent<Text>().text; //I don't wanna set a string for this in social system.. grab from hud ;D
+        PCM.chatClient.PublishMessage(currentPublicRoomChatName,
+            new string[] { message, sentTime.ToBinary().ToString(), senderName});
+        currentChatPanel.GetComponent<MsgContentController>().AddMessage(senderName, //current chat panel should be the public room one, can put that in to safe check
+            TimeZoneInfo.ConvertTimeBySystemTimeZoneId(sentTime, TimeZoneInfo.Local.Id).ToString(), message, true);
     }
 
     public void NoCurrentChat()
@@ -194,6 +224,25 @@ public class SocialSystemScript : MonoBehaviour
     {
         PCM.chatClient.SetOnlineStatus(2, friendID); //ChatUserStatus.Online, 2+ //send a message id to person getting unfriended
         //In the future, can vary this message to create key real time chat effects!
+    }
+
+    public void CreatePublicRoomPanel()
+    {
+        publicRoomChatPanel = Instantiate(chatPanel, msgViewPort.transform);
+        publicRoomChatPanel.transform.parent = msgViewPort.transform; //is this necessary?
+        publicRoomChatPanel.GetComponent<MsgContentController>().listing = null; //juust makin sure
+        publicRoomChatPanel.SetActive(false);
+        chatPanels.Add(currentPublicRoomChatName, publicRoomChatPanel);
+    }
+
+    public void OnPublicChatRoomClicked()
+    {
+        isPrivate = false;
+        if (currentChatPanel != null) currentChatPanel.SetActive(false);
+        publicRoomChatPanel.SetActive(true);
+        //reset scroll view, will do later.
+        currentChatPanel = publicRoomChatPanel;
+        NoCurrentChat();
     }
 }
 

@@ -12,6 +12,7 @@ using System;
 public class PhotonChatManager : MonoBehaviour, IChatClientListener
 {
     public SocialSystemScript socialSystem = null; //this is assigned by scene listener on load, it won't be null!
+    public string publicRoomChatName;
 
     public void DebugReturn(DebugLevel level, string message)
     {
@@ -23,11 +24,14 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //throw new System.NotImplementedException();
     }
 
-    public void OnConnected()
+    public void OnConnected() //on connected, automatically connects to public room chat
     {
-        Debug.Log("ChatRoom connected");
         AddPhotonChatFriends();
-        chatClient.Subscribe(new string[] { "RegionChannel" }); //this is for public        
+        publicRoomChatName = PhotonNetwork.CurrentRoom.Name + " public room";
+        chatClient.Subscribe(new string[] { publicRoomChatName }); //this is for the public room chat, room name will be owner ID
+        socialSystem.currentPublicRoomChatName = publicRoomChatName;
+        socialSystem.CreatePublicRoomPanel();
+        Debug.Log("Public Chatroom Connected!"); //connected!
         //throw new System.NotImplementedException();
     }
 
@@ -37,9 +41,26 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     }
 
     //triggered whenever a public chat message is published to a channel we are currently subscribed to
+    //current just the public room chat
     public void OnGetMessages(string channelName, string[] senders, object[] messages)
     {
-        //throw new System.NotImplementedException();
+        if(channelName == publicRoomChatName) //could have more channels in the future
+        {
+            for(int i = 0; i < senders.Length; i++)
+            {
+                string sender = senders[i];
+                object message = messages[i];
+                if (sender != GetComponent<PlayFabController>().myID)
+                {
+                    GameObject receivingPanel = socialSystem.publicRoomChatPanel;
+                    string msg = ((string[])message)[0];
+                    string senderName = ((string[])message)[2];
+                    DateTime dt = DateTime.FromBinary(long.Parse(((string[])message)[1]));
+                    string sentTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dt, TimeZoneInfo.Local.Id).ToString();
+                    receivingPanel.GetComponent<MsgContentController>().AddMessage(senderName, sentTime, msg, false);
+                }
+            }
+        }
     }
 
     //Whenever I send a private message to any user it also sends a copy of it because of its implementation in IChatClientListener interface.

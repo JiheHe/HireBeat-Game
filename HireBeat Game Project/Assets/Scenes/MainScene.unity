@@ -10571,7 +10571,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8355644622929921079}
         m_TargetAssemblyTypeName: SocialSystemScript, Assembly-CSharp
-        m_MethodName: SendPrivateMessage
+        m_MethodName: SendChatMessage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10972,14 +10972,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08627451, g: 0.121568635, b: 0.16862746, a: 1}
+  m_Color: {r: 1, g: 0.66608846, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: eaa16a7ef00c0db4083684d6f4792ea2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0ba4fe47ec4877146a18d96d7bf791ae, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -35151,7 +35151,7 @@ GameObject:
   - component: {fileID: 880732451}
   - component: {fileID: 880732450}
   m_Layer: 5
-  m_Name: InGameChat
+  m_Name: InGameRoomChat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35259,7 +35259,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 880732453}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8355644622929921079}
+        m_TargetAssemblyTypeName: SocialSystemScript, Assembly-CSharp
+        m_MethodName: OnPublicChatRoomClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &880732453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52501,7 +52513,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 117.93104
+      value: 115.5361
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.y
@@ -52509,7 +52521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 158.96552
+      value: 157.76805
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -52617,7 +52629,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 317.93103
+      value: 315.5361
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.y
@@ -52625,7 +52637,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 158.96552
+      value: 157.76805
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -57726,7 +57738,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -58.380005, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1472020529
 MonoBehaviour:
@@ -57741,14 +57753,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08627451, g: 0.121568635, b: 0.16862746, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 54cb3845dcd39634bbe8da35cebd6873, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f9bda9db9d352c47a2b6eed9d87a95b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -63411,7 +63423,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 0.75
-  m_Text: In Game Chat
+  m_Text: 'Public Room Chat
+
+'
 --- !u!222 &1521032706
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -71602,6 +71616,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3365427681128587563, guid: c40d4a41ae9d0ed47a00ba9911e9ea0a, type: 3}
+      propertyPath: m_CaretWidth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3365427681128587563, guid: c40d4a41ae9d0ed47a00ba9911e9ea0a, type: 3}
       propertyPath: m_OnSubmit.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -71623,7 +71641,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3365427681128587563, guid: c40d4a41ae9d0ed47a00ba9911e9ea0a, type: 3}
       propertyPath: m_OnSubmit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SendPrivateMessage
+      value: SendChatMessage
       objectReference: {fileID: 0}
     - target: {fileID: 3365427681128587563, guid: c40d4a41ae9d0ed47a00ba9911e9ea0a, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -88910,6 +88928,9 @@ MonoBehaviour:
   message: 
   messageField: {fileID: 1851852482}
   noChatOnSymbol: {fileID: 2052590188}
+  currentPublicRoomChatName: 
+  publicRoomChatPanel: {fileID: 0}
+  isPrivate: 0
 --- !u!224 &8365966832851059875
 RectTransform:
   m_ObjectHideFlags: 0

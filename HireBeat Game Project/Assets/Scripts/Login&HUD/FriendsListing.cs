@@ -96,6 +96,7 @@ public class FriendsListing : MonoBehaviour
         {
             info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 1); //friend list click
             var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+            socialSystem.isPrivate = true;
             if(socialSystem.currentChatPanel != null) socialSystem.currentChatPanel.SetActive(false);
             chatPanel.SetActive(true);
             //reset scroll view, will do later.
