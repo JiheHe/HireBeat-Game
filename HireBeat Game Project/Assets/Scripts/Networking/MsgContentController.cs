@@ -23,10 +23,10 @@ public class MsgContentController : MonoBehaviour
         
     }
 
-    public void AddMessage(string name, string time, string msg, bool isSelf)
+    public void AddMessage(string name, string time, string msg, bool isSelf, string senderID)
     {
         var newMsg = Instantiate(message, gameObject.transform);
-        newMsg.GetComponent<SingleMsg>().UpdateMsgContent(name, time, msg, isSelf);
+        newMsg.GetComponent<SingleMsg>().UpdateMsgContent(name, time, msg, isSelf, senderID);
         newMsg.transform.parent = gameObject.transform; //is this necessary?
 
         messages.Add(newMsg); //The object to be added to the end of the List<T>

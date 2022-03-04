@@ -55,9 +55,10 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     GameObject receivingPanel = socialSystem.publicRoomChatPanel;
                     string msg = ((string[])message)[0];
                     string senderName = ((string[])message)[2];
+                    string senderID = ((string[])message)[3];
                     DateTime dt = DateTime.FromBinary(long.Parse(((string[])message)[1]));
                     string sentTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dt, TimeZoneInfo.Local.Id).ToString();
-                    receivingPanel.GetComponent<MsgContentController>().AddMessage(senderName, sentTime, msg, false);
+                    receivingPanel.GetComponent<MsgContentController>().AddMessage(senderName, sentTime, msg, false, senderID);
                 }
             }
         }
@@ -83,12 +84,12 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                 if(receivingPanel.GetComponent<MsgContentController>().listing != null) //listing's set, so display username
                 {
                     receivingPanel.GetComponent<MsgContentController>().AddMessage(receivingPanel.GetComponent<MsgContentController>().listing.playerName.text,
-                    sentTime, msg, false); //haven't configurated time yet
+                    sentTime, msg, false, "0000"); //haven't configurated time yet
                 }
                 else
                 {
                     receivingPanel.GetComponent<MsgContentController>().AddMessage(receivingPanel.GetComponent<MsgContentController>().tempName, //gonna keep using id when sent 
-                   sentTime, msg, false);
+                   sentTime, msg, false, "0000");
                 }
                 
             }
@@ -106,7 +107,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                 }, result => {
                     tempPanel.GetComponent<MsgContentController>().tempName = result.Data["acctName"].Value;
                     tempPanel.GetComponent<MsgContentController>().AddMessage(tempPanel.GetComponent<MsgContentController>().tempName,
-                    sentTime, msg, false);
+                    sentTime, msg, false, "0000");
                 }, (error) => {
                     Debug.Log("Got error retrieving user data:");
                     Debug.Log(error.GenerateErrorReport());

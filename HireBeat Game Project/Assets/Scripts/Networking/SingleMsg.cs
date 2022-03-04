@@ -12,8 +12,13 @@ public class SingleMsg : MonoBehaviour
     public Text msgBody;
     public Image pfp;
 
-    public void UpdateMsgContent(string name, string time, string msg, bool isSelf)
+    //if senderID = "0000" special code, then it's a private msg. Else public
+    public string sendersID;
+
+    public void UpdateMsgContent(string name, string time, string msg, bool isSelf, string senderID)
     {
+        if (senderID == "0000") transform.GetChild(0).GetComponent<Button>().interactable = false; //special code! private msg
+        else sendersID = senderID;
         senderName.text = name;
         sendTime.text = time;
         msgBody.text = msg;
@@ -23,6 +28,15 @@ public class SingleMsg : MonoBehaviour
             pfp.color = newColor;
             senderName.color = newColor;
         }
+    }
+
+    //no multiple check rn, prob can use msg content as a controller. Try static info card count?
+    public void GenerateInfoCard()
+    {
+        GameObject infoCard = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>().playerInfoCard;
+
+        GameObject info = Instantiate(infoCard, new Vector2(0, 0), Quaternion.identity); //need to make new instance! else gonna overwrite prefab
+        info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(sendersID, 0);
     }
 
 }
