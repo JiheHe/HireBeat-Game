@@ -1122,7 +1122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 285832552103712474}
   - component: {fileID: 285832552103712475}
-  - component: {fileID: 285832552103712476}
+  - component: {fileID: 312029336254801388}
   m_Layer: 0
   m_Name: SkillCategoryFrame
   m_TagString: Untagged
@@ -1141,8 +1141,7 @@ Transform:
   m_LocalPosition: {x: 0, y: -1.211, z: 0}
   m_LocalScale: {x: 0.6666667, y: 0.42237645, z: 1.3712}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 285832552573398256}
+  m_Children: []
   m_Father: {fileID: 285832553191547477}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1184,8 +1183,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -810822171
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8a7a753f989769c4ebd7f236420af813, type: 3}
   m_Color: {r: 0, g: 0.13336134, b: 1, a: 0.6784314}
@@ -1198,7 +1197,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!210 &285832552103712476
+--- !u!210 &312029336254801388
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2966,6 +2965,7 @@ GameObject:
   - component: {fileID: 285832552573398258}
   - component: {fileID: 2552671957580417515}
   - component: {fileID: 2587729047597698615}
+  - component: {fileID: 7843932301667318483}
   m_Layer: 0
   m_Name: PFP
   m_TagString: Untagged
@@ -2981,11 +2981,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 285832552573398271}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.004, y: -0.0009, z: 0}
-  m_LocalScale: {x: 2.1312, y: 2.126412, z: 2.1361988}
+  m_LocalPosition: {x: -0.0026666522, y: -1.2113801, z: 0}
+  m_LocalScale: {x: 0.558, y: 0.355, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 285832552103712474}
+  m_Father: {fileID: 285832553191547477}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &285832552573398257
@@ -3028,9 +3028,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -2
+  m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3089,6 +3089,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a58bdabdf1995e469884a1193302d81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!210 &7843932301667318483
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 285832552573398271}
+  m_Enabled: 1
+  m_SortingLayerID: -810822171
+  m_SortingLayer: 1
+  m_SortingOrder: -1
+  m_SortAtRoot: 1
 --- !u!1 &285832552585801440
 GameObject:
   m_ObjectHideFlags: 0
@@ -5014,6 +5026,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 285832552245142640}
+  - {fileID: 285832552573398256}
   - {fileID: 285832552103712474}
   - {fileID: 5413518073052113178}
   m_Father: {fileID: 285832552292041264}
@@ -5084,7 +5097,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverIndicator: {fileID: 285832552245142655}
-  pfpDisplay: {fileID: 285832552103712473}
+  pfpDisplayFrame: {fileID: 285832552103712473}
+  pfpDisplayImg: {fileID: 285832552573398271}
   playerObj: {fileID: 0}
   playerCamera: {fileID: 0}
   playerZoneTab: {fileID: 0}

@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class OnMouseOverObject : MonoBehaviour
 {
     public GameObject hoverIndicator;
-    public GameObject pfpDisplay;
+    public GameObject pfpDisplayFrame;
+    public GameObject pfpDisplayImg;
 
     public GameObject playerObj;
     public cameraController playerCamera;
@@ -63,7 +64,11 @@ public class OnMouseOverObject : MonoBehaviour
         if(!view.IsMine)
         {
             hoverIndicator.SetActive(true);
-            pfpDisplay.SetActive(true);
+            pfpDisplayFrame.SetActive(true);
+
+            Color32 myColor = pfpDisplayImg.GetComponent<SpriteRenderer>().color;
+            myColor.a = 255;
+            pfpDisplayImg.GetComponent<SpriteRenderer>().color = myColor;
         }
     }
 
@@ -72,7 +77,11 @@ public class OnMouseOverObject : MonoBehaviour
         if (!view.IsMine)
         {
             hoverIndicator.SetActive(false);
-            pfpDisplay.SetActive(false);
+            pfpDisplayFrame.SetActive(false);
+
+            Color32 myColor = pfpDisplayImg.GetComponent<SpriteRenderer>().color;
+            myColor.a = 0;
+            pfpDisplayImg.GetComponent<SpriteRenderer>().color = myColor;
         }
     }
 

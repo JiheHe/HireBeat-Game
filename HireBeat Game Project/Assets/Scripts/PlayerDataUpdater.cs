@@ -22,7 +22,7 @@ public class PlayerDataUpdater : MonoBehaviour, IPunInstantiateMagicCallback
     {
         object[] instanceData = info.photonView.InstantiationData;
 
-        ProfileUpdater updater = gameObject.transform.Find("PlayerMouseDetector").transform.Find("SkillCategoryFrame").transform.Find("PFP").GetComponent<ProfileUpdater>();
+        ProfileUpdater updater = gameObject.transform.Find("PlayerMouseDetector").transform.Find("PFP").GetComponent<ProfileUpdater>();
         string imgString = SpawnPlayers.ConnectArrayOfSubstrings((string[])instanceData[13]); //need to break img string down to n parts, else too long
         byte[] pfpByteArr = Convert.FromBase64String(imgString);
         updater.changeSpriteRPC(pfpByteArr);
