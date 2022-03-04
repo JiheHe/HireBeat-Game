@@ -20,7 +20,6 @@ public class FriendsListing : MonoBehaviour
     public string type; //use this to tell the system which mode it's in
 
     public Image status;
-    public bool isOnline = false;
 
     public GameObject chatPanel = null; //only assign this when confirmed friend
 
@@ -108,9 +107,9 @@ public class FriendsListing : MonoBehaviour
     }
 
     //this is called when this listing is instantiated in playfabcontroller
-    public void createChatPanel()
+    public void createChatPanel() 
     {
-        var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        SocialSystemScript socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
         if(!socialSystem.chatPanels.ContainsKey(playerID)) //else player already exists through private message panel method, no need for another
         {
             chatPanel = Instantiate(socialSystem.chatPanel, socialSystem.msgViewPort.transform);
@@ -125,19 +124,16 @@ public class FriendsListing : MonoBehaviour
             incompletePanel.GetComponent<MsgContentController>().listing = this;
             chatPanel = incompletePanel; //now it's complete!
         }
-        
     }
 
-    public void changeOnStatus(bool isOn)
+    public void changeOnStatus(bool isOn) //no need for a public bool, because photon chat manages it
     {
         if(isOn)
         {
-            isOnline = true;
             status.color = new Color32(67, 180, 106, 255);
         }
         else
         {
-            isOnline = false;
             status.color = new Color32(216, 99, 42, 255);
         }
     }

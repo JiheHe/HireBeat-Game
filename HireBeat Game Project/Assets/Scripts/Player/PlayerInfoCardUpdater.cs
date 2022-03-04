@@ -226,10 +226,14 @@ public class PlayerInfoCardUpdater : MonoBehaviour
     //No need for this one. If player B removes A and A removes B at same time, then bad things won't happen.
     public void OnConfirmRemovalPressed()
     {
-        if(listingObject != null)
+        PFC.StartCloudDenyFriendRequest(acctID);
+        if (listingObject != null)
         {
             var chatPanelz = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").
                         GetComponent<SocialSystemScript>();
+            //If I want to pass message here, then I need to invoke locally because it takes time for removal to go through. Better to call in PFC's removal confirmed func
+            //chatPanelz.RemovePhotonChatFriend(listingObject.GetComponent<FriendsListing>().playerID); 
+            //chatPanelz.BroadcastFriendRemoval(listingObject.GetComponent<FriendsListing>().playerID); //sending the message
             Destroy(chatPanelz.chatPanels[listingObject.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
             chatPanelz.chatPanels.Remove(listingObject.GetComponent<FriendsListing>().playerID);
             chatPanelz.currentChatPanel = null; //don't null, turn to next friend
@@ -243,7 +247,6 @@ public class PlayerInfoCardUpdater : MonoBehaviour
             //So no need to worry about not clicking on friend tab to instantiate the pair before removal = null
             Destroy(listingObject); //"unfriended"
         }
-        PFC.StartCloudDenyFriendRequest(acctID);
         CloseTab();
         PFC.GetFriends();
     }

@@ -38,17 +38,6 @@ public class PlayFabController : MonoBehaviour
     
     private void OnEnable() //making sure only 1 playfab controller
     {
-        /*if(PlayFabController.PFC == null)
-        {
-            PlayFabController.PFC = this;
-        }
-        else
-        {
-            if(PlayFabController.PFC != this)
-            {
-                Destroy(this.gameObject);
-            }
-        }*/ //cant use damn signleton in multiplayer
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -90,8 +79,6 @@ public class PlayFabController : MonoBehaviour
         myID = result.PlayFabId; //this is the unique ID!!!
         SetUserData("acctID", myID, "Public");
         PD.RetrieveUserData();
-
-        //StartCloudDenyFriendRequest("7A98A976DE472605"); this is for testing purposes
     }
 
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
@@ -407,21 +394,6 @@ public class PlayFabController : MonoBehaviour
     List<PlayFab.ClientModels.FriendInfo> myFriends;
     bool requestAccepted = false; //upon request accepted, update
 
-    /*private void Awake()
-    {
-        PhotonConnector.GetPhotonFriends += HandleGetFriends;
-    }
-
-    private void OnDestroy()
-    {
-        PhotonConnector.GetPhotonFriends -= HandleGetFriends;
-    }
-
-    private void HandleGetFriends()
-    {
-        GetFriends();
-    }*/
-
     //Last function in the process, you decide how you wanna show it ;D
     void DisplayFriends(List<PlayFab.ClientModels.FriendInfo> friendsCache)
     {
@@ -497,6 +469,7 @@ public class PlayFabController : MonoBehaviour
                 {
                     var chatPanelz = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").
                         GetComponent<SocialSystemScript>();
+                    chatPanelz.RemovePhotonChatFriend(userTab.GetComponent<FriendsListing>().playerID); //this is receiver's end
                     Destroy(chatPanelz.chatPanels[userTab.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
                     chatPanelz.chatPanels.Remove(userTab.GetComponent<FriendsListing>().playerID);
                     chatPanelz.currentChatPanel = null; //don't null, turn to next friend
@@ -544,6 +517,8 @@ public class PlayFabController : MonoBehaviour
                             tempListing.playerID = f.FriendPlayFabId;
                             tempListing.PFC = this;
                             tempListing.type = "confirmed";
+                            GetComponent<PhotonChatManager>().chatClient.AddFriends(new string[] { f.FriendPlayFabId }); //initiate photon chat status update
+                            //even if the above happened before chat connection, it doens't matter: garbo value
                             tempListing.createChatPanel();
                         }
                         break;
@@ -577,6 +552,9 @@ public class PlayFabController : MonoBehaviour
                 tempListing.playerName.text = f.TitleDisplayName;
                 tempListing.playerID = f.FriendPlayFabId;
                 tempListing.PFC = this;
+                tempListing.type = "confirmed";
+                GetComponent<PhotonChatManager>().chatClient.AddFriends(new string[] { f.FriendPlayFabId }); //initiate photon chat status update
+                //even if the above happened before chat connection, it doens't matter: garbo value
                 tempListing.createChatPanel();
                 requestAccepted = false;
             }
@@ -597,9 +575,6 @@ public class PlayFabController : MonoBehaviour
 
     public List<PlayFab.ClientModels.FriendInfo> _friends = null; //friend result saved in there
 
-    //allow other scripts to subscribe to this action
-    //public static Action<List<PlayFab.ClientModels.FriendInfo>> OnFriendListUpdated = delegate { };
-
     public void GetFriends() //set to public so can be used with buttons 
     {
         PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
@@ -609,49 +584,9 @@ public class PlayFabController : MonoBehaviour
             XboxToken = null
         }, result => {
             _friends = result.Friends;
-            //UpdatePhotonFriendsList(result); //this ultimatelly leads to the calling of updatefriendliststatus //nvm this doesn't work...
             DisplayFriends(_friends); // triggers your UI
-            //OnFriendsListSuccess(result);
         }, DisplayPlayFabError);
     }
-
-    //nvm cannot call FindFriends in a room, gotta use Photon Chat...
-    //an idea: returns an array of bool
-    /*private void UpdatePhotonFriendsList(GetFriendsListResult result)
-    {
-        var users = result.Friends;
-        List<string> friendIDs = new List<string>();
-        foreach (PlayFab.ClientModels.FriendInfo user in users)
-        {
-            if (user.Tags[0] == "confirmed")
-            {
-                friendIDs.Add(user.FriendPlayFabId);
-            }
-        }
-        PhotonNetwork.FindFriends(friendIDs.ToArray()); //every time this function is called, OnFriendListUpdate in photon connector responds
-    }
-
-    public void UpdateFriendListStatus(Dictionary<string, bool> friendListStatus)
-    {
-        int numFriends = 0; //this is for the initialization case
-        if(friendsList != null) numFriends = friendsList.childCount;
-        for(int i = 0; i < numFriends; i++)
-        {
-            FriendsListing currFriend = friendsList.GetChild(i).GetComponent<FriendsListing>();
-            bool updatedStatus = friendListStatus[currFriend.playerID];
-            if (currFriend.isOnline != updatedStatus) //if on status has changed, then change on status
-            {
-                currFriend.changeOnStatus(updatedStatus);
-            }
-        }
-    }*/
-
-    //could probably be condensed, will try later
-    /*private void OnFriendsListSuccess(GetFriendsListResult result)
-    {
-        //letting PHOTON know when it should update friends list internally
-        OnFriendListUpdated?.Invoke(result.Friends);
-    }*/
 
     enum FriendIdType { PlayFabId, Username, Email, DisplayName };
 
@@ -681,7 +616,6 @@ public class PlayFabController : MonoBehaviour
 
     string friendSearch;
     [SerializeField]
-    //GameObject friendPanel; //search options and listings
 
     public void InputFriendID(string idIn)
     {
@@ -694,11 +628,6 @@ public class PlayFabController : MonoBehaviour
         //and make friendsearch ask for email/username/display name etc
         AddFriend(FriendIdType.PlayFabId, friendSearch);
     }
-
-    /*public void OpenCloseFriends() //no need
-    {
-        friendPanel.SetActive(!friendPanel.activeInHierarchy); //inversing
-    }*/
 
     //ACCEPT REQUEST ONLY CHANGE TAGS!!!!! THEY NEED TO BE FRIENDS THROUGH FRIEND REQUEST FIRST!!!!!!
 
@@ -755,8 +684,9 @@ public class PlayFabController : MonoBehaviour
         GetFriends();
     }
 
-    public void StartCloudDenyFriendRequest(string friendPlayFabID)
+    public void StartCloudDenyFriendRequest(string friendPlayFabID) //this is from sender's perspective
     {
+        removingFriend.Add(friendPlayFabID); //queue it in every time it's received
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "DenyFriendRequest", // Arbitrary function name
@@ -765,9 +695,22 @@ public class PlayFabController : MonoBehaviour
         }, OnCloudDenyFriendRequest, DisplayPlayFabError);
     }
 
+    List<string> removingFriend = new List<string>(); //just in case frequent removal requests
     private void OnCloudDenyFriendRequest(ExecuteCloudScriptResult result)
     {
-        Debug.Log("Friend Request denied!");
+        Debug.Log("Friend Request denied! / Friend removed!");
+        if(removingFriend.Count > 0)
+        {
+            var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+            for (int i = 0; i < removingFriend.Count; i++)
+            {
+                string f = removingFriend[0];
+                removingFriend.RemoveAt(0);
+                i--;
+                socialSystem.RemovePhotonChatFriend(f); //if want this to be insta, pass it to onclouddeny etc
+                socialSystem.BroadcastFriendRemoval(f);
+            }
+        }
         GetFriends();
     }
 

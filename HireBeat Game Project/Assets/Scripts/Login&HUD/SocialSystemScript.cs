@@ -164,7 +164,6 @@ public class SocialSystemScript : MonoBehaviour
 
     public void SendPrivateMessage()
     {
-        Debug.Log("PCM sends message to " + currentChatPanel.GetComponent<MsgContentController>().listing.playerID);
         if (currentChatPanel != null)
         {
             PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, message);
@@ -179,6 +178,18 @@ public class SocialSystemScript : MonoBehaviour
     {
         if (currentChatPanel == null) noChatOnSymbol.SetActive(true);
         else noChatOnSymbol.SetActive(false);
+    }
+
+    public void RemovePhotonChatFriend(string friendID)
+    {
+        PCM.chatClient.RemoveFriends(new string[] { friendID });
+    }
+
+    //this is sender's end, using Photon chat for insta feedback
+    public void BroadcastFriendRemoval(string friendID)
+    {
+        PCM.chatClient.SetOnlineStatus(2, friendID); //ChatUserStatus.Online, 2+ //send a message id to person getting unfriended
+        //In the future, can vary this message to create key real time chat effects!
     }
 }
 

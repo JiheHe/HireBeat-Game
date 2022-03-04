@@ -6,6 +6,7 @@ using Photon.Pun;
 using PlayFab;
 using PlayFab.ClientModels;
 using ExitGames.Client.Photon;
+using System.Linq;
 
 public class PhotonChatManager : MonoBehaviour, IChatClientListener
 {
@@ -24,6 +25,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     public void OnConnected()
     {
         Debug.Log("ChatRoom connected");
+        AddPhotonChatFriends();
         chatClient.Subscribe(new string[] { "RegionChannel" }); //this is for public
         //throw new System.NotImplementedException();
     }
@@ -83,18 +85,29 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     Debug.Log("Got error retrieving user data:");
                     Debug.Log(error.GenerateErrorReport());
                 });
-
-            //tempPanel.GetComponent<MsgContentController>().tempName = "User: " + sender;
-                //tempPanel.GetComponent<MsgContentController>().AddMessage(tempPanel.GetComponent<MsgContentController>().tempName, //gonna do sender for now. Just user ID anyways ;D
-                    //"12:00", (string)message, false);
             }
             
         }
     }
 
+    //Friend status change call back
     public void OnStatusUpdate(string user, int status, bool gotMessage, object message)
     {
-        //throw new System.NotImplementedException();
+        //two possibitilies: 1. get friend is already called at this point with all prefabs ready. 2. set it, then call
+        //Gonna try one: that's how the order goes in scene listener (rip latency)
+        //Usually a friend has a chatbox yeah? and that chatbox uses socialsystem's dictionary. Prob can use that to locate status!
+        if (status == ChatUserStatus.Online)
+        {
+            if(gotMessage && (string)message == GetComponent<PlayFabController>().myID) //you are getting unfriended :((
+            {
+                GetComponent<PlayFabController>().GetFriends(); //force update... you'll see he gone ;-;
+            }
+            socialSystem.chatPanels[user].GetComponent<MsgContentController>().listing.changeOnStatus(true);
+        }
+        else
+        {
+            socialSystem.chatPanels[user].GetComponent<MsgContentController>().listing.changeOnStatus(false);
+        }
     }
 
     public void OnSubscribed(string[] channels, bool[] results)
@@ -180,12 +193,16 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //Don't connect yet! wait for main scene load, then do it in scene listener
     }
 
+    void DisplayPlayFabError(PlayFabError error)
+    {
+        Debug.Log(error.GenerateErrorReport());
+    }
+
     public void ConnectChat()
     {
-        chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat,
+        chatClient.ConnectAndSetStatus(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat,
             PhotonNetwork.AppVersion, chatClient.AuthValues);
         isConnected = true;
-
         LogMessage("Connection to Photon Chat established.");
     }
 
@@ -204,5 +221,27 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     void Update()
     {
         if(isConnected) chatClient.Service(); //this maintains client's connection to the server
+    }
+
+    void AddPhotonChatFriends() //no need to do this at beginning, playfab controller's display friend covers the case 1 by 1
+     //Actaully idk if chat will be connected at that instance...
+    {
+        PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+        {
+            IncludeSteamFriends = false,
+            IncludeFacebookFriends = false,
+            XboxToken = null
+        }, result => {
+            var friends = result.Friends;
+            List<string> currFriends = new List<string>();
+            foreach (FriendInfo f in friends)
+            {
+                if (f.Tags[0] == "confirmed")
+                {
+                    currFriends.Add(f.FriendPlayFabId);
+                }
+            }
+            Debug.Log("Update Playfab friends attempt: " + chatClient.AddFriends(currFriends.ToArray())); //subscribe to current list of confirmed friends
+        }, DisplayPlayFabError);
     }
 }
