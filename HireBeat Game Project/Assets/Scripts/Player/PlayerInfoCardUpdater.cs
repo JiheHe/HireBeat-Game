@@ -236,12 +236,7 @@ public class PlayerInfoCardUpdater : MonoBehaviour
             //chatPanelz.BroadcastFriendRemoval(listingObject.GetComponent<FriendsListing>().playerID); //sending the message
             Destroy(chatPanelz.chatPanels[listingObject.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
             chatPanelz.chatPanels.Remove(listingObject.GetComponent<FriendsListing>().playerID);
-            if (chatPanelz.chatPanels.Count - 1 <= 0) chatPanelz.OnPublicChatRoomClicked(); //if no friend default to public
-            else //-1 because public room chat ALWAYS exists //go to a friend
-            {
-                GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().friendsList.GetChild(1).gameObject.GetComponent<FriendsListing>().OnProfileClicked(1); //go to next friend
-                                                                                                                                                                                    //get 1 because 0th child is destroyed after
-            } //if there are still friends, then turn to next panel
+            chatPanelz.OnPublicChatRoomClicked(); //default to public
             chatPanelz.NoCurrentChat(); //this is kinda useless ngl now lol ,was to bring up null symb
             //Remove does not throw if the key is not found (only if the key is null). If the key is not in the dictionary then it returns false. 
             //So no need to worry about not clicking on friend tab to instantiate the pair before removal = null

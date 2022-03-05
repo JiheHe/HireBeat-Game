@@ -394,7 +394,7 @@ public class PlayFabController : MonoBehaviour
     public Transform requesterList;
     public Transform requesteeList;
     List<PlayFab.ClientModels.FriendInfo> myFriends;
-    bool requestAccepted = false; //upon request accepted, update
+    string requestAcceptedId = null; //upon request accepted, update //make into a key string!
 
     //Last function in the process, you decide how you wanna show it ;D
     void DisplayFriends(List<PlayFab.ClientModels.FriendInfo> friendsCache)
@@ -472,12 +472,14 @@ public class PlayFabController : MonoBehaviour
                     socialSystem.RemovePhotonChatFriend(userTab.GetComponent<FriendsListing>().playerID); //this is receiver's end
                     Destroy(socialSystem.chatPanels[userTab.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
                     socialSystem.chatPanels.Remove(userTab.GetComponent<FriendsListing>().playerID);
-                    if(socialSystem.chatPanels.Count-1 <= 0) socialSystem.OnPublicChatRoomClicked(); //if no friend default to public
-                    else //-1 because public room chat ALWAYS exists //go to a friend
+                    //just gonna default to public to avoid bugs and missend
+                    if(socialSystem.currentChatPanel == null) socialSystem.OnPublicChatRoomClicked(); //if curr panel was him, default to public
+                    if(socialSystem.currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().listingObject.GetComponent<FriendsListing>().playerID
+                        == userTab.GetComponent<FriendsListing>().playerID)
                     {
-                        friendsList.GetChild(1).gameObject.GetComponent<FriendsListing>().OnProfileClicked(1); //go to next friend
-                        //get 1 because 0th child is destroyed after
-                    } //if there are still friends, then turn to next panel
+                        Destroy(socialSystem.currentInfoCardOpened);
+                    }
+                    //friendsList.GetChild(1).gameObject.GetComponent<FriendsListing>().OnProfileClicked(1); //go to next friend
                     socialSystem.NoCurrentChat(); //this is kinda useless ngl now lol ,was to bring up null symb
                 }
                 Destroy(userTab); //no connections at all, so destroy
@@ -508,7 +510,7 @@ public class PlayFabController : MonoBehaviour
                 switch (f.Tags[0]) //might be mmultple for 2 way?
                 {
                     case "confirmed":
-                        if (!requestAccepted) //if confirmed, then will make it. But request accepted also makes another one... avoids dup
+                        if (requestAcceptedId == null) //if confirmed, then will make it. But request accepted also makes another one... avoids dup
                         {
                             GameObject listing = Instantiate(listingPrefab, friendsList);
                             FriendsListing tempListing = listing.GetComponent<FriendsListing>();
@@ -544,7 +546,7 @@ public class PlayFabController : MonoBehaviour
                 //Debug.Log("Friend type is: " + f.Tags[0]);
             }
 
-            if(requestAccepted) //instant local feedback upon accepting
+            if(requestAcceptedId == f.FriendPlayFabId) //instant local feedback upon accepting //is this a solid method?? what if multiple...
             {
                 GameObject listing = Instantiate(listingPrefab, friendsList);
                 FriendsListing tempListing = listing.GetComponent<FriendsListing>();
@@ -556,7 +558,7 @@ public class PlayFabController : MonoBehaviour
                 GetComponent<PhotonChatManager>().chatClient.AddFriends(new string[] { f.FriendPlayFabId }); //initiate photon chat status update
                 //even if the above happened before chat connection, it doens't matter: garbo value
                 tempListing.createChatPanel();
-                requestAccepted = false;
+                requestAcceptedId = null;
             }
         }
         myFriends = friendsCache;
@@ -659,7 +661,7 @@ public class PlayFabController : MonoBehaviour
         }, result =>
         {
             Debug.Log("Friend Request Accepted!");
-            requestAccepted = true;
+            requestAcceptedId = friendPlayFabID;
             GetFriends();
             socialSystem.RefreshReceiverFriendList(friendPlayFabID);
         }, DisplayPlayFabError);
@@ -676,7 +678,7 @@ public class PlayFabController : MonoBehaviour
         }, result =>
         {
             Debug.Log("Friend Request added and accepted!");
-            requestAccepted = true;
+            requestAcceptedId = friendPlayFabID;
             GetFriends();
             socialSystem.RefreshReceiverFriendList(friendPlayFabID);
         }, DisplayPlayFabError);

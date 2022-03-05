@@ -19,7 +19,7 @@ public class MainMenu : MonoBehaviourPunCallbacks //this is inheritance! for ove
     public void CreateRoom()
     {
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 2; //will change
+        roomOptions.MaxPlayers = 3; //will change
 
         //roomOptions.IsOpen = true; //allows other users to join
         //roomOptions.IsVisible = true; //allows the room to be discovered by public
