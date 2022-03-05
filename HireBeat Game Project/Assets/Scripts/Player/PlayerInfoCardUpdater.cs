@@ -264,7 +264,8 @@ public class PlayerInfoCardUpdater : MonoBehaviour
 
     public void onPointerOut()
     {
-        eventController.GetComponent<cameraController>().enabled = true;
+        if(!PFC.socialSystem.gameObject.activeInHierarchy) eventController.GetComponent<cameraController>().enabled = true; //if social tab not open
+        //also always enable at the end of social tab closing ;D, so doesn't matter
     }
 
 }

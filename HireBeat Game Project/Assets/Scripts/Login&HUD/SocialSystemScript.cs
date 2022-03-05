@@ -43,6 +43,7 @@ public class SocialSystemScript : MonoBehaviour
     public bool isPrivate;
 
     public GameObject currentInfoCardOpened = null; //starts null, set throughout
+    public GameObject lobbyInfoCardOpened = null; //i think making 2 info card aval is not bad? one in system, 1 in lobby
 
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
@@ -156,17 +157,18 @@ public class SocialSystemScript : MonoBehaviour
     }
 
 
-    GameObject info;
     public void OnSearchFriendPressed()
     {
         PFC.GetFriends(); //lol gonna run it once here too
         Debug.Log("Searching for: " + friendsSearchBarInput.text);
-        if (info != null) //object self destructs into null on tab close
+        if (currentInfoCardOpened == null) //object self destructs into null on tab close
         {
-            Destroy(info.gameObject);
+            GameObject info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
+            info.transform.GetChild(0).transform.localPosition = new Vector2(-243, 0); //shift x to the left, of this generated card
+            info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
+            currentInfoCardOpened = info;
         }
-        info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
-        info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
+        else currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
     }
 
     public void GetMessage(string input)

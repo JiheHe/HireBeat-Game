@@ -86,17 +86,21 @@ public class FriendsListing : MonoBehaviour
     public void OnProfileClicked(int type) //1 = friend list,  2 = request list
     {
         var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
-        if (socialSystem.currentInfoCardOpened != null) //object self destructs into null on tab close
+        if (socialSystem.currentInfoCardOpened == null) //object self destructs into null on tab close
         {
-            Destroy(socialSystem.currentInfoCardOpened);
+            GameObject info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
+            info.transform.GetChild(0).transform.localPosition = new Vector2(-243, 0); //shift x to the left, of this generated card
+            info.GetComponent<PlayerInfoCardUpdater>().listingObject = gameObject; //binding
+            socialSystem.currentInfoCardOpened = info;
         }
-        GameObject info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
-        info.transform.GetChild(0).transform.localPosition = new Vector2(-243, 0); //shift x to the left, of this generated card
-        info.GetComponent<PlayerInfoCardUpdater>().listingObject = gameObject; //binding
-        socialSystem.currentInfoCardOpened = info;
+        else
+        {
+            socialSystem.currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().listingObject = gameObject; //binding
+        }
+        //better to refresh than remake!
         if (type == 1)
         {
-            info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 1); //friend list click
+            socialSystem.currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 1); //friend list click
             socialSystem.isPrivate = true;
             if(socialSystem.currentChatPanel != null) socialSystem.currentChatPanel.SetActive(false);
             chatPanel.SetActive(true);
@@ -104,7 +108,7 @@ public class FriendsListing : MonoBehaviour
             socialSystem.currentChatPanel = chatPanel;
             socialSystem.NoCurrentChat();
         }
-        else info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 2); //request list click
+        else socialSystem.currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 2); //request list click
         
     }
 

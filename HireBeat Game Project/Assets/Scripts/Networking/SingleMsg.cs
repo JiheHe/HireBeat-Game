@@ -34,14 +34,17 @@ public class SingleMsg : MonoBehaviour
     public void GenerateInfoCard()
     {
         var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
-        if (socialSystem.currentInfoCardOpened != null) //object self destructs into null on tab close
+        if (socialSystem.currentInfoCardOpened == null) //object self destructs into null on tab close
         {
-            Destroy(socialSystem.currentInfoCardOpened);
+            GameObject info = Instantiate(socialSystem.playerInfoCard, new Vector2(0, 0), Quaternion.identity); //need to make new instance! else gonna overwrite prefab
+            info.transform.GetChild(0).transform.localPosition = new Vector2(-243, 0); //shift x to the left, of this generated card
+            info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(sendersID, 0);
+            socialSystem.currentInfoCardOpened = info;
         }
-        GameObject info = Instantiate(socialSystem.playerInfoCard, new Vector2(0, 0), Quaternion.identity); //need to make new instance! else gonna overwrite prefab
-        info.transform.GetChild(0).transform.localPosition = new Vector2(-243, 0); //shift x to the left, of this generated card
-        info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(sendersID, 0);
-        socialSystem.currentInfoCardOpened = info;
+        else
+        {
+            socialSystem.currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(sendersID, 0);
+        }
     }
 
 }

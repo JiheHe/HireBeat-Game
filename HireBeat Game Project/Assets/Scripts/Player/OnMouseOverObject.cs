@@ -22,6 +22,8 @@ public class OnMouseOverObject : MonoBehaviour
     public string PlayFabID;
     public GameObject playerInfoCard;
 
+    public GameObject localSocialSystem;
+
     void Start()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -41,27 +43,33 @@ public class OnMouseOverObject : MonoBehaviour
         UIController = cameraController.GetComponent<PlayerMenuUIController>();
         playerZoneTab = cameraController.GetComponent<InGameUIController>();
         playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
+
+        localSocialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").gameObject;
     }
 
     // Start is called before the first frame update
-    GameObject info;
     void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(0) && !view.IsMine) //doing so disable user interacting on himself
+        if (Input.GetMouseButtonDown(0) && !view.IsMine && !localSocialSystem.activeInHierarchy) //doing so disable user interacting on himself
         {
             //UIController.instantiateProfileViewer(playerInfoCardDisplay); //this is like the one window thing //info card shouldn't be controlled by it...
-            if(info != null) //object self destructs into null on tab close
+            if (localSocialSystem.GetComponent<SocialSystemScript>().lobbyInfoCardOpened == null) //object self destructs into null on tab close
             {
-                Destroy(info.gameObject);
+                GameObject info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //need to make new instance! else gonna overwrite prefab
+                info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(PlayFabID, 0); //lobby click
+                localSocialSystem.GetComponent<SocialSystemScript>().lobbyInfoCardOpened = info;
             }
-            info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //need to make new instance! else gonna overwrite prefab
-            info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(PlayFabID, 0); //lobby click
+            else
+            {
+                //it's better to refresh already existing than making a new one! more efficient and no null ref!
+                localSocialSystem.GetComponent<SocialSystemScript>().lobbyInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(PlayFabID, 0);
+            }
         }
     }
 
     private void OnMouseEnter()
     {
-        if(!view.IsMine)
+        if(!view.IsMine && !localSocialSystem.activeInHierarchy)
         {
             hoverIndicator.SetActive(true);
             pfpDisplayFrame.SetActive(true);
