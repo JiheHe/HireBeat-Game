@@ -106,6 +106,7 @@ public class FriendsListing : MonoBehaviour
             chatPanel.SetActive(true);
             //reset scroll view, will do later.
             socialSystem.currentChatPanel = chatPanel;
+            socialSystem.msgScrollView.content = chatPanel.GetComponent<RectTransform>();
             socialSystem.NoCurrentChat();
         }
         else socialSystem.currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(playerID, 2); //request list click
@@ -120,6 +121,7 @@ public class FriendsListing : MonoBehaviour
         {
             chatPanel = Instantiate(socialSystem.chatPanel, socialSystem.msgViewPort.transform);
             chatPanel.transform.parent = socialSystem.msgViewPort.transform; //is this necessary?
+            chatPanel.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
             chatPanel.GetComponent<MsgContentController>().listing = this;
             chatPanel.SetActive(false);
             socialSystem.chatPanels.Add(playerID, chatPanel);

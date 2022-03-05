@@ -27,7 +27,7 @@ public class MsgContentController : MonoBehaviour
     {
         var newMsg = Instantiate(message, gameObject.transform);
         newMsg.GetComponent<SingleMsg>().UpdateMsgContent(name, time, msg, isSelf, senderID);
-        newMsg.transform.parent = gameObject.transform; //is this necessary?
+        newMsg.transform.SetParent(gameObject.transform, false);
 
         messages.Add(newMsg); //The object to be added to the end of the List<T>
         if(messages.Count > MAX_MSG) //then destroy the earliest message

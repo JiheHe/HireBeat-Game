@@ -32,6 +32,7 @@ public class SocialSystemScript : MonoBehaviour
 
     public GameObject chatPanel; //this stores the prefab
     public GameObject msgViewPort; //this stores the local viewport
+    public ScrollRect msgScrollView;
     public GameObject currentChatPanel = null;
     public Dictionary<string, GameObject> chatPanels = new Dictionary<string, GameObject>();
     public string message;
@@ -237,7 +238,8 @@ public class SocialSystemScript : MonoBehaviour
     public void CreatePublicRoomPanel()
     {
         publicRoomChatPanel = Instantiate(chatPanel, msgViewPort.transform);
-        publicRoomChatPanel.transform.parent = msgViewPort.transform; //is this necessary?
+        publicRoomChatPanel.transform.SetParent(msgViewPort.transform, false);
+        publicRoomChatPanel.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
         publicRoomChatPanel.GetComponent<MsgContentController>().listing = null; //juust makin sure
         publicRoomChatPanel.SetActive(false);
         chatPanels.Add(currentPublicRoomChatName, publicRoomChatPanel);
@@ -250,6 +252,7 @@ public class SocialSystemScript : MonoBehaviour
         publicRoomChatPanel.SetActive(true);
         //reset scroll view, will do later.
         currentChatPanel = publicRoomChatPanel;
+        msgScrollView.content = publicRoomChatPanel.GetComponent<RectTransform>();
         Destroy(currentInfoCardOpened);
         currentInfoCardOpened = null;
         NoCurrentChat();

@@ -109,7 +109,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
             }
             else {
                 GameObject tempPanel = Instantiate(socialSystem.chatPanel, socialSystem.msgViewPort.transform);
-                tempPanel.transform.parent = socialSystem.msgViewPort.transform; //is this necessary?
+                tempPanel.transform.SetParent(socialSystem.msgViewPort.transform, false);
+                tempPanel.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
                 tempPanel.GetComponent<MsgContentController>().listing = null;
                 tempPanel.SetActive(false);
                 socialSystem.chatPanels.Add(sender, tempPanel);
