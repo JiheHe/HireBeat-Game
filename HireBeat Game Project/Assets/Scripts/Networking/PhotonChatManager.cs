@@ -72,6 +72,20 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //we know userID is constant, and we can get username from friendslisting because friendslisting's username updates with cloud ;D
         //Problem: if a user friends one before another one queues an update display, thehn the panel might not exist!
         //solution: upon receiving, if such panel doesn't exist, then create the panel now!
+        if(message is string) //currently doing friend removal with status update's embedded message... could switch
+        {
+            switch ((string)message)
+            {
+                case "REFRESH LIST": //can use this for other friend removal, add friend, request sent, etc
+                    GetComponent<PlayFabController>().GetFriends();
+                    //Refresh info card too if there's one; make it refresh ONLY IF it's related with the request...
+                    //nvm refresh is kinda trivia
+                    break;
+            }
+            return;
+        }
+
+        //actually chat message, they are sent in string arrays
         if(sender != GetComponent<PlayFabController>().myID) //watch out! also sends a copy to yourself
         {
             string msg = ((string[])message)[0];
@@ -125,10 +139,6 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //Usually a friend has a chatbox yeah? and that chatbox uses socialsystem's dictionary. Prob can use that to locate status!
         if (status == ChatUserStatus.Online)
         {
-            if(gotMessage && (string)message == GetComponent<PlayFabController>().myID) //you are getting unfriended :((
-            {
-                GetComponent<PlayFabController>().GetFriends(); //force update... you'll see he gone ;-;
-            }
             socialSystem.chatPanels[user].GetComponent<MsgContentController>().listing.changeOnStatus(true);
         }
         else

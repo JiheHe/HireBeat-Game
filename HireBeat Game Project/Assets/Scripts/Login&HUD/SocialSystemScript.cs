@@ -152,7 +152,6 @@ public class SocialSystemScript : MonoBehaviour
     public void OnRequestsListPressed()
     {
         requestsList.SetActive(!requestsList.activeSelf);
-        //if(requestsList.activeSelf) PFC.GetFriends();
         PFC.GetFriends(); //GET UPDATE AS MUCH AS POSSSIBLEEEE
     }
 
@@ -168,7 +167,6 @@ public class SocialSystemScript : MonoBehaviour
         }
         info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
         info.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
-        //PFC.StartCloudSendFriendRequest(friendsSearchBarInput.text);
     }
 
     public void GetMessage(string input)
@@ -228,11 +226,10 @@ public class SocialSystemScript : MonoBehaviour
         PCM.chatClient.RemoveFriends(new string[] { friendID });
     }
 
-    //this is sender's end, using Photon chat for insta feedback
-    public void BroadcastFriendRemoval(string friendID)
+    //force a getfriend refresh on receiver's end
+    public void RefreshReceiverFriendList(string friendID)
     {
-        PCM.chatClient.SetOnlineStatus(2, friendID); //ChatUserStatus.Online, 2+ //send a message id to person getting unfriended
-        //In the future, can vary this message to create key real time chat effects!
+        PCM.chatClient.SendPrivateMessage(friendID, "REFRESH LIST");
     }
 
     public void CreatePublicRoomPanel()

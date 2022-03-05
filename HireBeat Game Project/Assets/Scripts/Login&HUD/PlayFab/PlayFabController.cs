@@ -635,6 +635,7 @@ public class PlayFabController : MonoBehaviour
     //Before send cloud friend request, check to see if you two are already friended, and the requestee (him) is a requester (to you)
     public void StartCloudSendFriendRequest(string friendPlayFabID)
     {
+        requestingFriend.Add(friendPlayFabID);
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "SendFriendRequest", // Arbitrary function name
@@ -643,20 +644,28 @@ public class PlayFabController : MonoBehaviour
         }, OnCloudSendFriendRequest, DisplayPlayFabError);
     }
 
+
+    List<string> requestingFriend = new List<string>();
     private void OnCloudSendFriendRequest(ExecuteCloudScriptResult result)
     {
-        /*Debug.Log(result.FunctionResult.ToString());
-        JsonObject jsonResult = (JsonObject)result.FunctionResult;
-        object messageValue;
-        jsonResult.TryGetValue("messageValue", out messageValue);
-        Debug.Log((string)messageValue);*/
         Debug.Log("Friend Request sent!");
         GetFriends();
+
+        //network:
+        var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        for (int i = 0; i < requestingFriend.Count; i++)
+        {
+            string f = requestingFriend[0];
+            requestingFriend.RemoveAt(0);
+            i--;
+            socialSystem.RefreshReceiverFriendList(f);
+        }
     }
 
     //This version sets the tags of two users into confirmed friends
     public void StartCloudAcceptFriendRequest(string friendPlayFabID)
     {
+        addingFriend.Add(friendPlayFabID); //queue it in every time it's received
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "AcceptFriendRequest", // Arbitrary function name
@@ -668,6 +677,7 @@ public class PlayFabController : MonoBehaviour
     //This version adds the two players into friends and sets their tags to confirmed, if they are not friends already
     public void StartCloudAddAndAcceptFriendRequest(string friendPlayFabID)
     {
+        addingFriend.Add(friendPlayFabID); //queue it in every time it's received
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "AddAndAcceptFriendRequest", // Arbitrary function name
@@ -676,12 +686,22 @@ public class PlayFabController : MonoBehaviour
         }, OnCloudAcceptFriendRequest, DisplayPlayFabError);
     }
 
-
+    List<string> addingFriend = new List<string>();
     private void OnCloudAcceptFriendRequest(ExecuteCloudScriptResult result)
     {
         Debug.Log("Friend Request accepted!");
         requestAccepted = true;
         GetFriends();
+
+        //network:
+        var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        for (int i = 0; i < addingFriend.Count; i++)
+        {
+            string f = addingFriend[0];
+            addingFriend.RemoveAt(0);
+            i--;
+            socialSystem.RefreshReceiverFriendList(f);
+        }
     }
 
     public void StartCloudDenyFriendRequest(string friendPlayFabID) //this is from sender's perspective
@@ -708,7 +728,7 @@ public class PlayFabController : MonoBehaviour
                 removingFriend.RemoveAt(0);
                 i--;
                 socialSystem.RemovePhotonChatFriend(f); //if want this to be insta, pass it to onclouddeny etc
-                socialSystem.BroadcastFriendRemoval(f);
+                socialSystem.RefreshReceiverFriendList(f);
             }
         }
         GetFriends();
