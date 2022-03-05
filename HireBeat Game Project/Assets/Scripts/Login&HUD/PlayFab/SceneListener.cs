@@ -24,6 +24,7 @@ public class SceneListener : MonoBehaviour
         if(scene.name == "MainScene")
         {
             playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD");
+            GetComponent<PlayFabController>().socialSystem = playerHUD.transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
             GetComponent<PlayFabController>().friendsList = playerHUD.GetComponent<changeReceiver>().friendsList;
             GetComponent<PlayFabController>().requesterList = playerHUD.GetComponent<changeReceiver>().requesterList;
             GetComponent<PlayFabController>().requesteeList = playerHUD.GetComponent<changeReceiver>().requesteeList;

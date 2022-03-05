@@ -384,6 +384,8 @@ public class PlayFabController : MonoBehaviour
 
     #region Friends
 
+    public SocialSystemScript socialSystem; //this is also assigned at load in
+
     public GameObject listingPrefab; //confirmed friend
     public GameObject requesterPrefab;
     public GameObject requesteePrefab;
@@ -467,18 +469,16 @@ public class PlayFabController : MonoBehaviour
             {
                 if(userTab.GetComponent<FriendsListing>().chatPanel != null) //null in general, unless friends
                 {
-                    var chatPanelz = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").
-                        GetComponent<SocialSystemScript>();
-                    chatPanelz.RemovePhotonChatFriend(userTab.GetComponent<FriendsListing>().playerID); //this is receiver's end
-                    Destroy(chatPanelz.chatPanels[userTab.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
-                    chatPanelz.chatPanels.Remove(userTab.GetComponent<FriendsListing>().playerID);
-                    if(chatPanelz.chatPanels.Count-1 <= 0) chatPanelz.OnPublicChatRoomClicked(); //if no friend default to public
+                    socialSystem.RemovePhotonChatFriend(userTab.GetComponent<FriendsListing>().playerID); //this is receiver's end
+                    Destroy(socialSystem.chatPanels[userTab.GetComponent<FriendsListing>().playerID]); //this is just for faster local visual
+                    socialSystem.chatPanels.Remove(userTab.GetComponent<FriendsListing>().playerID);
+                    if(socialSystem.chatPanels.Count-1 <= 0) socialSystem.OnPublicChatRoomClicked(); //if no friend default to public
                     else //-1 because public room chat ALWAYS exists //go to a friend
                     {
                         friendsList.GetChild(1).gameObject.GetComponent<FriendsListing>().OnProfileClicked(1); //go to next friend
                         //get 1 because 0th child is destroyed after
                     } //if there are still friends, then turn to next panel
-                    chatPanelz.NoCurrentChat(); //this is kinda useless ngl now lol ,was to bring up null symb
+                    socialSystem.NoCurrentChat(); //this is kinda useless ngl now lol ,was to bring up null symb
                 }
                 Destroy(userTab); //no connections at all, so destroy
             }
@@ -635,109 +635,68 @@ public class PlayFabController : MonoBehaviour
     //Before send cloud friend request, check to see if you two are already friended, and the requestee (him) is a requester (to you)
     public void StartCloudSendFriendRequest(string friendPlayFabID)
     {
-        requestingFriend.Add(friendPlayFabID);
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "SendFriendRequest", // Arbitrary function name
             FunctionParameter = new { FriendPlayFabId = friendPlayFabID},
             GeneratePlayStreamEvent = false
-        }, OnCloudSendFriendRequest, DisplayPlayFabError);
-    }
-
-
-    List<string> requestingFriend = new List<string>();
-    private void OnCloudSendFriendRequest(ExecuteCloudScriptResult result)
-    {
-        Debug.Log("Friend Request sent!");
-        GetFriends();
-
-        //network:
-        var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
-        for (int i = 0; i < requestingFriend.Count; i++)
+        }, result=>
         {
-            string f = requestingFriend[0];
-            requestingFriend.RemoveAt(0);
-            i--;
-            socialSystem.RefreshReceiverFriendList(f);
-        }
+            Debug.Log("Friend Request sent!");
+            GetFriends();
+            socialSystem.RefreshReceiverFriendList(friendPlayFabID);
+        }, DisplayPlayFabError);
     }
 
     //This version sets the tags of two users into confirmed friends
     public void StartCloudAcceptFriendRequest(string friendPlayFabID)
     {
-        addingFriend.Add(friendPlayFabID); //queue it in every time it's received
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "AcceptFriendRequest", // Arbitrary function name
             FunctionParameter = new { FriendPlayFabId = friendPlayFabID },
             GeneratePlayStreamEvent = false
-        }, OnCloudAcceptFriendRequest, DisplayPlayFabError);
+        }, result =>
+        {
+            Debug.Log("Friend Request Accepted!");
+            requestAccepted = true;
+            GetFriends();
+            socialSystem.RefreshReceiverFriendList(friendPlayFabID);
+        }, DisplayPlayFabError);
     }
 
     //This version adds the two players into friends and sets their tags to confirmed, if they are not friends already
     public void StartCloudAddAndAcceptFriendRequest(string friendPlayFabID)
     {
-        addingFriend.Add(friendPlayFabID); //queue it in every time it's received
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "AddAndAcceptFriendRequest", // Arbitrary function name
             FunctionParameter = new { FriendPlayFabId = friendPlayFabID },
             GeneratePlayStreamEvent = false
-        }, OnCloudAcceptFriendRequest, DisplayPlayFabError);
-    }
-
-    List<string> addingFriend = new List<string>();
-    private void OnCloudAcceptFriendRequest(ExecuteCloudScriptResult result)
-    {
-        Debug.Log("Friend Request accepted!");
-        requestAccepted = true;
-        GetFriends();
-
-        //network:
-        var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
-        for (int i = 0; i < addingFriend.Count; i++)
+        }, result =>
         {
-            string f = addingFriend[0];
-            addingFriend.RemoveAt(0);
-            i--;
-            socialSystem.RefreshReceiverFriendList(f);
-        }
+            Debug.Log("Friend Request added and accepted!");
+            requestAccepted = true;
+            GetFriends();
+            socialSystem.RefreshReceiverFriendList(friendPlayFabID);
+        }, DisplayPlayFabError);
     }
 
     public void StartCloudDenyFriendRequest(string friendPlayFabID) //this is from sender's perspective
     {
-        removingFriend.Add(friendPlayFabID); //queue it in every time it's received
         PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
         {
             FunctionName = "DenyFriendRequest", // Arbitrary function name
             FunctionParameter = new { FriendPlayFabId = friendPlayFabID },
             GeneratePlayStreamEvent = false
-        }, OnCloudDenyFriendRequest, DisplayPlayFabError);
-    }
-
-    List<string> removingFriend = new List<string>(); //just in case frequent removal requests
-    private void OnCloudDenyFriendRequest(ExecuteCloudScriptResult result)
-    {
-        Debug.Log("Friend Request denied! / Friend removed!");
-        if(removingFriend.Count > 0)
+        }, result =>
         {
-            var socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
-            for (int i = 0; i < removingFriend.Count; i++)
-            {
-                string f = removingFriend[0];
-                removingFriend.RemoveAt(0);
-                i--;
-                socialSystem.RemovePhotonChatFriend(f); //if want this to be insta, pass it to onclouddeny etc
-                socialSystem.RefreshReceiverFriendList(f);
-            }
-        }
-        GetFriends();
+            Debug.Log("Friend Request Denied / Removed!");
+            socialSystem.RemovePhotonChatFriend(friendPlayFabID);
+            GetFriends();
+            socialSystem.RefreshReceiverFriendList(friendPlayFabID);
+        }, DisplayPlayFabError);
     }
-
-
-
-
-
     #endregion Friends
 
 }
