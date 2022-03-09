@@ -46,6 +46,8 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject currentInfoCardOpened = null; //starts null, set throughout
     public GameObject lobbyInfoCardOpened = null; //i think making 2 info card aval is not bad? one in system, 1 in lobby
 
+    public GameObject voiceChatPanel;
+
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
@@ -256,6 +258,11 @@ public class SocialSystemScript : MonoBehaviour
         Destroy(currentInfoCardOpened);
         currentInfoCardOpened = null;
         NoCurrentChat();
+    }
+
+    public void OnVoiceChatPanelOpenClicked()
+    {
+        voiceChatPanel.SetActive(true);
     }
 }
 
