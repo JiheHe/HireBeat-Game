@@ -17,5 +17,6 @@ namespace FrostweepGames.VoicePro
         string GetNetworkState();
         string GetConnectionToServer();
         string GetCurrentRoomName();
+        void ChangeNetworkInfoName(string name); //custom method by me
     }
 }

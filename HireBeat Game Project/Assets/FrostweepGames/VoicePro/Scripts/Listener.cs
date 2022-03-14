@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using FrostweepGames.VoicePro.NetworkProviders.PUN; //added this
+using Photon.Pun;
 
 namespace FrostweepGames.VoicePro
 {
@@ -142,6 +144,27 @@ namespace FrostweepGames.VoicePro
 				}
 
 				speaker.HandleRawData(bytes);
+			}
+		}
+
+		//Below is my custom method for creating usertab upon user joining
+		public void CreatePlayerJoined(string playerID)
+        {
+			NetworkActorInfo info = new NetworkActorInfo()
+			{
+				id = playerID, 
+				name = PhotonNetwork.CurrentRoom.Players.Values.ToList().Find(p => p.UserId == playerID).NickName 
+			};
+
+			INetworkActor sender = new PUNNetworkProvider.PUNNetworkActor(info);
+			if (!Speakers.ContainsKey(sender.Id))
+			{
+				Speaker speaker = new Speaker(sender, gameObject);
+				speaker.IsMute = IsSpeakersMuted;
+
+				Speakers.Add(sender.Id, speaker);
+
+				SpeakersUpdatedEvent?.Invoke(Speakers.Values.ToList());
 			}
 		}
 

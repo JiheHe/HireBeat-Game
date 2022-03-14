@@ -21,10 +21,15 @@ public class changeReceiver : MonoBehaviour
 
     PlayerMenuUIController pui;
 
+    //below are special scripts that need initialization
+    public VoiceChatController vcc;
+
     // Start is called before the first frame update
     void Start()
     {
         pui = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
+
+        vcc.InitializationSteps();
     }
 
     // Update is called once per frame

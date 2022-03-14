@@ -99,6 +99,7 @@ public class SocialSystemScript : MonoBehaviour
         requestsList.SetActive(false);
         if (currentInfoCardOpened != null) Destroy(currentInfoCardOpened);
         PFC.GetFriends();
+        voiceChatPanel.SetActive(false);
     }
 
     public void OpenProfileEditor()
@@ -235,6 +236,21 @@ public class SocialSystemScript : MonoBehaviour
     public void RefreshReceiverFriendList(string friendID)
     {
         PCM.chatClient.SendPrivateMessage(friendID, "REFRESH LIST");
+    }
+
+    public void RefreshVoiceChatList(string userID)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "LEAVING VC");
+    }
+
+    public void UpdateVCUsernames(string userID)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "UPDATE VC NAMES"); 
+    }
+
+    public void AnnounceMeJoining(string userID)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "NEW VCP JOINED");
     }
 
     public void CreatePublicRoomPanel()

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
+using FrostweepGames.MicrophonePro;
 
 namespace FrostweepGames.VoicePro.Examples
 {
@@ -36,11 +39,15 @@ namespace FrostweepGames.VoicePro.Examples
 
         public Listener listener;
 
+        string myID;
+
         /// <summary>
         /// initializes event handlers and registers network actor
         /// </summary>
         private void Start()
         {
+            /*myID = GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID;
+
             refreshMicrophonesButton.onClick.AddListener(RefreshMicrophonesButtonOnClickHandler);
             muteMyClientToggle.onValueChanged.AddListener(MuteMyClientToggleValueChanged);
             muteRemoteClientsToggle.onValueChanged.AddListener(MuteRemoteClientsToggleValueChanged);
@@ -51,6 +58,25 @@ namespace FrostweepGames.VoicePro.Examples
             _remoteSpeakerItems = new List<RemoteSpeakerItem>();
 
             RefreshMicrophonesButtonOnClickHandler();
+
+            listener.SpeakersUpdatedEvent += SpeakersUpdatedEventHandler;*/
+
+            RefreshMicrophonesButtonOnClickHandler();
+        }
+
+        //Also custom... need to be prepped beforehand by the acctive  script changeReceiver.
+        public void InitializationSteps()
+        {
+            myID = GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID;
+
+            refreshMicrophonesButton.onClick.AddListener(RefreshMicrophonesButtonOnClickHandler);
+            muteMyClientToggle.onValueChanged.AddListener(MuteMyClientToggleValueChanged);
+            muteRemoteClientsToggle.onValueChanged.AddListener(MuteRemoteClientsToggleValueChanged);
+            debugEchoToggle.onValueChanged.AddListener(DebugEchoToggleValueChanged);
+            reliableTransmissionToggle.onValueChanged.AddListener(ReliableTransmissionToggleValueChanged);
+            microphonesDropdown.onValueChanged.AddListener(MicrophoneDropdownOnValueChanged);
+
+            _remoteSpeakerItems = new List<RemoteSpeakerItem>();
 
             listener.SpeakersUpdatedEvent += SpeakersUpdatedEventHandler;
         }
@@ -69,6 +95,13 @@ namespace FrostweepGames.VoicePro.Examples
                 item.Update();
             }
         }
+
+        //no need for this! Just grab directly from data base, then new network actor instance grabs from there when generated.
+        //and in terms of real time update, more efficient to update the display directly anyway.
+        /*public void UpdatePersonalNetworkRouterName(string name) 
+        {
+            NetworkRouter.Instance._networkProvider.NetworkActor.SetNetworkActorInfoName(name); //hopefully updates local.
+        }*/
 
         /// <summary>
         /// handler of event that updates list of speakers in ui
@@ -90,18 +123,42 @@ namespace FrostweepGames.VoicePro.Examples
 
             foreach (var speaker in speakers)
             {
+                //if(speaker.Id == myID) listener.SpeakerLeave(myID); //added ID comparison, to avoid adding self in //THIS ONLY HAPPENS IF DEBUG ECHO IS PRESSED!!!!
+
                 if (_remoteSpeakerItems.Find(item => item.Speaker == speaker) == null)
                 {
-                    _remoteSpeakerItems.Add(new RemoteSpeakerItem(parentOfRemoteClients, remoteClientPrefab, speaker));
+                    var prefabWithID = Instantiate(remoteClientPrefab);
+                    prefabWithID.GetComponent<GenerateInfoCardOnClick>().userID = speaker.Id;
+                    _remoteSpeakerItems.Add(new RemoteSpeakerItem(parentOfRemoteClients, prefabWithID, speaker));
+                    //_remoteSpeakerItems.Add(new RemoteSpeakerItem(parentOfRemoteClients, remoteClientPrefab, speaker)); //this line is the original
                 }
             }
         }
 
+        //this method is a custom one i wrote
+        public void CheckCurrentSpeakerNames()
+        {
+            var CurrPlayersInRoom = PhotonNetwork.CurrentRoom.Players.Values.ToList();
+            foreach (var speakerItem in _remoteSpeakerItems)
+            {
+                var itemSpeaker = speakerItem.Speaker;
+                var target = CurrPlayersInRoom.Find(p => p.UserId == itemSpeaker.Id); //find matching id people
+                if (target != null && target.NickName != itemSpeaker.Name) //shouldn't be null unless bug //when current name is diff from rec
+                {
+                    speakerItem.UpdateDisplayName(target.NickName);
+                }
+            }
+        }
+
+        string previousMicCache; //added this to keep track of prev mic
         /// <summary>
         /// refreshes list of microphones. works async in webgl
         /// </summary>
         private void RefreshMicrophonesButtonOnClickHandler()
         {
+            previousMicCache = recorder.GetMicrophoneDeviceName(); //for ex, this stores "Microphone 1"
+            muteMyClientToggle.isOn = false; //turn off the mic while transitioning mic
+
             recorder.RefreshMicrophones();
 
             microphonesDropdown.ClearOptions();
@@ -109,6 +166,10 @@ namespace FrostweepGames.VoicePro.Examples
 
             if (CustomMicrophone.HasConnectedMicrophoneDevices())
             {
+                if(previousMicCache != CustomMicrophone.devices[0] && !recorder.StopRecordWithMicName(previousMicCache))
+                {
+                    recorder.recording = false; //if stop recording is false, then maually set var to ready!
+                }
                 recorder.SetMicrophone(CustomMicrophone.devices[0]);
             }
         }
@@ -117,7 +178,7 @@ namespace FrostweepGames.VoicePro.Examples
         /// sets status of recording of my mic
         /// </summary>
         /// <param name="status"></param>
-        private void MuteMyClientToggleValueChanged(bool status)
+        public void MuteMyClientToggleValueChanged(bool status)
         {
             if (status)
             {
@@ -130,13 +191,30 @@ namespace FrostweepGames.VoicePro.Examples
             {
                 recorder.StopRecord();
             }
+
+            /*if (status)
+            {
+                bool resultRecorder = !recorder.StartRecord(); //this will call and return yay or nay
+                bool resultNetwork = !NetworkRouter.Instance.ReadyToTransmit;
+                if (resultNetwork || resultRecorder) //wait this is an or.. since this statement passed, one of them is true for it to work!
+                {
+                    muteMyClientToggle.isOn = false; //this line is only executed when error.
+                    //for this error prevention line to execute, one of the two bool is false.
+                }
+                if(resultNetwork) Debug.LogError("Network instance not ready to transmit"); 
+                if (resultRecorder) Debug.LogError("Recorder cannot start recording!"); //problem identified: recorder...
+            }
+            else
+            {
+                recorder.StopRecord();
+            }*/
         }
 
         /// <summary>
         /// mutes all speakers connected to listener
         /// </summary>
         /// <param name="status"></param>
-        private void MuteRemoteClientsToggleValueChanged(bool status)
+        public void MuteRemoteClientsToggleValueChanged(bool status)
         {
             listener.SetMuteStatus(status);
         }
@@ -145,9 +223,20 @@ namespace FrostweepGames.VoicePro.Examples
         ///  sets debug echo network parameter
         /// </summary>
         /// <param name="status"></param>
-        private void DebugEchoToggleValueChanged(bool status)
+        public void DebugEchoToggleValueChanged(bool status)
         {
             recorder.debugEcho = status;
+
+            if(status == false) //added this: if you leave debug, then remove your obj
+            {
+                ClearSpeaker(myID);
+                Invoke("WaitAndClearSelf", 0.5f);
+            }
+        }
+
+        private void WaitAndClearSelf() //this is to deal with the case that the remaining of self tab msg gets through and form new tab
+        {
+            ClearSpeaker(myID);
         }
 
         /// <summary>
@@ -165,8 +254,16 @@ namespace FrostweepGames.VoicePro.Examples
         /// <param name="index"></param>
         private void MicrophoneDropdownOnValueChanged(int index)
         {
+            previousMicCache = recorder.GetMicrophoneDeviceName(); //for ex, this stores "Microphone 1"
+            muteMyClientToggle.isOn = false; //turn off the mic while transitioning mic
+
             if (CustomMicrophone.HasConnectedMicrophoneDevices())
             {
+                //Debug.LogError("Successfully stopped recording at dropdown?: " + recorder.StopRecord());
+                if (previousMicCache != CustomMicrophone.devices[index] && !recorder.StopRecordWithMicName(previousMicCache))
+                {
+                    recorder.recording = false; //if stop recording is false, then maually set var to ready!
+                }
                 recorder.SetMicrophone(CustomMicrophone.devices[index]);
             }
         }
@@ -260,6 +357,30 @@ namespace FrostweepGames.VoicePro.Examples
             {
                 AdminTools.SetSpeakerMuteStatus(Speaker, !value);
             }
+
+            //made this up as well ;D
+            public void UpdateDisplayName(string name)
+            {
+                _speakerNameText.text = name;
+            }
+        }
+
+        //some of my own custom methods
+        public void ClearSpeaker(string id)
+        {
+            //NetworkRouter.Instance. //_networkProvider.Dispose(); //Unregister(); //This leaves the photon room... we don't want that...
+            //listener.SpeakerLeave(GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID); //this only removes the speaker item of yourself...
+            listener.SpeakerLeave(id);
+        }
+
+        public void ChangeNetworkInfoName(string name)
+        {
+            NetworkRouter.Instance.ChangeNetworkInfoName(name);
+        }
+
+        public void OnOtherPlayerConnected(string id)
+        {
+            listener.CreatePlayerJoined(id);
         }
     }
 }

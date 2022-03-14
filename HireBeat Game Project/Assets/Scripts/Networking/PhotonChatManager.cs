@@ -81,6 +81,15 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     //Refresh info card too if there's one; make it refresh ONLY IF it's related with the request...
                     //nvm refresh is kinda trivia
                     break;
+                case "LEAVING VC":
+                    socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(sender);
+                    break;
+                case "NEW VCP JOINED":
+                    socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().OnOtherPlayerConnected(sender);
+                    break;
+                case "UPDATE VC NAMES":
+                    socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().CheckCurrentSpeakerNames();
+                    break;
             }
             return;
         }

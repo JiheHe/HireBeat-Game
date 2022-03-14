@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 #if PUN2_NETWORK_PROVIDER
 using FrostweepGames.VoicePro.NetworkProviders.PUN;
 #endif
@@ -36,7 +38,12 @@ namespace FrostweepGames.VoicePro
 		/// <summary>
 		/// Current network provider instance
 		/// </summary>
-		private INetworkProvider _networkProvider;
+		private INetworkProvider _networkProvider; //changed to public
+
+		public void ChangeNetworkInfoName(string name) //custom method by me
+        {
+			_networkProvider.ChangeNetworkInfoName(name);
+        }
 
 		public bool ReadyToTransmit => _networkProvider.ReadyToTransmit;
 
@@ -44,11 +51,13 @@ namespace FrostweepGames.VoicePro
 
         static NetworkRouter()
         {
-			string id = GetUniqueUserId();
+			//string id = GetUniqueUserId(); //this generates a random ID, but we don't want that.
+			var pd = GameObject.Find("PersistentData").GetComponent<PersistentData>(); //will update pd, so it carries onto diff rooms.. ;D
+
 			Instance.Register(new NetworkActorInfo()
 			{
-				id = id,
-				name = $"User_{id}"
+				id = pd.acctID, //the name thing below should work, because we connect AFTER instantiation (connection button pressed after photon inst.)
+				name = pd.acctName //$"User_{id}"
 			});
 		}
 
@@ -128,7 +137,7 @@ namespace FrostweepGames.VoicePro
 		/// <summary>
 		/// Unregisters and destroys current network user and network connection at all
 		/// </summary>
-		private void Unregister()
+		public void Unregister() //changed to public
 		{
 			_networkProvider?.Dispose();
 			_networkProvider = null;
@@ -282,7 +291,7 @@ namespace FrostweepGames.VoicePro
 
 		private static string GetUniqueUserId()
         {
-			return Guid.NewGuid().ToString();
+			return Guid.NewGuid().ToString(); //this generates a random ID, but we don't want that.
         }
 
 		public class NetworkParameters

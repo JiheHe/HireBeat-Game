@@ -28,6 +28,11 @@ namespace FrostweepGames.VoicePro.NetworkProviders.PUN
 
         private INetworkActor _networkActor;
 
+        public void ChangeNetworkInfoName(string name) //custom method by me
+        {
+            _networkActor.ChangeNetworkInfoName(name);
+        }
+
         private GameObject _eventsHandler;
 
         public bool ReadyToTransmit => PhotonNetwork.NetworkClientState == ClientState.Joined;

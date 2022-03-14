@@ -48,6 +48,12 @@ namespace FrostweepGames.VoicePro
 		[SerializeField]
 		private string _microphoneDevice;
 
+		//made this function up
+		public string GetMicrophoneDeviceName()
+        {
+			return _microphoneDevice;
+        }
+
 		/// <summary>
 		/// RAW samples from microphone
 		/// </summary>
@@ -241,12 +247,14 @@ namespace FrostweepGames.VoicePro
 			if (CustomMicrophone.IsRecording(_microphoneDevice) || !CustomMicrophone.HasConnectedMicrophoneDevices())
 			{
 				RecordFailedEvent?.Invoke("record already started or no microphone device connected");
+				//Debug.LogError("record already started or no microphone device connected"); //added this line
 				return false;
 			}
 
 			if (recording)
 			{
 				RecordFailedEvent?.Invoke("record already started");
+				//Debug.LogError("record already started"); //added this line //this is the problem.
 				return false;
 			}
 
@@ -269,10 +277,59 @@ namespace FrostweepGames.VoicePro
 		public bool StopRecord()
 		{
 			if (!CustomMicrophone.IsRecording(_microphoneDevice))
+			{
+				//Debug.LogError("Microphone device given " + _microphoneDevice + " isn't recording"); //added this
 				return false;
+			}
+
+			if (!recording) {
+				//Debug.LogError("Recording boolean variable is already false"); //added this
+				return false;
+			}
+
+			recording = false;
+
+			if (CustomMicrophone.HasConnectedMicrophoneDevices())
+			{
+				_stopRecordPosition = CustomMicrophone.GetPosition(_microphoneDevice);
+
+				CustomMicrophone.End(_microphoneDevice, () =>
+				{
+					if (_workingClip != null)
+					{
+						Destroy(_workingClip);
+					}
+
+					RecordEndedEvent?.Invoke();
+				});
+			}
+			else
+			{
+				if (_workingClip != null)
+				{
+					Destroy(_workingClip);
+				}
+
+				RecordEndedEvent?.Invoke();
+			}
+
+			return true;
+		}
+
+		//this is a custom variant function i made:
+		public bool StopRecordWithMicName(string _microphoneDevice)
+		{
+			if (!CustomMicrophone.IsRecording(_microphoneDevice))
+			{
+				//Debug.LogError("Microphone device given " + _microphoneDevice + " isn't recording"); //added this
+				return false;
+			}
 
 			if (!recording)
+			{
+				//Debug.LogError("Recording boolean variable is already false"); //added this
 				return false;
+			}
 
 			recording = false;
 
