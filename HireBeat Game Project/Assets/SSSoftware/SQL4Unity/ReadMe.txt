@@ -13,6 +13,14 @@ SteveSmith.Software
 
 Release Notes:
 
+	V.1.0.5 March 2022
+		Bug Fix
+			SQLHelp not working in Unity 2020 or greater.
+			Fallback to browser implemented.
+
+			Using a Turkish language system corupts the schema.
+			Fix implemented.
+
 	V.1.0.5 February 2022
 		New Features
 			SQLWorkbench

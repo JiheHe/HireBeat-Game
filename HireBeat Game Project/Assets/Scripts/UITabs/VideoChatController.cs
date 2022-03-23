@@ -4,12 +4,13 @@ using UnityEngine;
 using Byn.Awrtc;
 using Byn.Awrtc.Unity;
 using Byn.Unity.Examples;
+using UnityEngine.UI;
 
 public class VideoChatController : MonoBehaviour
 {
 
     const int maxUsersInRoom = 6;
-    int currUsersInRoom;
+    int currUsersInRoom; //can use database for this now
     List<string> userInRoomIDs;
 
     IMediaNetwork communicator; //no need for sender and receiver! the receiver in the example is for 1 to N, as said in email. One network is enough.
@@ -18,7 +19,48 @@ public class VideoChatController : MonoBehaviour
     private NetworkConfig netConf;
     private string selfAddress;
 
-    //public GameObject 
+    /// <summary>
+    /// Media configuration. Will be set during setup.
+    /// </summary>
+    private MediaConfig mediaConf = new MediaConfig();
+
+    /// <summary>
+    /// Can be used to keep track of each connection. 
+    /// </summary>
+    private List<ConnectionId> mConnectionIds = new List<ConnectionId>();
+
+    // I understood!
+    private Dictionary<ConnectionId, RawImage> uVideoOutputs = new Dictionary<ConnectionId, RawImage>();
+    public RawImage remoteDisplayPanel; //this is a prefab
+    public RawImage localDisplayPanel; //this is a legit gameobject
+
+    public RectTransform parentPanel;
+
+    /// <summary>
+    /// Helper to keep to keep track of each instance
+    /// </summary>
+    private static int sInstances = 0;
+
+    /// <summary>
+    /// Helper to give each instance an id to print via log output
+    /// </summary>
+    private int mIndex = 0;
+
+    /// <summary>
+    /// If true this will create peers that send out video. False will
+    /// not send anything.
+    /// </summary>
+    public bool uSender = false;
+
+    /// <summary>
+    /// Will be used to show the texture received (or sent)
+    /// </summary>
+    //public RawImage uVideoOutput; //this is single! no
+
+    /// <summary>
+    /// Texture2D used as buffer for local or remote video
+    /// </summary>
+    private Texture2D mVideoTexture;
 
     // Start is called before the first frame update
     void Start()
@@ -59,7 +101,7 @@ public class VideoChatController : MonoBehaviour
         {
             //Send the photon chat message to that ID, a new user has joined!.
 
-            //Also initializes a new display raw image for it
+            //Also initializes a new display raw image for it //this should be covered from getting a new connection.
         }
     }
 
@@ -91,7 +133,7 @@ public class VideoChatController : MonoBehaviour
     {
         Debug.Log("communicator setup");
         communicator = UnityCallFactory.Instance.CreateMediaNetwork(netConf);
-        MediaConfig mediaConf = CreateMediaConfig();
+        mediaConf = CreateMediaConfig();
 
         //make a deep clone to avoid confusion if settings are changed
         //at runtime. 
@@ -119,11 +161,82 @@ public class VideoChatController : MonoBehaviour
         //mUi.SetGuiState(false);
     }
 
-    private void UpdateCommunicator()
+
+    // Update is called once per frame
+    void Update()
     {
-        //STEP5: Sender update loop. IMediaNetwork uses polling instead of events
+        if (communicator == null)
+            return;
         communicator.Update();
 
+        //This is the event handler via polling.
+        //This needs to be called or the memory will fill up with unhanded events!
+        NetworkEvent evt;
+        while (communicator != null && communicator.Dequeue(out evt))
+        {
+            HandleNetworkEvent(evt);
+        }
+        //polls for video updates
+        HandleMediaEvents();
+
+        //Flush will resync changes done in unity to the native implementation
+        //(and possibly drop events that aren't handled in the future)
+        if (communicator != null)
+            communicator.Flush();
+    }
+
+    /// <summary>
+    /// Handler polls the media network to check for new video frames.
+    /// 
+    /// </summary>
+    protected virtual void HandleMediaEvents()
+    {
+        //just for debugging
+        bool handleLocalFrames = true;
+        bool handleRemoteFrames = true;
+
+        if (communicator != null && handleLocalFrames)
+        {
+            IFrame localFrame = communicator.TryGetFrame(ConnectionId.INVALID); //invalid means local!
+            if (localFrame != null)
+            {
+                UpdateTexture(localFrame, ConnectionId.INVALID);
+
+            }
+        }
+        if (communicator != null && handleRemoteFrames)
+        {
+            //so far the loop shouldn't be needed. we only expect one // now it's needed
+            foreach (var id in mConnectionIds)
+            {
+                if (communicator != null)
+                {
+                    IFrame remoteFrame = communicator.TryGetFrame(id);
+                    if (remoteFrame != null)
+                    {
+                        UpdateTexture(remoteFrame, id);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Log method to help seeing what each of the different apps does.
+    /// </summary>
+    /// <param name="txt"></param>
+    private void Log(string txt)
+    {
+        Debug.Log("Instance " + mIndex + ": " + txt);
+    }
+
+    /// <summary>
+    /// Method is called to handle the network events triggered by the internal media network and 
+    /// trigger related event handlers for the call object.
+    /// </summary>
+    /// <param name="evt"></param>
+    protected virtual void HandleNetworkEvent(NetworkEvent evt)
+    {
         if (communicator.GetConfigurationState() == MediaConfigurationState.Failed)
         {
             //did configuration fail? error
@@ -139,30 +252,108 @@ public class VideoChatController : MonoBehaviour
             communicator.StartServer(selfAddress); //Starting a self-server with my own address!
         }
 
-        NetworkEvent evt;
-
-        while (communicator.Dequeue(out evt))
+        switch (evt.Type)
         {
-            if (evt.Type == NetEventType.ServerInitialized)
+            case NetEventType.NewConnection:
+
+                mConnectionIds.Add(evt.ConnectionId);
+                uVideoOutputs.Add(evt.ConnectionId, Instantiate(remoteDisplayPanel, Vector2.zero, Quaternion.identity, parentPanel)); //I see!
+
+                Log("New connection id " + evt.ConnectionId);
+                /*if (uSender == false)
+                    this.GetComponent<Image>().color = Color.green; //receiving*/
+
+                break;
+            case NetEventType.ConnectionFailed:
+                //call failed
+                Log("Outgoing connection failed");
+                /*if (uSender == false) //add in future
+                    this.GetComponent<Image>().color = new Color(0, 0.125f, 0, 1); //receiver failed to connect*/
+                break;
+            case NetEventType.Disconnected:
+
+                if (mConnectionIds.Contains(evt.ConnectionId))
+                {
+                    mConnectionIds.Remove(evt.ConnectionId);
+                    Destroy(uVideoOutputs[evt.ConnectionId].gameObject); //I see!
+                    uVideoOutputs.Remove(evt.ConnectionId);
+
+                    Log("Connection disconnected");
+                    /*if (uSender == false)
+                        this.GetComponent<Image>().color = new Color(0, 0.5f, 0, 1); //receiver lost connection.  */
+                }
+                break;
+            case NetEventType.ServerInitialized:
+                //incoming calls possible
+                Log("Server ready for incoming connections. Address: " + evt.Info);
+                //this.GetComponent<Image>().color = Color.red;
+                break;
+            case NetEventType.ServerInitFailed:
+                Log("Server init failed");
+                //this.GetComponent<Image>().color = new Color(0.125f, 0, 0, 1); ; //server lost ability to receive connections (internet / signaling broken)
+                break;
+            case NetEventType.ServerClosed:
+                Log("Server stopped");
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Updates the ui with the new raw frame
+    /// </summary>
+    /// <param name="frame"></param>
+    private void UpdateTexture(IFrame frame, ConnectionId frameId)
+    {
+        if (uVideoOutputs[frameId] != null)
+        {
+            if (frame != null)
             {
-                //triggered if StartServer completed
-                Debug.Log("communicator: server initialized.");
-            }
-            else if (evt.Type == NetEventType.ServerInitFailed)
-            {
-                //either network problem or address in use
-                Debug.LogError("communicator: server init failed");
-            }
-            else if (evt.Type == NetEventType.NewConnection)
-            {
-                Debug.Log("communicator: New connection with id " + evt.ConnectionId);
-            }
-            else if (evt.Type == NetEventType.ConnectionFailed)
-            {
-                Debug.LogError("communicator: connection failed");
+                UpdateTexture(ref mVideoTexture, frame); //current this texture is being used n times per frame; We'll see if it's overloaded or not.
+                uVideoOutputs[frameId].texture = mVideoTexture;
             }
         }
-        communicator.Flush();
+        else if (frameId == ConnectionId.INVALID && frame != null) // I SEE
+        {
+            UpdateTexture(ref mVideoTexture, frame); 
+            localDisplayPanel.texture = mVideoTexture;
+        }
+    }
+
+    /// <summary>
+    /// Writes the raw frame into the given texture or creates it if null or wrong width/height.
+    /// </summary>
+    /// <param name="tex"></param>
+    /// <param name="frame"></param>
+    /// <returns></returns>
+    protected bool UpdateTexture(ref Texture2D tex, IFrame frame)
+    {
+        bool newTextureCreated = false;
+        //texture exists but has the wrong height /width? -> destroy it and set the value to null
+        if (tex != null && (tex.width != frame.Width || tex.height != frame.Height))
+        {
+            Texture2D.Destroy(tex);
+            tex = null;
+        }
+        //no texture? create a new one first
+        if (tex == null)
+        {
+            newTextureCreated = true;
+            Debug.Log("Creating new texture with resolution " + frame.Width + "x" + frame.Height + " Format:" + mediaConf.Format);
+            if (mediaConf.Format == FramePixelFormat.ABGR)
+            {
+                tex = new Texture2D(frame.Width, frame.Height, TextureFormat.RGBA32, false);
+            }
+            else
+            {
+                //not yet properly supported.
+                tex = new Texture2D(frame.Width, frame.Height, TextureFormat.YUY2, false);
+            }
+            tex.wrapMode = TextureWrapMode.Clamp;
+        }
+        ///copy image data into the texture and apply
+        tex.LoadRawTextureData(frame.Buffer);
+        tex.Apply();
+        return newTextureCreated;
     }
 
     private void OnDestroy()
@@ -180,20 +371,13 @@ public class VideoChatController : MonoBehaviour
             currUsersInRoom = 1;
             userInRoomIDs.Clear();
 
-            //Remove the remote panels, etc
+            //Remove the remote panels, etc //this should be covered.
         }
 
         foreach (string userID in userInRoomIDs)
         {
             //Send the photon chat message to that ID: this user has left!
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (communicator != null)
-            UpdateCommunicator();
     }
 
 

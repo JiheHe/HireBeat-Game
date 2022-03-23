@@ -22,7 +22,7 @@ MonoBehaviour:
     created: 1
     checksum: 
     tables: 0100000004000000
-    procedures: 
+    procedures: 1500000016000000170000001800000019000000
     dbKeys:
     - id: 0
       foreignKeys: []
@@ -34,11 +34,11 @@ MonoBehaviour:
     displayName: VideoChatsAvailable
     hidden: 0
     columns: 02000d0007000a000e00
-    indexes: 03000c00
+    indexes: 03001300
     dropped: 0
-    created: 0
-    updated: 1
-    dataTable: 0
+    created: 1
+    updated: 0
+    dataTable: 4
     dataPage: 0
     bigTab: 0
   - id: 4
@@ -81,7 +81,7 @@ MonoBehaviour:
     autoIncrement: 1
     hidden: 1
     dropped: 0
-    created: 0
+    created: 1
     value: 
   - id: 5
     tabId: 4
@@ -111,7 +111,7 @@ MonoBehaviour:
     autoIncrement: 0
     hidden: 0
     dropped: 0
-    created: 0
+    created: 1
     value: 
   - id: 8
     tabId: 1
@@ -156,7 +156,7 @@ MonoBehaviour:
     autoIncrement: 0
     hidden: 0
     dropped: 0
-    created: 0
+    created: 1
     value: 1
   - id: 13
     tabId: 1
@@ -167,11 +167,11 @@ MonoBehaviour:
     dataType: string
     dataLength: 0
     allowNull: 0
-    primaryKey: 0
+    primaryKey: 1
     autoIncrement: 0
     hidden: 0
     dropped: 0
-    created: 0
+    created: 1
     value: 
   - id: 14
     tabId: 1
@@ -186,7 +186,7 @@ MonoBehaviour:
     autoIncrement: 0
     hidden: 0
     dropped: 0
-    created: 0
+    created: 1
     value: false
   - id: 17
     tabId: 16
@@ -212,10 +212,10 @@ MonoBehaviour:
     type: List
     hidden: 1
     dropped: 0
-    created: 0
+    created: 1
     columns: 0200
     dataType: ushort
-    dataIndex: 0
+    dataIndex: 6
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -256,11 +256,11 @@ MonoBehaviour:
     displayName: RoomNumber
     type: Sorted
     hidden: 0
-    dropped: 0
-    created: 0
+    dropped: 1
+    created: 1
     columns: 0d0007000a000e00
     dataType: Multiple
-    dataIndex: 0
+    dataIndex: 5
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -275,6 +275,36 @@ MonoBehaviour:
     created: 0
     columns: 1100
     dataType: ushort
+    dataIndex: 0
+    dataPage: 0
+    bigTab: 0
+    unique: 1
+  - id: 19
+    tabId: 1
+    dbId: 0
+    indexName: hirebeatprojectdb.videochatsavailable.roomnamepk
+    displayName: RoomNamePK
+    type: Dict
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 0d00
+    dataType: string
+    dataIndex: 5
+    dataPage: 0
+    bigTab: 0
+    unique: 1
+  - id: 20
+    tabId: 1
+    dbId: 0
+    indexName: hirebeatprojectdb.videochatsavailable.currowneridpk
+    displayName: CurrOwnerIDPK
+    type: Dict
+    hidden: 1
+    dropped: 1
+    created: 0
+    columns: 0700
+    dataType: string
     dataIndex: 0
     dataPage: 0
     bigTab: 0
@@ -307,4 +337,183 @@ MonoBehaviour:
     conditions: 
     joins: []
     lastId: 0
-  lastID: 18
+  - id: 21
+    dbId: 0
+    procedureName: hirebeatprojectdb.createnewvcroom
+    displayName: CreateNewVCRoom
+    hidden: 0
+    dropped: 0
+    created: 1
+    updated: 0
+    isOpen: 1
+    isParsed: 1
+    type: 1
+    sql: INSERT INTO VideoChatsAvailable (RoomName,CurrOwnerID,NumMembers,IsPublic)
+      VALUES (%roomName%, %creatorID%, 1, %isPublic%)
+    displaySql: INSERT INTO VideoChatsAvailable (RoomName,CurrOwnerID,NumMembers,IsPublic)
+      VALUES (%roomName%, %creatorID%, 1, %isPublic%)
+    databases:
+    - hirebeatprojectdb
+    tables:
+    - hirebeatprojectdb.videochatsavailable
+    colKey: 0d0007000a000e00
+    colValType:
+    - string
+    - string
+    - int
+    - string
+    colValString:
+    - '%roomName%'
+    - '%creatorID%'
+    - 1
+    - '%isPublic%'
+    aliasKey: []
+    aliasVal: []
+    where: []
+    orderKey: 
+    orderVal: []
+    groupby: 0
+    conditions: 
+    joins: []
+    lastId: 0
+  - id: 22
+    dbId: 0
+    procedureName: hirebeatprojectdb.retrievevcroominfo
+    displayName: RetrieveVCRoomInfo
+    hidden: 0
+    dropped: 0
+    created: 1
+    updated: 0
+    isOpen: 1
+    isParsed: 1
+    type: 2
+    sql: SELECT CurrOwnerID, NumMembers, IsPublic FROM VideoChatsAvailable WHERE
+      RoomName = %roomName%
+    displaySql: SELECT CurrOwnerID, NumMembers, IsPublic FROM VideoChatsAvailable
+      WHERE RoomName = %roomName%
+    databases:
+    - hirebeatprojectdb
+    tables:
+    - hirebeatprojectdb.videochatsavailable
+    colKey: 07000a000e00
+    colValType:
+    - null
+    - null
+    - null
+    colValString:
+    - NULL
+    - NULL
+    - NULL
+    aliasKey: []
+    aliasVal: []
+    where: []
+    orderKey: 
+    orderVal: []
+    groupby: 0
+    conditions: '#0#'
+    joins: []
+    lastId: 3
+  - id: 23
+    dbId: 0
+    procedureName: hirebeatprojectdb.updatevcroomprops
+    displayName: UpdateVCRoomProps
+    hidden: 0
+    dropped: 0
+    created: 1
+    updated: 0
+    isOpen: 1
+    isParsed: 1
+    type: 3
+    sql: 'UPDATE VideoChatsAvailable SET CurrOwnerID = %newOwnerID%, NumMembers =
+      %newNumMembers%, IsPublic = %newIsPublic% WHERE RoomName = %roomName% '
+    displaySql: 'UPDATE VideoChatsAvailable SET CurrOwnerID = %newOwnerID%, NumMembers
+      = %newNumMembers%, IsPublic = %newIsPublic% WHERE RoomName = %roomName% '
+    databases:
+    - hirebeatprojectdb
+    tables:
+    - hirebeatprojectdb.videochatsavailable
+    colKey: 07000a000e00
+    colValType:
+    - string
+    - string
+    - string
+    colValString:
+    - '%newOwnerID%'
+    - '%newNumMembers%'
+    - '%newIsPublic%'
+    aliasKey: []
+    aliasVal: []
+    where: []
+    orderKey: 
+    orderVal: []
+    groupby: 0
+    conditions: '#0#'
+    joins: []
+    lastId: 3
+  - id: 24
+    dbId: 0
+    procedureName: hirebeatprojectdb.deletevcroom
+    displayName: DeleteVCRoom
+    hidden: 0
+    dropped: 0
+    created: 1
+    updated: 0
+    isOpen: 1
+    isParsed: 1
+    type: 4
+    sql: DELETE FROM VideoChatsAvailable WHERE RoomName = %roomName%
+    displaySql: DELETE FROM VideoChatsAvailable WHERE RoomName = %roomName%
+    databases:
+    - hirebeatprojectdb
+    tables:
+    - hirebeatprojectdb.videochatsavailable
+    colKey: 
+    colValType: []
+    colValString: []
+    aliasKey: []
+    aliasVal: []
+    where: []
+    orderKey: 
+    orderVal: []
+    groupby: 0
+    conditions: '#0#'
+    joins: []
+    lastId: 3
+  - id: 25
+    dbId: 0
+    procedureName: hirebeatprojectdb.graballvcroominfo
+    displayName: GrabAllVCRoomInfo
+    hidden: 0
+    dropped: 0
+    created: 1
+    updated: 0
+    isOpen: 1
+    isParsed: 1
+    type: 2
+    sql: SELECT RoomName, CurrOwnerID, NumMembers, IsPublic FROM VideoChatsAvailable
+    displaySql: SELECT RoomName, CurrOwnerID, NumMembers, IsPublic FROM VideoChatsAvailable
+    databases:
+    - hirebeatprojectdb
+    tables:
+    - hirebeatprojectdb.videochatsavailable
+    colKey: 0d0007000a000e00
+    colValType:
+    - null
+    - null
+    - null
+    - null
+    colValString:
+    - NULL
+    - NULL
+    - NULL
+    - NULL
+    aliasKey: []
+    aliasVal: []
+    where: []
+    orderKey: 
+    orderVal: []
+    groupby: 0
+    conditions: 
+    joins: []
+    lastId: 1
+  lastID: 25
