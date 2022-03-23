@@ -68,6 +68,8 @@ public class VideoChatController : MonoBehaviour
         currUsersInRoom = 1; //start with 1 because yourself is always included!
         userInRoomIDs = new List<string>(); //excluding yourself.
         selfAddress = "HireBeatProjVidC" + GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //no need for Application.productName
+
+        OnCreatePressed(); //for testing.
     }
 
     public void OnCreatePressed() //you are the owner that makes a new room!
@@ -128,6 +130,13 @@ public class VideoChatController : MonoBehaviour
     }
 
     //No need to set up false false receiver... receiver is an example of network application.
+    //This is for testing purposes: direct address connecting
+    public void ConnectToVidCAddress(string targetUserID)
+    {
+        communicator.Connect("HireBeatProjVidC" + targetUserID);
+        Debug.LogError("VidCAddressSubmitted");
+    }
+
 
     private void SetupCommunicator()
     {
@@ -158,6 +167,8 @@ public class VideoChatController : MonoBehaviour
 
         Debug.Log("Configure call using MediaConfig: " + mMediaConfigInUse);
         communicator.Configure(mMediaConfigInUse);
+        communicator.StartServer(selfAddress); //Starting a self-server with my own address!
+        //Debug.LogError("Starting self address!");
         //mUi.SetGuiState(false);
     }
 
@@ -243,14 +254,15 @@ public class VideoChatController : MonoBehaviour
             Debug.Log("communicator configuration failed " + communicator.GetConfigurationError());
             communicator.ResetConfiguration();
         }
-        else if (communicator.GetConfigurationState() == MediaConfigurationState.Successful
+        /*else if (communicator.GetConfigurationState() == MediaConfigurationState.Successful
             && mCommunicatorConfigured == false)
         {
             //configuration successful.
             mCommunicatorConfigured = true;
             //StartServer corresponds to ICall.Listen
             communicator.StartServer(selfAddress); //Starting a self-server with my own address!
-        }
+            Debug.LogError("Starting self address!");
+        }*/
 
         switch (evt.Type)
         {
@@ -259,7 +271,7 @@ public class VideoChatController : MonoBehaviour
                 mConnectionIds.Add(evt.ConnectionId);
                 uVideoOutputs.Add(evt.ConnectionId, Instantiate(remoteDisplayPanel, Vector2.zero, Quaternion.identity, parentPanel)); //I see!
 
-                Log("New connection id " + evt.ConnectionId);
+                Debug.LogError("New connection id " + evt.ConnectionId);
                 /*if (uSender == false)
                     this.GetComponent<Image>().color = Color.green; //receiving*/
 
@@ -304,7 +316,7 @@ public class VideoChatController : MonoBehaviour
     /// <param name="frame"></param>
     private void UpdateTexture(IFrame frame, ConnectionId frameId)
     {
-        if (uVideoOutputs[frameId] != null)
+        if (uVideoOutputs.ContainsKey(frameId) && uVideoOutputs[frameId] != null)
         {
             if (frame != null)
             {

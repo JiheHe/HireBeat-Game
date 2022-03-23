@@ -50,9 +50,11 @@ public class DataBaseCommunicator : MonoBehaviour
 		//sql.Command("select * from roomname", null, SelectCallback); // We do not need to supply a result as it is passed back to the callback
 		sql.SyncWithServer(true);
 
-		CreateNewVCRoom("test", "abcd1234abcd1243", false);
+		//CreateNewVCRoom("newRoom", "123456YEP", true);
+		//UpdateVCRoomProps("newRoom", "YESIMNEWOWNER", 6, false);
+		//DeleteVCRoom("newRoom");
 
-		sql.Close();
+		//sql.Close();
 	}
 
 
