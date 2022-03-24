@@ -8,7 +8,7 @@ using Byn.Awrtc;
 public class VidCRemoteInfo : MonoBehaviour, IPointerClickHandler
 {
     public string userAcctID;
-    public ConnectionId userConnectionID;
+    public ConnectionId userConnectionID = ConnectionId.INVALID; //this stays default for local
 
     public VideoChatController vidCController;
 
@@ -51,7 +51,6 @@ public class VidCRemoteInfo : MonoBehaviour, IPointerClickHandler
         if ((eventData.clickTime - mLastClick) < 0.5f)
         {
             vidCController.ActivateSpeakerView(isLocal, userConnectionID);
-            Debug.LogError("Entering speaker mode");
         }
         /*else
         {

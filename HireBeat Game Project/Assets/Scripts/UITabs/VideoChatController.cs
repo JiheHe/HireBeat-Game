@@ -38,7 +38,6 @@ public class VideoChatController : MonoBehaviour
     public RectTransform speakerPanel; //this is speakerView
     bool inProportionalView = true; //this is default to true at room creation / join.
     ConnectionId currentSpeaker = ConnectionId.INVALID; //invalid strictly means none here
-    bool localIsSpeaker = false;
 
     /// <summary>
     /// Helper to keep to keep track of each instance
@@ -156,7 +155,7 @@ public class VideoChatController : MonoBehaviour
     public void ConnectToVidCAddress(string targetUserID)
     {
         communicator.Connect("HireBeatProjVidC" + targetUserID);
-        Debug.LogError("VidCAddressSubmitted");
+        Debug.Log("VidCAddressSubmitted");
     }
 
 
@@ -202,7 +201,7 @@ public class VideoChatController : MonoBehaviour
             //configuration successful.
             //StartServer corresponds to ICall.Listen
             communicator.StartServer(selfAddress); //Starting a self-server with my own address!
-            Debug.LogError("Starting self address!");
+            Debug.Log("Starting self address!");
         }
         //mUi.SetGuiState(false);
     }
@@ -321,7 +320,7 @@ public class VideoChatController : MonoBehaviour
 
                 SetCellSizeBasedOnNum(); //this wouldn't hurt no matter what view u in.
 
-                Debug.LogError("New connection id " + evt.ConnectionId);
+                Debug.Log("New connection id " + evt.ConnectionId);
                 /*if (uSender == false)
                     this.GetComponent<Image>().color = Color.green; //receiving*/
 
@@ -665,9 +664,10 @@ public class VideoChatController : MonoBehaviour
 
     public void ActivateProportionalView()
     {
+        Debug.Log("Entering proportional mode");
+
         inProportionalView = true;
         currentSpeaker = ConnectionId.INVALID;
-        localIsSpeaker = false;
         speakerPanel.gameObject.SetActive(false);
         parentPanel.gameObject.SetActive(true);
         SetCellSizeBasedOnNum();
@@ -680,12 +680,14 @@ public class VideoChatController : MonoBehaviour
 
     public void ActivateSpeakerView(bool isLocal, ConnectionId id)
     {
-        if((id == currentSpeaker && localIsSpeaker == false) || localIsSpeaker == true) //first double click shapes, but another one on same reverts
+        //if((!inProportionalView && id == currentSpeaker && localIsSpeaker == false) || (!inProportionalView && id == ConnectionId.INVALID && localIsSpeaker == true)) //first double click shapes, but another one on same reverts
+        if(!inProportionalView && id == currentSpeaker) //have to be in speaker view first, no need for the complication on top LOL
         {
             ActivateProportionalView();
-            Debug.LogError("Entering proportional mode");
             return;
         }
+
+        Debug.Log("Entering speaker mode");
 
         inProportionalView = false;
         speakerPanel.gameObject.SetActive(true);
@@ -693,35 +695,33 @@ public class VideoChatController : MonoBehaviour
         if(isLocal)
         {
             currentSpeaker = ConnectionId.INVALID; //invalid indicates self or none.
-            localIsSpeaker = true;
-            localDisplayPanel.transform.parent.gameObject.transform.SetParent(speakerPanel);
             localDisplayPanel.transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(1843.2f, 1036.8f);
+            localDisplayPanel.transform.parent.gameObject.transform.SetParent(speakerPanel);
 
             RectTransform leftPanel = speakerPanel.Find("LeftPanels").GetComponent<RectTransform>();
             foreach(var remotePanel in uVideoOutputs.Values)
             {
-                remotePanel.transform.parent.gameObject.transform.SetParent(leftPanel);
                 remotePanel.transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f);
+                remotePanel.transform.parent.gameObject.transform.SetParent(leftPanel);
             }
         } 
         else
         {
             currentSpeaker = id;
-            localIsSpeaker = false;
             RectTransform leftPanel = speakerPanel.Find("LeftPanels").GetComponent<RectTransform>();
-            localDisplayPanel.transform.parent.gameObject.transform.SetParent(leftPanel); //local always first
             localDisplayPanel.transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f);
+            localDisplayPanel.transform.parent.gameObject.transform.SetParent(leftPanel); //local always first
 
             foreach (var connectionId in uVideoOutputs.Keys)
             {
                 if (connectionId == id)
                 {
-                    uVideoOutputs[connectionId].transform.parent.gameObject.transform.SetParent(speakerPanel);
                     uVideoOutputs[connectionId].transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(1843.2f, 1036.8f);
+                    uVideoOutputs[connectionId].transform.parent.gameObject.transform.SetParent(speakerPanel);
                 }
                 else {
-                    uVideoOutputs[connectionId].transform.parent.gameObject.transform.SetParent(leftPanel);
                     uVideoOutputs[connectionId].transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f);
+                    uVideoOutputs[connectionId].transform.parent.gameObject.transform.SetParent(leftPanel);
                 }
             }
         }
