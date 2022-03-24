@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using Byn.Awrtc;
 using Byn.Awrtc.Unity;
@@ -14,7 +15,6 @@ public class VideoChatController : MonoBehaviour
     List<string> userInRoomIDs;
 
     IMediaNetwork communicator; //no need for sender and receiver! the receiver in the example is for 1 to N, as said in email. One network is enough.
-    private bool mCommunicatorConfigured = false;
 
     private NetworkConfig netConf;
     private string selfAddress;
@@ -31,10 +31,14 @@ public class VideoChatController : MonoBehaviour
 
     // I understood!
     private Dictionary<ConnectionId, RawImage> uVideoOutputs = new Dictionary<ConnectionId, RawImage>();
-    public RawImage remoteDisplayPanel; //this is a prefab
+    public GameObject remoteDisplayObject; //this is a prefab
     public RawImage localDisplayPanel; //this is a legit gameobject
 
-    public RectTransform parentPanel;
+    public RectTransform parentPanel; //this is proportionalView
+    public RectTransform speakerPanel; //this is speakerView
+    bool inProportionalView = true; //this is default to true at room creation / join.
+    ConnectionId currentSpeaker = ConnectionId.INVALID; //invalid strictly means none here
+    bool localIsSpeaker = false;
 
     /// <summary>
     /// Helper to keep to keep track of each instance
@@ -62,6 +66,21 @@ public class VideoChatController : MonoBehaviour
     /// </summary>
     private Texture2D mVideoTexture;
 
+    public GameObject vidCTextChatObj;
+    public VidCTextChat textChatController;
+
+    /// <summary>
+    /// Input field to enter a new message.
+    /// </summary>
+    public InputField uMessageInput;
+
+    /// <summary>
+    /// Send button.
+    /// </summary>
+    public Button uSend;
+
+    PersistentData pd; //we can grab username etc from here! username is updated in here too I believe. 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,7 +88,10 @@ public class VideoChatController : MonoBehaviour
         userInRoomIDs = new List<string>(); //excluding yourself.
         selfAddress = "HireBeatProjVidC" + GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //no need for Application.productName
 
+        pd = GameObject.Find("PersistentData").GetComponent<PersistentData>();
+
         OnCreatePressed(); //for testing.
+        SetCellSizeBasedOnNum(); //for testing too.
     }
 
     public void OnCreatePressed() //you are the owner that makes a new room!
@@ -167,8 +189,21 @@ public class VideoChatController : MonoBehaviour
 
         Debug.Log("Configure call using MediaConfig: " + mMediaConfigInUse);
         communicator.Configure(mMediaConfigInUse);
-        communicator.StartServer(selfAddress); //Starting a self-server with my own address!
-        //Debug.LogError("Starting self address!");
+
+        if (communicator.GetConfigurationState() == MediaConfigurationState.Failed)
+        {
+            //did configuration fail? error
+            Debug.Log("communicator configuration failed " + communicator.GetConfigurationError());
+            communicator.ResetConfiguration();
+            SetupCommunicator(); //is this recursion bug-free? //I added this line, might be bug idk
+        }
+        else
+        {
+            //configuration successful.
+            //StartServer corresponds to ICall.Listen
+            communicator.StartServer(selfAddress); //Starting a self-server with my own address!
+            Debug.LogError("Starting self address!");
+        }
         //mUi.SetGuiState(false);
     }
 
@@ -248,13 +283,13 @@ public class VideoChatController : MonoBehaviour
     /// <param name="evt"></param>
     protected virtual void HandleNetworkEvent(NetworkEvent evt)
     {
-        if (communicator.GetConfigurationState() == MediaConfigurationState.Failed)
+        /*if (communicator.GetConfigurationState() == MediaConfigurationState.Failed)
         {
             //did configuration fail? error
             Debug.Log("communicator configuration failed " + communicator.GetConfigurationError());
             communicator.ResetConfiguration();
         }
-        /*else if (communicator.GetConfigurationState() == MediaConfigurationState.Successful
+        else if (communicator.GetConfigurationState() == MediaConfigurationState.Successful
             && mCommunicatorConfigured == false)
         {
             //configuration successful.
@@ -269,7 +304,22 @@ public class VideoChatController : MonoBehaviour
             case NetEventType.NewConnection:
 
                 mConnectionIds.Add(evt.ConnectionId);
-                uVideoOutputs.Add(evt.ConnectionId, Instantiate(remoteDisplayPanel, Vector2.zero, Quaternion.identity, parentPanel)); //I see!
+                GameObject newRemoteDisplay;
+                if (inProportionalView)
+                {
+                    newRemoteDisplay = Instantiate(remoteDisplayObject, Vector2.zero, Quaternion.identity, parentPanel); //add to an equal!
+                }
+                else
+                {
+                    RectTransform leftPanel = speakerPanel.Find("LeftPanels").GetComponent<RectTransform>();
+                    newRemoteDisplay = Instantiate(remoteDisplayObject, Vector2.zero, Quaternion.identity, leftPanel);
+                    newRemoteDisplay.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f); //add to a small!
+                }
+                newRemoteDisplay.GetComponent<VidCRemoteInfo>().InitializeIds("PlayFabIDNotReadyYet", evt.ConnectionId);
+                newRemoteDisplay.GetComponent<VidCRemoteInfo>().vidCController = this;
+                uVideoOutputs.Add(evt.ConnectionId, newRemoteDisplay.transform.GetChild(0).GetComponent<RawImage>()); //I see!
+
+                SetCellSizeBasedOnNum(); //this wouldn't hurt no matter what view u in.
 
                 Debug.LogError("New connection id " + evt.ConnectionId);
                 /*if (uSender == false)
@@ -282,13 +332,19 @@ public class VideoChatController : MonoBehaviour
                 /*if (uSender == false) //add in future
                     this.GetComponent<Image>().color = new Color(0, 0.125f, 0, 1); //receiver failed to connect*/
                 break;
-            case NetEventType.Disconnected:
+            case NetEventType.Disconnected: 
 
                 if (mConnectionIds.Contains(evt.ConnectionId))
                 {
                     mConnectionIds.Remove(evt.ConnectionId);
-                    Destroy(uVideoOutputs[evt.ConnectionId].gameObject); //I see!
+                    Destroy(uVideoOutputs[evt.ConnectionId].gameObject.transform.parent.gameObject); //I see!
                     uVideoOutputs.Remove(evt.ConnectionId);
+
+                    if (!inProportionalView && currentSpeaker == evt.ConnectionId) //if in speaker && the person leaving is speaker
+                    {
+                        ActivateSpeakerView(true, ConnectionId.INVALID); //doesn't matter id, set yourself to speaker, a refresh
+                    }
+                    SetCellSizeBasedOnNum(); //this wouldn't hurt no matter what view u in.
 
                     Log("Connection disconnected");
                     /*if (uSender == false)
@@ -307,7 +363,87 @@ public class VideoChatController : MonoBehaviour
             case NetEventType.ServerClosed:
                 Log("Server stopped");
                 break;
+            case NetEventType.ReliableMessageReceived:
+            case NetEventType.UnreliableMessageReceived:
+                {
+                    HandleIncommingMessage(ref evt);
+                }
+                break;
         }
+    }
+
+    private void HandleIncommingMessage(ref NetworkEvent evt)
+    {
+        MessageDataBuffer buffer = (MessageDataBuffer)evt.MessageData;
+
+        //we know username won't contain "," because it's alphanumeric!
+        string[] msg = (Encoding.UTF8.GetString(buffer.Buffer, 0, buffer.ContentLength)).Split(new[] { ',' }, 2); //return 2 substrings by 1st occ. of ,
+
+        //Is it possible to get randy server msg? hmmm
+
+        //if server -> forward the message to everyone else including the sender
+        //we use the server side connection id to identify the client
+        //ConnectionId senderId = evt.ConnectionId; //can use this to identify username, if have a list beforehand.
+        //we can grab username too I believe. no need for id check.
+        string username = msg[0];
+        string content = msg[1];
+        //Then we update username and string (make into a printable obj) here.
+        textChatController.AddTextEntry(username, content, false);
+
+        //return the buffer so the network can reuse it
+        buffer.Dispose();
+    }
+
+    /// <summary>
+    /// Sends a string as UTF8 byte array to ALL connections //no pm for now.
+    /// </summary>
+    /// <param name="msg">String containing the message to send</param>
+    /// <param name="reliable">false to use unreliable messages / true to use reliable messages</param>
+    private void SendString(string msg, bool reliable = true)
+    {
+        if (communicator == null)
+        {
+            Debug.Log("No connection. Can't send message.");
+        }
+        else //even if mConnections.Count == 0, you can still send! Just to yourself, tho...
+        {
+            byte[] msgData = Encoding.UTF8.GetBytes(msg);
+            foreach (ConnectionId id in mConnectionIds)
+            {
+                communicator.SendData(id, msgData, 0, msgData.Length, reliable);
+            }
+        }
+    }
+
+    public void SendButtonPressed()
+    {
+        //get the message written into the text field
+        string msg = uMessageInput.text;
+
+        if (msg.Length != 0)
+        {
+            SendString(pd.acctName + "," + msg); //first , is the splitter character.
+            textChatController.AddTextEntry("You", msg, true);
+            uMessageInput.text = "";
+        }//no empty string spam!
+
+        //make sure the text box is in focus again so the user can continue typing without clicking it again
+        //select another element first. without this the input field is in focus after return pressed
+        uSend.Select();
+        uMessageInput.Select();
+
+        /*if (msg.StartsWith("/disconnect"))
+        {
+            string[] slt = msg.Split(' ');
+            if (slt.Length >= 2)
+            {
+                ConnectionId conId;
+                if (short.TryParse(slt[1], out conId.id))
+                {
+                    mNetwork.Disconnect(conId);
+                }
+            }
+        }*/
     }
 
     /// <summary>
@@ -383,6 +519,8 @@ public class VideoChatController : MonoBehaviour
             currUsersInRoom = 1;
             userInRoomIDs.Clear();
 
+            mConnectionIds = new List<ConnectionId>();
+
             //Remove the remote panels, etc //this should be covered.
         }
 
@@ -432,7 +570,7 @@ public class VideoChatController : MonoBehaviour
         mediaConfig.Format = FramePixelFormat.ABGR;
 
         mediaConfig.MinWidth = 160;
-        mediaConfig.MinHeight = 120;
+        mediaConfig.MinHeight = 120; 
         //Larger resolutions are possible in theory but
         //allowing users to set this too high is risky.
         //A lot of devices do have great cameras but not
@@ -446,5 +584,164 @@ public class VideoChatController : MonoBehaviour
         mediaConfig.IdealHeight = 120;
         mediaConfig.IdealFrameRate = 30;
         return mediaConfig;
+    }
+
+    //
+    // Summary:
+    //     Sets a volume for the replay of a remote connections audio stream.
+    //
+    // Parameters:
+    //   volume:
+    //     1 = normal volume, 0 = mute, everything above 1 might increase volume but reduce
+    //     quality
+    //
+    //   remoteUserId:
+    //     Id of the remote connection.
+    public void SetVolume(double volume, ConnectionId remoteUserId) //currently it starts at 1 and ranges from 0 to 1.5
+    {
+        if (communicator != null)
+        {
+            communicator.SetVolume(volume, remoteUserId);
+            return;
+        }
+
+        SLog.LW("SetVolume not supported", "VideoChatController WebRTC Call");
+    }
+
+    //
+    // Summary:
+    //     Checks if the local audio track (local microphone) is muted. True means it is
+    //     muted. False means it isn't muted (via this system). This doesn't mean the microphone
+    //     is actually sending. It still can be muted within the OS or via the physicial
+    //     device.
+    //
+    // Returns:
+    //     true - muted false - not muted
+    public bool IsMute()
+    {
+        if (communicator != null)
+        {
+            return communicator.IsMute();
+        }
+
+        return true;
+    }
+
+    //
+    // Summary:
+    //     Allows to mute the local audio track (local microphone) True = mute False = send
+    //     the microphone data if available
+    //
+    // Parameters:
+    //   val:
+    //     true - set to mute false - not muted
+    public void SetMute(bool val)
+    {
+        if (communicator != null)
+        {
+            communicator.SetMute(val);
+            
+        }
+    }
+
+    public void SetCellSizeBasedOnNum() //this should be called after new user joins and leaves
+    {
+        var formatter = parentPanel.GetComponent<GridLayoutGroup>();
+
+        //+1 because myself will always be there! 
+        switch(mConnectionIds.Count + 1) //if want to adjust, use parentPanel.childCount for manual testing
+        {
+            case 1:
+                formatter.cellSize = new Vector2(2304, 1296);
+                break;
+            case 2: case 3: case 4:
+                formatter.cellSize = new Vector2(1152, 648); //case 1 / 2
+                break;
+            case 5: case 6:
+                formatter.cellSize = new Vector2(768, 432); //case 1 / 3
+                break;
+        }
+    }
+
+    public void ActivateProportionalView()
+    {
+        inProportionalView = true;
+        currentSpeaker = ConnectionId.INVALID;
+        localIsSpeaker = false;
+        speakerPanel.gameObject.SetActive(false);
+        parentPanel.gameObject.SetActive(true);
+        SetCellSizeBasedOnNum();
+        localDisplayPanel.transform.parent.gameObject.transform.SetParent(parentPanel); //local always first
+        foreach(var remotePanel in uVideoOutputs.Values)
+        {
+            remotePanel.transform.parent.gameObject.transform.SetParent(parentPanel);
+        }
+    }
+
+    public void ActivateSpeakerView(bool isLocal, ConnectionId id)
+    {
+        if((id == currentSpeaker && localIsSpeaker == false) || localIsSpeaker == true) //first double click shapes, but another one on same reverts
+        {
+            ActivateProportionalView();
+            Debug.LogError("Entering proportional mode");
+            return;
+        }
+
+        inProportionalView = false;
+        speakerPanel.gameObject.SetActive(true);
+        parentPanel.gameObject.SetActive(false);
+        if(isLocal)
+        {
+            currentSpeaker = ConnectionId.INVALID; //invalid indicates self or none.
+            localIsSpeaker = true;
+            localDisplayPanel.transform.parent.gameObject.transform.SetParent(speakerPanel);
+            localDisplayPanel.transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(1843.2f, 1036.8f);
+
+            RectTransform leftPanel = speakerPanel.Find("LeftPanels").GetComponent<RectTransform>();
+            foreach(var remotePanel in uVideoOutputs.Values)
+            {
+                remotePanel.transform.parent.gameObject.transform.SetParent(leftPanel);
+                remotePanel.transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f);
+            }
+        } 
+        else
+        {
+            currentSpeaker = id;
+            localIsSpeaker = false;
+            RectTransform leftPanel = speakerPanel.Find("LeftPanels").GetComponent<RectTransform>();
+            localDisplayPanel.transform.parent.gameObject.transform.SetParent(leftPanel); //local always first
+            localDisplayPanel.transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f);
+
+            foreach (var connectionId in uVideoOutputs.Keys)
+            {
+                if (connectionId == id)
+                {
+                    uVideoOutputs[connectionId].transform.parent.gameObject.transform.SetParent(speakerPanel);
+                    uVideoOutputs[connectionId].transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(1843.2f, 1036.8f);
+                }
+                else {
+                    uVideoOutputs[connectionId].transform.parent.gameObject.transform.SetParent(leftPanel);
+                    uVideoOutputs[connectionId].transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 180f);
+                }
+            }
+        }
+    }
+
+    public void OnTextChatOpenButtonPressed()
+    {
+        GetComponent<Transform>().localPosition = new Vector2(-380, 0);
+        vidCTextChatObj.SetActive(true);
+    }
+
+    public void CloseTextChatTab()
+    {
+        vidCTextChatObj.SetActive(false);
+        GetComponent<Transform>().localPosition = new Vector2(0, 0);
+    }
+
+    //I think I won't touch textpanel... keep user pref for this session before minimize.
+    public void CloseVideoChatPanel()
+    {
+        gameObject.SetActive(false);
     }
 }
