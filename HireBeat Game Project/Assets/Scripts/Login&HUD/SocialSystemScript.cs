@@ -52,7 +52,7 @@ public class SocialSystemScript : MonoBehaviour
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player"); 
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players)
         {
             if (player.GetComponent<PhotonView>().IsMine) //can also use GetComponent<playerController>().view.IsMine
@@ -141,7 +141,7 @@ public class SocialSystemScript : MonoBehaviour
         }
 
         //Two options: 1. set curr chat panel to null upon exiting. 2. upon on opening generating curr chat panel's info card (using 2 for now)
-        if(currentChatPanel != null && currentChatPanel.GetComponent<MsgContentController>().listing != null) //if it's a private convo
+        if (currentChatPanel != null && currentChatPanel.GetComponent<MsgContentController>().listing != null) //if it's a private convo
         {
             currentChatPanel.GetComponent<MsgContentController>().listing.OnProfileClicked(1); //friends list
         }
@@ -206,9 +206,9 @@ public class SocialSystemScript : MonoBehaviour
     private void SendPrivateMessage()
     {
         DateTime sentTime = DateTime.UtcNow;
-        PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID, 
-            new string[] { message, sentTime.ToBinary().ToString()});
-        currentChatPanel.GetComponent<MsgContentController>().AddMessage("You", 
+        PCM.chatClient.SendPrivateMessage(currentChatPanel.GetComponent<MsgContentController>().listing.playerID,
+            new string[] { message, sentTime.ToBinary().ToString() });
+        currentChatPanel.GetComponent<MsgContentController>().AddMessage("You",
             TimeZoneInfo.ConvertTimeBySystemTimeZoneId(sentTime, TimeZoneInfo.Local.Id).ToString(), message, true, "0000");
     }
 
@@ -217,7 +217,7 @@ public class SocialSystemScript : MonoBehaviour
         DateTime sentTime = DateTime.UtcNow;
         string senderName = transform.parent.GetChild(2).GetChild(0).GetComponent<Text>().text; //I don't wanna set a string for this in social system.. grab from hud ;D
         PCM.chatClient.PublishMessage(currentPublicRoomChatName,
-            new string[] { message, sentTime.ToBinary().ToString(), senderName, PFC.myID});
+            new string[] { message, sentTime.ToBinary().ToString(), senderName, PFC.myID });
         currentChatPanel.GetComponent<MsgContentController>().AddMessage(senderName, //current chat panel should be the public room one, can put that in to safe check
             TimeZoneInfo.ConvertTimeBySystemTimeZoneId(sentTime, TimeZoneInfo.Local.Id).ToString(), message, true, "0000"); //why locally open yourself LOL
     }
@@ -246,7 +246,7 @@ public class SocialSystemScript : MonoBehaviour
 
     public void UpdateVCUsernames(string userID)
     {
-        PCM.chatClient.SendPrivateMessage(userID, "UPDATE VC NAMES"); 
+        PCM.chatClient.SendPrivateMessage(userID, "UPDATE VC NAMES");
     }
 
     public void AnnounceMeJoining(string userID)
@@ -284,7 +284,14 @@ public class SocialSystemScript : MonoBehaviour
 
     public void OnVideoChatPanelOpenClicked() //this will involve more decisions in the future.
     {
-        videoChatPanel.SetActive(true);
+        if (videoChatPanel.GetComponent<VideoChatRoomSearch>().vCC == null) //destroyed and not assigned one
+        {
+            videoChatPanel.SetActive(true);
+        }
+        else
+        {
+            videoChatPanel.GetComponent<VideoChatRoomSearch>().vCC.gameObject.SetActive(true);
+        }
     }
 }
 

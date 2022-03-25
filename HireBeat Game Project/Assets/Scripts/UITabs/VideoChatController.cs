@@ -6,6 +6,7 @@ using Byn.Awrtc;
 using Byn.Awrtc.Unity;
 using Byn.Unity.Examples;
 using UnityEngine.UI;
+using System.Linq;
 
 public class VideoChatController : MonoBehaviour
 {
@@ -13,20 +14,14 @@ public class VideoChatController : MonoBehaviour
     const int maxUsersInRoom = 6;
     //If connectionId is > maxUsersInRoom - 1 (because excluding yourself), then you are full!
     //The dictionary below might be useless, because such data is already stored in remote panel info script object... delte if no use
-    string[] userInRoomIds; //this is to be populated, send connect request to each at end step.
+    string[] userInRoomIds = new string[] { }; //this is to be populated, send connect request to each at end step.
     private Dictionary<ConnectionId, string> connectionIdWithPlayFabId = new Dictionary<ConnectionId, string>(); //link connection id to playfab through msg.
 
     [Header("Video chat panel")]
     IMediaNetwork communicator; //no need for sender and receiver! the receiver in the example is for 1 to N, as said in email. One network is enough.
 
-    private NetworkConfig netConf;
     private string myID;
     private string selfAddress;
-
-    /// <summary>
-    /// Media configuration. Will be set during setup.
-    /// </summary>
-    private MediaConfig mediaConf = new MediaConfig();
 
     /// <summary>
     /// Can be used to keep track of each connection. 
@@ -51,7 +46,17 @@ public class VideoChatController : MonoBehaviour
     /// <summary>
     /// Texture2D used as buffer for local or remote video
     /// </summary>
-    private Texture2D mVideoTexture; //should I make an array of this too? Having 1 buffering everything... overworked
+    //private Texture2D mVideoTexture; //should I make an array of this too? Having 1 buffering everything... overworked
+    private Texture2D localTexture;
+    //private Texture2D remoteTexture;
+    private Texture2D rTex0;
+    private Texture2D rTex1;
+    private Texture2D rTex2;
+    private Texture2D rTex3;
+    private Texture2D rTex4;
+    private Dictionary<ConnectionId, int> textureIndex = new Dictionary<ConnectionId, int>();
+    
+
 
     [Header("Text chat panel")]
     public GameObject vidCTextChatObj;
@@ -69,89 +74,40 @@ public class VideoChatController : MonoBehaviour
 
     PersistentData pd; //we can grab username etc from here! username is updated in here too I believe. 
 
-    [Header("Settings panel")]
-    /// <summary>
-    /// Panel with the join button. Will be hidden after setup
-    /// </summary>
-    public RectTransform uSetupPanel;
-
-    public Toggle uAudioToggle;
-    public Toggle uVideoToggle;
-    public Dropdown uVideoDropdown;
-    public InputField uIdealWidth;
-    public InputField uIdealHeight;
-    public InputField uIdealFps;
-    public Dropdown uFormatDropdown;
-    private string mStoredVideoDevice = null;
-
-    private string mPrefix = "VidCUI_";
-    private static readonly string PREF_AUDIO = "audio";
-    private static readonly string PREF_VIDEO = "video";
-    private static readonly string PREF_VIDEODEVICE = "videodevice";
-    private static readonly string PREF_IDEALWIDTH = "idealwidth";
-    private static readonly string PREF_IDEALHEIGHT = "idealheight";
-    private static readonly string PREF_IDEALFPS = "idealfps";
-    private static readonly string PREF_FORMAT = "format";
-    public bool uLoadSettings = true;
-
-    public Text errorMessageObject;
-
     //Here's how the process works: Join room clicked -> if ok -> initialize VC system -> settings panel -> set up communicator -> connection statements.
 
+    MediaConfig mediaConf; //this mediaConf is set to be the same as VCRS's, assigned at this prefab's creation
+    NetworkConfig netConf; //same here, like the mediaConf above.
+
+    VideoChatRoomSearch vcs;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         pd = GameObject.Find("PersistentData").GetComponent<PersistentData>();
 
-        myID = GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID;
+        myID = pd.acctID;
         selfAddress = "HireBeatProjVidC" + myID; //no need for Application.productName
 
-        OnCreatePressed(); //for testing.
         SetCellSizeBasedOnNum(); //for testing too.
     }
 
-    public void OnCreatePressed() //you are the owner that makes a new room!
+    public void SetupMediaAndNetConfAndOther(MediaConfig mC, NetworkConfig nC, VideoChatRoomSearch vCS)
     {
-        UnityCallFactory.EnsureInit(OnCallFactoryReady, OnCallFactoryFailed); //initializes your own server.
-
-        //and find some ways to announce your new room to the public! 
+        mediaConf = mC;
+        netConf = nC;
+        vcs = vCS;
     }
 
-    public void OnConnectPressed(string targetOwnerID) //address should be HireBeatProjVidC + myID //this is to avoid connect to other
+    public void StartRoomCreateOrJoinProcess()
     {
-        //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
-    }
-
-    public void SendNoticeToCurrRoomUsers(string[] userInRoomIDs) //this method is ONLY CALLED when photon chat receives the message from owner and has finished setting up the array list
-    {
-        if (userInRoomIDs == null) //set it to null if the room is full... this is the special message.
-        {
-            Debug.LogError("My custom message: Room is full! 6/6 users."); //Add some sort of display in the future to tell the user.
-            return;
-        } //else not full! Actual list:
-
-        //Set up your own personal server first
         UnityCallFactory.EnsureInit(OnCallFactoryReady, OnCallFactoryFailed);
-
-        //It's better to wait till self communicator is ready, then connect to every user in userInRoomIDs.
-        userInRoomIds = userInRoomIDs; //so we gonna store it here, call at the end.
-
-        //But user should also send a message to everyone, telling them that a person is trying to join. 
-
-        //Don't forget to include owner's ID in the result too! (from sender's end).
-        /*foreach (string userID in userInRoomIDs) //this whole is below is useless... new connection already covered.
-        {
-            //Send the photon chat message to that ID, a new user has joined!.
-
-            //Also initializes a new display raw image for it //this should be covered from getting a new connection.
-        }*/
     }
 
     void OnCallFactoryReady()
     {
         UnityCallFactory.Instance.RequestLogLevel(UnityCallFactory.LogLevel.Info);
         InitVidCSystem();
-        SetGuiState(true); //bring up the vc settings stuff.
     }
 
     void OnCallFactoryFailed(string error)
@@ -162,21 +118,14 @@ public class VideoChatController : MonoBehaviour
 
     void InitVidCSystem()
     {
-        //STEP1: instance setup
-        netConf = new NetworkConfig();
-        netConf.SignalingUrl = ExampleGlobals.Signaling; //will change the urls and servers later, post testing
-        netConf.IceServers.Add(new IceServer(ExampleGlobals.StunUrl));
         communicator = UnityCallFactory.Instance.CreateMediaNetwork(netConf);
-        mediaConf = new MediaConfig();
-        //Then the settings tab pop out here.
-        //SetupCommunicator(); //this should be called when the user presses green check arrow from settings
+        //Then the settings tab pop out here. //nope not anymore.
+        SetupCommunicator(); 
     }
 
     private void SetupCommunicator()
     {
         Debug.Log("communicator setup");
-        //communicator = UnityCallFactory.Instance.CreateMediaNetwork(netConf); 
-        //mediaConf = CreateMediaConfig();
 
         //make a deep clone to avoid confusion if settings are changed
         //at runtime. 
@@ -214,12 +163,12 @@ public class VideoChatController : MonoBehaviour
             //configuration successful.
             //StartServer corresponds to ICall.Listen
             communicator.StartServer(selfAddress); //Starting a self-server with my own address!
-            SetGuiState(false); //turn of settings. Done!
-            Debug.Log("Starting self address!");
+            Debug.LogError("Starting self address: " + selfAddress);
 
-            foreach(string id in userInRoomIds)
+            //then connect to each target in room.
+            foreach (string id in userInRoomIds) //if you create a room, then userInRoomIds would be empty, so nothing!
             {
-                ConnectToVidCAddress(id); //then connect to each target in room.
+                ConnectToVidCAddress(id); 
             }
         }
     }
@@ -228,7 +177,7 @@ public class VideoChatController : MonoBehaviour
     public void ConnectToVidCAddress(string targetUserID)
     {
         communicator.Connect("HireBeatProjVidC" + targetUserID);
-        Debug.Log("VidCAddressSubmitted to " + targetUserID);
+        Debug.LogError("VidCAddressSubmitted to " + targetUserID);
     }
 
 
@@ -347,10 +296,11 @@ public class VideoChatController : MonoBehaviour
                 newRemoteDisplay.GetComponent<VidCRemoteInfo>().userConnectionID = evt.ConnectionId;
                 newRemoteDisplay.GetComponent<VidCRemoteInfo>().vidCController = this;
                 uVideoOutputs.Add(evt.ConnectionId, newRemoteDisplay.transform.GetChild(0).GetComponent<RawImage>()); //I see!
+                textureIndex.Add(evt.ConnectionId, FindFirstUnoccupiedTexture());
 
                 SetCellSizeBasedOnNum(); //this wouldn't hurt no matter what view u in.
 
-                Debug.Log("New connection id " + evt.ConnectionId); 
+                Log("New connection id " + evt.ConnectionId); 
                 /*if (uSender == false)
                     this.GetComponent<Image>().color = Color.green; //receiving*/
 
@@ -366,6 +316,7 @@ public class VideoChatController : MonoBehaviour
                 if (mConnectionIds.Contains(evt.ConnectionId))
                 {
                     mConnectionIds.Remove(evt.ConnectionId);
+                    textureIndex.Remove(evt.ConnectionId);
                     Destroy(uVideoOutputs[evt.ConnectionId].gameObject.transform.parent.gameObject); //I see!
                     uVideoOutputs.Remove(evt.ConnectionId);
 
@@ -389,7 +340,7 @@ public class VideoChatController : MonoBehaviour
                 Log("Server init failed");
                 //this.GetComponent<Image>().color = new Color(0.125f, 0, 0, 1); ; //server lost ability to receive connections (internet / signaling broken)
                 break;
-            case NetEventType.ServerClosed:
+            case NetEventType.ServerClosed: //I never closed the server... hmm
                 Log("Server stopped");
                 break;
             case NetEventType.ReliableMessageReceived:
@@ -476,19 +427,6 @@ public class VideoChatController : MonoBehaviour
         //select another element first. without this the input field is in focus after return pressed
         uSend.Select();
         uMessageInput.Select();
-
-        /*if (msg.StartsWith("/disconnect"))
-        {
-            string[] slt = msg.Split(' ');
-            if (slt.Length >= 2)
-            {
-                ConnectionId conId;
-                if (short.TryParse(slt[1], out conId.id))
-                {
-                    mNetwork.Disconnect(conId);
-                }
-            }
-        }*/
     }
     #endregion
 
@@ -503,14 +441,41 @@ public class VideoChatController : MonoBehaviour
         {
             if (frame != null)
             {
-                UpdateTexture(ref mVideoTexture, frame); //current this texture is being used n times per frame; We'll see if it's overloaded or not.
-                uVideoOutputs[frameId].texture = mVideoTexture;
+                switch(textureIndex[frameId])
+                {
+                    case 0:
+                        UpdateTexture(ref rTex0, frame); 
+                        uVideoOutputs[frameId].texture = rTex0;
+                        break;
+                    case 1:
+                        UpdateTexture(ref rTex1, frame);
+                        uVideoOutputs[frameId].texture = rTex1;
+                        break;
+                    case 2:
+                        UpdateTexture(ref rTex2, frame);
+                        uVideoOutputs[frameId].texture = rTex2;
+                        break;
+                    case 3:
+                        UpdateTexture(ref rTex3, frame);
+                        uVideoOutputs[frameId].texture = rTex3;
+                        break;
+                    case 4:
+                        UpdateTexture(ref rTex4, frame);
+                        uVideoOutputs[frameId].texture = rTex4;
+                        break;
+                    default:
+                        Debug.LogError("No index detected"); //this is not possible;
+                        break;
+                }
+                //The data for texture objects don’t “exist” in a shader, they’re always references?
+                /*UpdateTexture(remoteTexture, frame); //current this texture is being used n times per frame; We'll see if it's overloaded or not.
+                uVideoOutputs[frameId].texture = remoteTexture;*/
             }
         }
         else if (frameId == ConnectionId.INVALID && frame != null) // I SEE
         {
-            UpdateTexture(ref mVideoTexture, frame); 
-            localDisplayPanel.texture = mVideoTexture;
+            UpdateTexture(ref localTexture, frame); 
+            localDisplayPanel.texture = localTexture;
         }
     }
 
@@ -550,6 +515,16 @@ public class VideoChatController : MonoBehaviour
         tex.Apply();
         return newTextureCreated;
     }
+
+    private int FindFirstUnoccupiedTexture()
+    {
+        var allUsed = textureIndex.Values.ToList();
+        for(int i = 0; i <= 4; i++)
+        {
+            if (!allUsed.Contains(i)) return i;
+        }
+        return -1; //this is not supposed to happen: only happens if full!
+    }
     #endregion
 
     private void OnDestroy()
@@ -574,63 +549,10 @@ public class VideoChatController : MonoBehaviour
 
             //Remove the remote panels, etc //this should be covered.
         }
+
+        Destroy(gameObject); //then destroy this prefab!
+        vcs.gameObject.SetActive(true); //open chat room search panel after leaving
     }
-
-
-    ///////////////////////////////////////////////////////////////////
-    /// <summary>
-    /// Create the default configuration for this CallApp instance.
-    /// This can be overwritten in a subclass allowing the creation custom apps that
-    /// use a slightly different configuration.
-    /// </summary>
-    /// <returns></returns>
-    /*public virtual MediaConfig CreateDefaultMediaConfig()
-    {
-        MediaConfig mediaConfig = new MediaConfig();
-        //testing echo cancellation (native only)
-        bool useEchoCancellation = true;
-        if (useEchoCancellation)
-        {
-#if (!UNITY_WEBGL && !UNITY_WSA)
-            var nativeConfig = new Byn.Awrtc.Native.NativeMediaConfig();
-            nativeConfig.AudioOptions.echo_cancellation = true;
-
-            mediaConfig = nativeConfig;
-#endif
-        }
-
-#if UNITY_WSA && !UNITY_EDITOR
-        var uwpConfig = new Byn.Awrtc.Uwp.UwpMediaConfig();
-        uwpConfig.Mrc = true;
-        //uwpConfig.ProcessLocalFrames = false;
-        //uwpConfig.DefaultCodec = "H264";
-        mediaConfig = uwpConfig;
-        Debug.Log("Using uwp specific media config: " + mediaConfig);
-#endif
-
-        //use video and audio by default (the UI is toggled on by default as well it will change on click )
-        mediaConfig.Audio = true;
-        mediaConfig.Video = true;
-        mediaConfig.VideoDeviceName = null;
-
-        mediaConfig.Format = FramePixelFormat.ABGR;
-
-        mediaConfig.MinWidth = 160;
-        mediaConfig.MinHeight = 120; 
-        //Larger resolutions are possible in theory but
-        //allowing users to set this too high is risky.
-        //A lot of devices do have great cameras but not
-        //so great CPU's which might be unable to
-        //encode fast enough.
-        mediaConfig.MaxWidth = 1920 * 2;
-        mediaConfig.MaxHeight = 1080 * 2;
-
-        //will be overwritten by UI in normal use
-        mediaConfig.IdealWidth = 160;
-        mediaConfig.IdealHeight = 120;
-        mediaConfig.IdealFrameRate = 30;
-        return mediaConfig;
-    }*/
 
     #region In Meeting Settings
     //
@@ -798,389 +720,4 @@ public class VideoChatController : MonoBehaviour
     }
     #endregion
 
-    #region Pre Meeting Settings
-    private void SaveSettings()
-    {
-        PlayerPrefsSetBool(mPrefix + PREF_AUDIO, uAudioToggle.isOn);
-        PlayerPrefsSetBool(mPrefix + PREF_VIDEO, uVideoToggle.isOn);
-        PlayerPrefs.SetString(mPrefix + PREF_VIDEODEVICE, GetSelectedVideoDevice());
-        PlayerPrefs.SetString(mPrefix + PREF_IDEALWIDTH, uIdealWidth.text);
-        PlayerPrefs.SetString(mPrefix + PREF_IDEALHEIGHT, uIdealHeight.text);
-        PlayerPrefs.SetString(mPrefix + PREF_IDEALFPS, uIdealFps.text);
-        PlayerPrefs.SetInt(mPrefix + PREF_FORMAT, uFormatDropdown.value);
-
-        PlayerPrefs.Save();
-    }
-
-    /// <summary>
-    /// Loads the ui state from last use
-    /// </summary>
-    private void LoadSettings()
-    {
-        //0 is on, 1 is off
-        ChangeAudioToggle(PlayerPrefsGetBool(mPrefix + PREF_AUDIO, true));
-        ChangeVideoToggle(PlayerPrefsGetBool(mPrefix + PREF_VIDEO, true));
-
-        /*uAudioToggle.isOn = PlayerPrefsGetBool(mPrefix + PREF_AUDIO, true);
-        uVideoToggle.isOn = PlayerPrefsGetBool(mPrefix + PREF_VIDEO, true);*/
-        //can't select this immediately because we don't know if it is valid yet
-        mStoredVideoDevice = PlayerPrefs.GetString(mPrefix + PREF_VIDEODEVICE, null);
-        uIdealWidth.text = PlayerPrefs.GetString(mPrefix + PREF_IDEALWIDTH, "320");
-        uIdealHeight.text = PlayerPrefs.GetString(mPrefix + PREF_IDEALHEIGHT, "240");
-        uIdealFps.text = PlayerPrefs.GetString(mPrefix + PREF_IDEALFPS, "30");
-        uFormatDropdown.value = PlayerPrefs.GetInt(mPrefix + PREF_FORMAT, 0);
-
-        //and here are some default settings that must be true
-        bool useEchoCancellation = true;
-        if (useEchoCancellation)
-        {
-#if (!UNITY_WEBGL && !UNITY_WSA)
-            var nativeConfig = new Byn.Awrtc.Native.NativeMediaConfig();
-            nativeConfig.AudioOptions.echo_cancellation = true;
-
-            mediaConf = nativeConfig;
-#endif
-        }
-
-#if UNITY_WSA && !UNITY_EDITOR
-        var uwpConfig = new Byn.Awrtc.Uwp.UwpMediaConfig();
-        uwpConfig.Mrc = true;
-        //uwpConfig.ProcessLocalFrames = false;
-        //uwpConfig.DefaultCodec = "H264";
-        mediaConf = uwpConfig;
-        Debug.Log("Using uwp specific media config: " + mediaConfig);
-#endif
-
-        //mediaConf.Format = FramePixelFormat.ABGR;
-
-        mediaConf.MinWidth = 160;
-        mediaConf.MinHeight = 120;
-        //Larger resolutions are possible in theory but
-        //allowing users to set this too high is risky.
-        //A lot of devices do have great cameras but not
-        //so great CPU's which might be unable to
-        //encode fast enough.
-        mediaConf.MaxWidth = 1920 * 2;
-        mediaConf.MaxHeight = 1080 * 2;
-    }
-
-    //I configurated the buttons in editor so that they impact isOn.
-    //0 is on button, 1 is off button. Click on on leads to off, off leads to on.
-    private void ChangeAudioToggle(bool value)
-    {
-        if (value) uAudioToggle.transform.GetChild(1).GetComponent<Button>().onClick.Invoke();
-        else uAudioToggle.transform.GetChild(0).GetComponent<Button>().onClick.Invoke();
-    }
-    private void ChangeVideoToggle(bool value) {
-        if (value) uVideoToggle.transform.GetChild(1).GetComponent<Button>().onClick.Invoke();
-        else uVideoToggle.transform.GetChild(0).GetComponent<Button>().onClick.Invoke();
-    }
-
-    private static void PlayerPrefsSetBool(string name, bool value)
-    {
-        PlayerPrefs.SetInt(name, value ? 1 : 0);
-    }
-
-    private static bool PlayerPrefsGetBool(string name, bool defval)
-    {
-        int def = 0;
-        if (defval)
-            def = 1;
-        return PlayerPrefs.GetInt(name, def) == 1 ? true : false;
-    }
-
-    private string GetSelectedVideoDevice()
-    {
-        if (uVideoDropdown.value <= 0 || uVideoDropdown.value >= uVideoDropdown.options.Count)
-        {
-            //return null if the first element is selected ("Any") or the ui returns
-            //invalid values. This will trigger the app to pick a default device
-            return null;
-        }
-        else
-        {
-            string devname = uVideoDropdown.options[uVideoDropdown.value].text;
-            return devname;
-        }
-    }
-
-    public void ResetSettings()
-    {
-        PlayerPrefs.DeleteKey(mPrefix + PREF_AUDIO);
-        PlayerPrefs.DeleteKey(mPrefix + PREF_VIDEO);
-        PlayerPrefs.DeleteKey(mPrefix + PREF_VIDEODEVICE);
-        PlayerPrefs.DeleteKey(mPrefix + PREF_IDEALWIDTH);
-        PlayerPrefs.DeleteKey(mPrefix + PREF_IDEALHEIGHT);
-        PlayerPrefs.DeleteKey(mPrefix + PREF_IDEALFPS);
-        PlayerPrefs.DeleteKey(mPrefix + PREF_FORMAT);
-        LoadSettings();
-        CheckSettings();
-    }
-
-    private void CheckSettings()
-    {
-        if (ExampleGlobals.HasAudioPermission() == false)
-        {
-            ChangeAudioToggle(false);
-        }
-        if (ExampleGlobals.HasVideoPermission() == false)
-        {
-            //uVideoToggle.isOn = false;
-            ChangeVideoToggle(false);
-        }
-    }
-
-    private void InitFormatDropdown()
-    {
-        uFormatDropdown.ClearOptions();
-        var formats = ExampleGlobals.PixelFormats;
-        var options = new List<string>();
-        foreach (var v in formats)
-        {
-            options.Add(v.ToString());
-        }
-        uFormatDropdown.AddOptions(options);
-    }
-
-    private FramePixelFormat GetSelectedFormat()
-    {
-        int index = uFormatDropdown.value;
-        if (index < 0 || index >= ExampleGlobals.PixelFormats.Length)
-        {
-            index = 0;
-        }
-        return ExampleGlobals.PixelFormats[index];
-    }
-
-    public void OnAudioSettingsChanged()
-    {
-        if (uAudioToggle.isOn && ExampleGlobals.HasAudioPermission() == false)
-        {
-            StartCoroutine(RequestAudioPermissions());
-        }
-    }
-
-    public void OnVideoSettingsChanged()
-    {
-        if (uVideoToggle.isOn && ExampleGlobals.HasVideoPermission() == false)
-        {
-            StartCoroutine(RequestVideoPermissions());
-        }
-    }
-
-    IEnumerator RequestAudioPermissions()
-    {
-        yield return ExampleGlobals.RequestAudioPermission();
-        ChangeAudioToggle(ExampleGlobals.HasAudioPermission());
-    }
-    IEnumerator RequestVideoPermissions()
-    {
-        yield return ExampleGlobals.RequestVideoPermission();
-        ChangeVideoToggle(ExampleGlobals.HasVideoPermission());
-    }
-
-    private static int TryParseInt(string value, int defval)
-    {
-        int result;
-        if (int.TryParse(value, out result) == false)
-        {
-            result = defval;
-        }
-        return result;
-    }
-
-    //Save settings for future session! This applies the answers to mediaconf.
-    private void SaveMediaConfSettings() //this is only called if the enter in the settings tab is clicked
-    {
-        SetVideoDevice(GetSelectedVideoDevice());
-        SetAudio(uAudioToggle.isOn);
-        SetVideo(uVideoToggle.isOn);
-        SetFormat(GetSelectedFormat());
-
-        int width = TryParseInt(uIdealWidth.text, 320);
-        int height = TryParseInt(uIdealHeight.text, 240);
-        int fps = TryParseInt(uIdealFps.text, 30);
-        SetIdealResolution(width, height);
-        SetIdealFps(fps);
-        //SetupCommunicator(); //this puts the mediaconf setting into communicator. This should ONLY be set at room join. 
-    }
-
-    /// <summary>
-    /// Turns on sending audio for the next call.
-    /// </summary>
-    /// <param name="value"></param>
-    public void SetAudio(bool value)
-    {
-        mediaConf.Audio = value;
-    }
-    /// <summary>
-    /// Turns on sending video for the next call.
-    /// </summary>
-    /// <param name="value"></param>
-    public void SetVideo(bool value)
-    {
-        mediaConf.Video = value;
-    }
-
-    /// <summary>
-    /// Sets a different format. 
-    /// Experimental use only. Most formats only work on specific platforms / specific setups. 
-    /// </summary>
-    /// <param name="format"></param>
-    public void SetFormat(FramePixelFormat format)
-    {
-        mediaConf.Format = format;
-    }
-    /// <summary>
-    /// Allows to set a specific video device.
-    /// This isn't supported on WebGL yet.
-    /// </summary>
-    /// <param name="deviceName"></param>
-    public void SetVideoDevice(string deviceName)
-    {
-        mediaConf.VideoDeviceName = deviceName;
-    }
-
-    /// <summary>
-    /// Changes the target resolution that will be used for
-    /// sending video streams.
-    /// The closest one the camera can handle will be used.
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    public void SetIdealResolution(int width, int height)
-    {
-        mediaConf.IdealWidth = width;
-        mediaConf.IdealHeight = height;
-    }
-
-    /// <summary>
-    /// Sets the ideal FPS.
-    /// This has a lower priority than the ideal resolution.
-    /// Note that the FPS aren't enforced. It pick
-    /// the closest FPS the video device supports.
-    /// </summary>
-    /// <param name="fps"></param>
-    public void SetIdealFps(int fps)
-    {
-        mediaConf.IdealFrameRate = fps;
-    }
-
-    /// <summary>
-    /// Updates the dropdown menu based on the current video devices and toggle status
-    /// </summary>
-    public void UpdateVideoDropdown()
-    {
-        uVideoDropdown.ClearOptions();
-        uVideoDropdown.AddOptions(new List<string>(GetVideoDevices()));
-        uVideoDropdown.interactable = CanSelectVideoDevice();
-
-        //restore the stored selection if possible
-        if (uVideoDropdown.interactable && mStoredVideoDevice != null)
-        {
-            int index = 0;
-            foreach (var opt in uVideoDropdown.options)
-            {
-                if (opt.text == mStoredVideoDevice)
-                {
-                    uVideoDropdown.value = index;
-                }
-                index++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Returns a list of video devices for the UI to show.
-    /// This is used to avoid having the UI directly access the UnityCallFactory.
-    /// </summary>
-    /// <returns></returns>
-    public string[] GetVideoDevices()
-    {
-        if (CanSelectVideoDevice())
-        {
-            List<string> devices = new List<string>();
-            string[] videoDevices = UnityCallFactory.Instance.GetVideoDevices();
-            devices.Add("Any");
-            devices.AddRange(videoDevices);
-            return devices.ToArray();
-        }
-        else
-        {
-            return new string[] { "Default" };
-        }
-    }
-
-    /// <summary>
-    /// Used by the UI
-    /// </summary>
-    /// <returns></returns>
-    public bool CanSelectVideoDevice()
-    {
-        return UnityCallFactory.Instance.CanSelectVideoDevice();
-    }
-    #endregion
-
-    /// <summary>
-    /// Shows the setup screen or the chat + video
-    /// </summary>
-    /// <param name="showSetup">true Shows the setup. False hides it.</param> called after Factory ready
-    public void SetGuiState(bool showSetup)
-    {
-        if (showSetup)
-        {
-            //fill the video dropbox
-            UpdateVideoDropdown();
-            InitFormatDropdown();
-            if (uLoadSettings)
-            {
-                LoadSettings();
-            }
-            CheckSettings();
-        }
-        uSetupPanel.gameObject.SetActive(showSetup);
-
-        if (showSetup) CloseTextChatTab();
-        else OnTextChatOpenButtonPressed();
-        //this is going to hide the textures until it is updated with a new frame update
-        /*UpdateLocalTexture(null);
-        UpdateRemoteTexture(null);*/
-    }
-
-    /// <summary>
-    /// Join button pressed. Tries to join a room. NOT ANYMORE! This is like save settings more like.
-    /// </summary>
-    public void SaveSettingsButtonPressed()
-    {
-        //remember for next run
-        if(CheckInputValidity())
-        {
-            mStoredVideoDevice = GetSelectedVideoDevice();
-            SaveSettings();
-            SaveMediaConfSettings();
-        }
-    }
-
-    private bool CheckInputValidity()
-    {
-        int width = TryParseInt(uIdealWidth.text, 320);
-        int height = TryParseInt(uIdealHeight.text, 240);
-        if(width > 960 || height > 540) //local client can go 1920 x 1080 +, but webgl sucks so...
-        {
-            //display error message
-            string errorMsg = "Please keep your width not exceeding 960 and your height not exceeding 540. " +
-                "Multiples of such work as well. " +
-                "The smaller the resolution, the smoother the session!";
-            StartCoroutine(DisplayErrorMessage(3f, errorMsg));
-            return false;
-        }
-        return true;
-    }
-
-    IEnumerator DisplayErrorMessage(float time, string msg)
-    {
-        errorMessageObject.text = msg;
-        yield return new WaitForSeconds(time);
-        errorMessageObject.text = "";
-    }
 }
