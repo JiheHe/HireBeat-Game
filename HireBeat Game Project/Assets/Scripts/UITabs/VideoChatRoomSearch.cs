@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System;
 using UnityEngine;
 using Byn.Awrtc;
 using Byn.Awrtc.Unity;
 using Byn.Unity.Examples;
 using UnityEngine.UI;
+using System.Linq;
+
 
 public class VideoChatRoomSearch : MonoBehaviour
 {
@@ -44,8 +47,41 @@ public class VideoChatRoomSearch : MonoBehaviour
 
     private NetworkConfig netConf;
 
-    public GameObject videoChatRoomPanelPrefab; //this is the prefab.
+    public GameObject videoChatRoomPanelPrefab; //this is the prefab for in call panel.
     public VideoChatController vCC = null;
+
+    [Serializable]
+    public class VidCRoomInfo //roomName is the key
+    {
+        public string currOwnerID;
+        public int numMembers;
+        public bool isPublic;
+        public VidCDisplayTab roomDisplayTab;
+
+        public VidCRoomInfo(string currOwnerID, int numMembers, bool isPublic, VidCDisplayTab roomDisplayTab)
+        {
+            this.currOwnerID = currOwnerID;
+            this.numMembers = numMembers;
+            this.isPublic = isPublic;
+            this.roomDisplayTab = roomDisplayTab;
+        }
+
+        public VidCRoomInfo(string currOwnerID, int numMembers, bool isPublic) //this overload is for data cahce
+        {
+            this.currOwnerID = currOwnerID;
+            this.numMembers = numMembers;
+            this.isPublic = isPublic;
+            this.roomDisplayTab = null;
+        }
+    }
+
+    [SerializeField]
+    public Dictionary<string, VidCRoomInfo> vcRoomList;
+    string prefix = "VC_ROOM_"; //this is what to add to each new room obj's name
+    public GameObject videoChatRoomDisplayPrefab; //this is the prefab for each room display in list
+    public RectTransform vcRoomDisplayPanel; //this is the content where room will be child of.
+
+    DataBaseCommunicator dbc; //the real time database!
 
     void Start() //conf the permanent netConf at start.
     {
@@ -53,6 +89,9 @@ public class VideoChatRoomSearch : MonoBehaviour
         netConf = new NetworkConfig();
         netConf.SignalingUrl = ExampleGlobals.Signaling; //will change the urls and servers later, post testing
         netConf.IceServers.Add(new IceServer(ExampleGlobals.StunUrl));
+
+        dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
+        vcRoomList = new Dictionary<string, VidCRoomInfo>(); //key will be roomName, it stays fixed.
     }
 
     // Update is called once per frame
@@ -61,6 +100,11 @@ public class VideoChatRoomSearch : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.O))
         {
             InitializeVideoChatRoomPanel(); //this is for testing only.
+        }
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            dbc.CreateNewVCRoom("test", "asbfasd", true);
+            dbc.CreateNewVCRoom("IamJack", ";fsdafasd", false);
         }
     }
 
@@ -84,9 +128,82 @@ public class VideoChatRoomSearch : MonoBehaviour
         //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
     }
 
+    #region Buttons
     public void CloseVideoChatRoomSearchPanel()
     {
         gameObject.SetActive(false);
+    }
+
+    public void OnRefreshVCRoomButtonPressed()
+    {
+        dbc.GrabAllVCRoomInfo();
+    }
+    #endregion 
+
+    private void AddNewRoomToList(string roomName, string currOwnerID, int numMembers, bool isPublic)
+    {
+        var newVCRoomDisplay = Instantiate(videoChatRoomDisplayPrefab, vcRoomDisplayPanel);
+        newVCRoomDisplay.name = prefix + roomName;
+        newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID);
+        vcRoomList.Add(roomName, new VidCRoomInfo(currOwnerID, numMembers, isPublic, newVCRoomDisplay.GetComponent<VidCDisplayTab>()));
+    }
+
+    private void UpdateRoomInfo(string roomName, string currOwnerID, int numMembers, bool isPublic) //isPublic basically stays the same...
+    {
+        var info = vcRoomList[roomName]; //I think this is by reference eh?
+        if(info.currOwnerID != currOwnerID)
+        {
+            info.currOwnerID = currOwnerID;
+            info.roomDisplayTab.UpdateCurrOwnerID(currOwnerID); //run test.
+        }
+        if(info.numMembers != numMembers)
+        {
+            info.numMembers = numMembers;
+            info.roomDisplayTab.UpdateNumMembers(numMembers);
+        }
+    }
+
+    //Need to check vcRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
+    //not in room then add, if in both then update.
+    public void UpdateVCRoomList(hirebeatprojectdb_videochatsavailable[] dbRooms)
+    {
+        //Is doing the below more efficient than two nested forloops?
+        var dbRoomsConverted = ConvertToReadableFormat(dbRooms);
+        List<string> listRoomNames = vcRoomList.Keys.ToList();
+        List<string> dbRoomNames = dbRoomsConverted.Keys.ToList(); //dbRooms.Select(r => r.RoomName).ToList(); //Select(r => (string)r["RoomName"]).ToList(); //was a list of dicts
+        List<string> ToBeUpdated = listRoomNames.Intersect(dbRoomNames).ToList();
+        List<string> ToBeDeleted = listRoomNames.Except(ToBeUpdated).ToList();
+        List<string> ToBeAdded = dbRoomNames.Except(ToBeUpdated).ToList();
+        foreach (string roomName in ToBeDeleted)
+        {
+            Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+            vcRoomList.Remove(roomName);
+        }
+        foreach (string roomName in ToBeUpdated)
+        {
+            var newInfo = dbRoomsConverted[roomName];
+            UpdateRoomInfo(roomName, newInfo.currOwnerID, newInfo.numMembers, newInfo.isPublic);    //dbRooms.Find()
+        }
+        foreach (string roomName in ToBeAdded)
+        {
+            var newInfo = dbRoomsConverted[roomName];
+            AddNewRoomToList(roomName, newInfo.currOwnerID, newInfo.numMembers, newInfo.isPublic);
+        }
+    }
+
+    private Dictionary<string, VidCRoomInfo> ConvertToReadableFormat(hirebeatprojectdb_videochatsavailable[] dbRooms)
+    {
+        Dictionary<string, VidCRoomInfo> result = new Dictionary<string, VidCRoomInfo>();
+        foreach (var dbRoom in dbRooms) //can do some arrangements here maybe
+        {
+            string roomName = dbRoom.RoomName;
+            string currOwnerID = dbRoom.CurrOwnerID;
+            int numMembers = dbRoom.NumMembers;
+            bool isPublic = dbRoom.IsPublic;
+
+            result.Add(roomName, new VidCRoomInfo(currOwnerID, numMembers, isPublic));
+        }
+        return result;
     }
 
     #region Pre Meeting Settings
@@ -209,7 +326,7 @@ public class VideoChatRoomSearch : MonoBehaviour
         CheckSettings();
     }
 
-    private void CheckSettings()
+    private void CheckSettings() 
     {
         if (ExampleGlobals.HasAudioPermission() == false)
         {
@@ -244,7 +361,7 @@ public class VideoChatRoomSearch : MonoBehaviour
         return ExampleGlobals.PixelFormats[index];
     }
 
-    public void OnAudioSettingsChanged()
+    public void OnAudioSettingsChanged() //I don't think on value change reacts...
     {
         if (uAudioToggle.isOn && ExampleGlobals.HasAudioPermission() == false)
         {
@@ -395,7 +512,6 @@ public class VideoChatRoomSearch : MonoBehaviour
     {
         return UnityCallFactory.Instance.CanSelectVideoDevice();
     }
-    #endregion
 
     /// <summary>
     /// Shows the setup screen or the chat + video
@@ -470,4 +586,5 @@ public class VideoChatRoomSearch : MonoBehaviour
         yield return new WaitForSeconds(time);
         errorMessageObject.text = "";
     }
+    #endregion 
 }

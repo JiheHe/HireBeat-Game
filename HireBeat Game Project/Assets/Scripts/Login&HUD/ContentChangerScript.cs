@@ -68,7 +68,7 @@ public class ContentChangerScript : MonoBehaviour
                 PFC.UpdateUserDisplayName(newInput.text); //also update Display name -> acct name is linked
                 GameObject.Find("PersistentData").GetComponent<PersistentData>().acctName = newInput.text; //set PD, since VC net info regis. draws from there.
                 PhotonNetwork.LocalPlayer.NickName = newInput.text; //changing photon name, which can be conveniently used for comparison! (real time update)
-                GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VoiceChat").GetComponent<VoiceChatController>().ChangeNetworkInfoName(newInput.text);
+                GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().vcc.ChangeNetworkInfoName(newInput.text);
             }
             else
             {

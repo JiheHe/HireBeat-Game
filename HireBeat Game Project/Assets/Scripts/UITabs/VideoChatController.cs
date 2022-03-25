@@ -518,7 +518,7 @@ public class VideoChatController : MonoBehaviour
 
     private int FindFirstUnoccupiedTexture()
     {
-        var allUsed = textureIndex.Values.ToList();
+        var allUsed = textureIndex.Values.ToList(); //or can use containsValue in future.
         for(int i = 0; i <= 4; i++)
         {
             if (!allUsed.Contains(i)) return i;

@@ -614,6 +614,7 @@ GameObject:
   - component: {fileID: 1351898600531975749}
   - component: {fileID: 1351898600531975750}
   - component: {fileID: 1351898600531975751}
+  - component: {fileID: 3934725426646606505}
   m_Layer: 5
   m_Name: VidCRoomDisplay
   m_TagString: Untagged
@@ -717,6 +718,21 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.29803923}
   m_EffectDistance: {x: 0, y: -6}
   m_UseGraphicAlpha: 1
+--- !u!114 &3934725426646606505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1351898600531975745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef0a3f461a9d3394e8b763eb063ffe2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomName: {fileID: 1351898599185538453}
+  numMembers: {fileID: 1351898599924019471}
+  publicAccess: {fileID: 1351898599390863963}
 --- !u!1 &1351898600768122387
 GameObject:
   m_ObjectHideFlags: 0
