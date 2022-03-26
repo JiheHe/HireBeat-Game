@@ -50,14 +50,13 @@ public class DataBaseCommunicator : MonoBehaviour
 		else
 		{
 			sql.Open(Database);
-			sql.SyncWithServer(true);
 		}
 	}
 
 	// Called once the database has been Opened
 	void OpenCallback(bool ok)
 	{
-		sql.SyncWithServer(true);
+		//sql.SyncWithServer(true); //DOn't sync with server! Everything will be server based if don't sync, which is good!
 	}
 
 
@@ -129,7 +128,7 @@ public class DataBaseCommunicator : MonoBehaviour
 																													//then here's a vc room display object
 				return row;
 			}
-			catch (Exception ex)
+			catch (Exception ex) //this could be possible if the room no longer exists, cuz the top one will error.
 			{
 				// May throw an Illegal Cast Exception if the local database is missing
 				Debug.Log(ex.Message);
@@ -228,6 +227,21 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.LogError("Updating room info! Here's the result: " + result.message);
 	}
 
+	//a quick function I wrote, might be slightly more efficient
+	public void UpdateVCRoomNumMembers(string roomName, int numMembers)
+    {
+		string query = "update VideoChatsAvailable set NumMembers = %newNumMembers% where RoomName = %roomName%";
+		SQLParameter parameter = new SQLParameter();
+
+		parameter.SetValue("newNumMembers", numMembers);
+		parameter.SetValue("roomName", roomName);
+
+		SQLResult result = new SQLResult();
+		sql.Command(query, result, parameter);
+
+		Debug.LogError("Updating room numMembers! Here's the result: " + result.message);
+	}
+
 	//Delete a VC room in the database
 	public void DeleteVCRoom(string roomName)
     {
@@ -241,9 +255,20 @@ public class DataBaseCommunicator : MonoBehaviour
 
 		Debug.LogError("Deleting the selected VC Room! Here's the result: ");// + result.message);
 	}
-    #endregion
 
-    private void OnDestroy()
+	//Delete every VC room in the database. If you are a user PLEASE DON'T ABUSE THIS; this is for internal only.
+	public void DeleteALLVCRooms()
+	{
+		string query = "Delete from VideoChatsAvailable";
+
+		SQLResult result = new SQLResult();
+		sql.Command(query, result);
+
+		Debug.LogError("Deleting every single VC Room!");// + result.message);
+	}
+	#endregion
+
+	private void OnDestroy()
     {
 		sql.Close();
 	}

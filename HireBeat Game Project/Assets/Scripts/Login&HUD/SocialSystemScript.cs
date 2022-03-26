@@ -254,6 +254,16 @@ public class SocialSystemScript : MonoBehaviour
         PCM.chatClient.SendPrivateMessage(userID, "NEW VCP JOINED");
     }
 
+    public void RequestVidCRoomInfo(string userID)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "REQSTING VCRM INFO");
+    }
+
+    public void SendVidCRoomInfo(string userID, string userIdsString)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "RECEI_VCRM_INFO" + userIdsString);
+    }
+
     public void CreatePublicRoomPanel()
     {
         publicRoomChatPanel = Instantiate(chatPanel, msgViewPort.transform);

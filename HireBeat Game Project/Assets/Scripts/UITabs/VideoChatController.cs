@@ -14,7 +14,7 @@ public class VideoChatController : MonoBehaviour
     const int maxUsersInRoom = 6;
     //If connectionId is > maxUsersInRoom - 1 (because excluding yourself), then you are full!
     //The dictionary below might be useless, because such data is already stored in remote panel info script object... delte if no use
-    string[] userInRoomIds = new string[] { }; //this is to be populated, send connect request to each at end step.
+    List<string> userInRoomIds = new List<string>(); //this is to be populated, send connect request to each at end step. 
     private Dictionary<ConnectionId, string> connectionIdWithPlayFabId = new Dictionary<ConnectionId, string>(); //link connection id to playfab through msg.
 
     [Header("Video chat panel")]
@@ -22,6 +22,7 @@ public class VideoChatController : MonoBehaviour
 
     private string myID;
     private string selfAddress;
+    private string roomName;
 
     /// <summary>
     /// Can be used to keep track of each connection. 
@@ -92,11 +93,13 @@ public class VideoChatController : MonoBehaviour
         SetCellSizeBasedOnNum(); //for testing too.
     }
 
-    public void SetupMediaAndNetConfAndOther(MediaConfig mC, NetworkConfig nC, VideoChatRoomSearch vCS)
+    public void SetupMediaAndNetConfAndOther(MediaConfig mC, NetworkConfig nC, VideoChatRoomSearch vCS, List<string> userIds, string rName)
     {
         mediaConf = mC;
         netConf = nC;
         vcs = vCS;
+        userInRoomIds = userIds;
+        roomName = rName;
     }
 
     public void StartRoomCreateOrJoinProcess()
@@ -319,6 +322,8 @@ public class VideoChatController : MonoBehaviour
                     textureIndex.Remove(evt.ConnectionId);
                     Destroy(uVideoOutputs[evt.ConnectionId].gameObject.transform.parent.gameObject); //I see!
                     uVideoOutputs.Remove(evt.ConnectionId);
+                    userInRoomIds.Remove(connectionIdWithPlayFabId[evt.ConnectionId]);
+                    connectionIdWithPlayFabId.Remove(evt.ConnectionId);
 
                     if (!inProportionalView && currentSpeaker == evt.ConnectionId) //if in speaker && the person leaving is speaker
                     {
@@ -379,6 +384,7 @@ public class VideoChatController : MonoBehaviour
             string playfabID = content;
             connectionIdWithPlayFabId.Add(evt.ConnectionId, playfabID); //Don't forget to clear this in future! //this might be pointless, idk what for. 
             uVideoOutputs[evt.ConnectionId].transform.parent.GetComponent<VidCRemoteInfo>().userAcctID = playfabID;
+            if (!userInRoomIds.Contains(playfabID)) userInRoomIds.Add(playfabID);
         }
         else
         {
@@ -539,7 +545,7 @@ public class VideoChatController : MonoBehaviour
             communicator.Dispose();
             communicator = null;
 
-            userInRoomIds = new string[] { };
+            userInRoomIds.Clear();
             connectionIdWithPlayFabId.Clear();
 
             mConnectionIds = new List<ConnectionId>();
@@ -719,5 +725,23 @@ public class VideoChatController : MonoBehaviour
         gameObject.SetActive(false);
     }
     #endregion
+
+    //This is only called when a new user is connecting
+    public string GetUserInVidCRoomIDsInString(string senderID)
+    {
+        string result = myID;
+        foreach(string id in userInRoomIds)
+        {
+            result += "," + id; //format: myID,id1,id2,...,id5 
+        }
+
+        //only owner adds this early, so the rest are still added through connection message.
+        userInRoomIds.Add(senderID);
+
+        //also owner updates room count by 1
+        vcs.UpdateVCRoomNumMembers(roomName, userInRoomIds.Count + 1); //including yourself, the +1
+
+        return result;
+    }
 
 }

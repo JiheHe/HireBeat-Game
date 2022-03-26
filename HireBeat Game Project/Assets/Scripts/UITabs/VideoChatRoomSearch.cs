@@ -82,6 +82,7 @@ public class VideoChatRoomSearch : MonoBehaviour
     public RectTransform vcRoomDisplayPanel; //this is the content where room will be child of.
 
     DataBaseCommunicator dbc = null; //the real time database!
+    string prevRoomName; //this gets updated at room joining, but you get to keep the previous name until overwritten.
 
 
     public Toggle publicSwitch;
@@ -94,6 +95,7 @@ public class VideoChatRoomSearch : MonoBehaviour
     public Button vcRoomCreateButton;
 
     public string myID;
+    public SocialSystemScript socialSystem;
 
     void Start() //conf the permanent netConf at start.
     {
@@ -125,34 +127,67 @@ public class VideoChatRoomSearch : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.T))
         {
-            //dbc.UpdateVCRoomProps("test", "billyJones", 4, true);
-            //dbc.DeleteVCRoom("");
-            //dbc.CreateNewVCRoom("test", "asbfasd", true);
-            //dbc.CreateNewVCRoom("IamJack", ";fsdafasd", false);
-            //dbc.CheckVCRoomExists("test");
-            //dbc.CheckVCRoomExists("monka");
+            //dbc.DeleteALLVCRooms();
         }
     }
 
-    private void InitializeVideoChatRoomPanel()
+    //Basically, connect button only shows if the room is public or you've been invited, either case you should be able to join directly
+    //When connect is pressed, this method in vcs will be called. Use roomName to grab the room stats and and request.
+    //Wouldn't the ownerid stored in the display tab be useless then LOL, since database everything basically.
+    public void OnConnectPressed(string roomName) //address should be HireBeatProjVidC + myID //this is to avoid connect to other
+    {
+        //Check amount of current users. If full then fail... but if not full then immediately add 1 to the current count! (cuz you gona connect!)
+        //Actually don't do it from your end! Remember only 1 user should edit a row, which should be the owner, so:
+        var RoomInfo = dbc.RetrieveVCRoomInfo(roomName);
+
+        if(RoomInfo == null) //nothing was returned, so special result! This means that the room no longer exists.
+        {
+            //Do something
+
+            Debug.Log("The room requested no longer exists!");
+            return;
+        } 
+        if(RoomInfo.NumMembers >= 6) //Room's already full
+        {
+            //Do something
+
+            Debug.Log("The room is full! 6/6");
+            return;
+        }//else:
+
+        //Check who the owner is
+        string currOwnerID = RoomInfo.CurrOwnerID;
+        prevRoomName = roomName;
+
+        //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
+        //Then the owner will add 1 to member and send back info upon receiving.
+        socialSystem.RequestVidCRoomInfo(currOwnerID);
+    }
+
+    //This callback is received when the owner sends you the list all users in room: ready to go!
+    //Called from photon chat manager
+    public void OnRoomOwnerInfoSendBack(string[] userIds)
+    {
+        Debug.LogError("Userids to connect to received: " + userIds.ToString());
+        InitializeVideoChatRoomPanel(userIds.ToList()); //you are joining!
+    }
+
+    private void InitializeVideoChatRoomPanel(List<string> userIds) //if userIds is empty, it indicates creating a room automatically. (no connect)
     {
         //initialize the object, set parent to social sytem
         vCC = Instantiate(videoChatRoomPanelPrefab, transform.parent.GetComponent<RectTransform>()).GetComponent<VideoChatController>();
         vCC.gameObject.transform.localPosition = new Vector2(-380f, 0f); //since we start with textchat.
         //set this.mediaConf to the object's
         //set this netConf to the object's
-        vCC.SetupMediaAndNetConfAndOther(mediaConf, netConf, this);
-        //intialize object's userInRoomIds (or not, if you are creating a new room) //no for now, testing
-        //announce new room to public in here.
+        //Initializes the userIds list: if you create a room then none, else have some.
+        vCC.SetupMediaAndNetConfAndOther(mediaConf, netConf, this, userIds, prevRoomName);
+        //Joining!
         vCC.StartRoomCreateOrJoinProcess();
 
+        //Close the search panel.
         gameObject.SetActive(false);
     }
 
-    public void OnConnectPressed(string targetOwnerID) //address should be HireBeatProjVidC + myID //this is to avoid connect to other
-    {
-        //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
-    }
 
     #region UIButtons
     public void CloseVideoChatRoomSearchPanel()
@@ -198,6 +233,12 @@ public class VideoChatRoomSearch : MonoBehaviour
     }
     #endregion 
 
+    //won't change from server's end, will do overwrite from owner's local end
+    public void UpdateVCRoomNumMembers(string roomName, int numMembers)
+    {
+        dbc.UpdateVCRoomNumMembers(roomName, numMembers);
+    }
+
     //When create new vc room button is pressed
     public void OnCreateNewVCRoom()
     {
@@ -219,7 +260,9 @@ public class VideoChatRoomSearch : MonoBehaviour
         {
             dbc.CreateNewVCRoom(roomName, myID, isPublic); //member default to 1
             OnCreateVCRoomButtonClicked(); //auto closes after room creation
-            //InitializeVideoChatPanel...
+
+            prevRoomName = roomName;
+            InitializeVideoChatRoomPanel(new List<string>()); //pass in an empty list, so nothing to connect to => create
         }
     }
 

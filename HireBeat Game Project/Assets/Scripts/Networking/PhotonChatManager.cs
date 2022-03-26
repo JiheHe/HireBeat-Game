@@ -80,16 +80,26 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     GetComponent<PlayFabController>().GetFriends();
                     //Refresh info card too if there's one; make it refresh ONLY IF it's related with the request...
                     //nvm refresh is kinda trivia
-                    break;
-                case "LEAVING VC":
+                    return;
+                case "LEAVING VC": //it's better to use voiceChatPanel.GetComponent<> for the next 3 msg, change in future.
                     socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(sender);
-                    break;
+                    return;
                 case "NEW VCP JOINED":
                     socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().OnOtherPlayerConnected(sender);
-                    break;
+                    return;
                 case "UPDATE VC NAMES":
                     socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().CheckCurrentSpeakerNames();
-                    break;
+                    return;
+                case "REQSTING VCRM INFO": //normally only owner receieve this, and he usually has a room panel avail, so...
+                    string userIdsString = socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().vCC.GetUserInVidCRoomIDsInString(sender);
+                    socialSystem.SendVidCRoomInfo(sender, userIdsString); //sends back to the requester!
+                    return;
+            }
+            var reMessage = (string)message;
+            if(reMessage.StartsWith("RECEI_VCRM_INFO")) //this is the callback from the owner
+            {
+                reMessage = reMessage.Replace("RECEI_VCRM_INFO", ""); //thought replace replaces all occur, can do this because _ not in playfabid, so will only be first one.
+                socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().OnRoomOwnerInfoSendBack(reMessage.Split(","));
             }
             return;
         }
