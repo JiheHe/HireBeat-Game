@@ -78,8 +78,37 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.LogError("Creating a new room! Here's the result: " + result.message);
 	}
 
+	//this new method can help with room name check at create or find at search!
+	public bool CheckVCRoomExists(string roomName) 
+    {
+		string query = "Select rowid from VideoChatsAvailable where RoomName = %roomName%";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("roomName", roomName);
+
+		SQLResult result = new SQLResult();
+		sql.Command(query, result, parameters);
+
+		if (result.status) //this if statement might not be necessarily
+		{
+			try
+			{
+				if (result.rowsAffected == 0) return false; //0 rows selected if doesn't exist.
+				else return true;
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError(ex.Message);
+				return false;
+			}
+		}
+		Debug.LogError("Wrong output for vc room exists check");
+		return false;
+	}
+
 	//Retrieve one vc room info in the database
-	public void RetrieveVCRoomInfo(string roomName)
+	public hirebeatprojectdb_videochatsavailable RetrieveVCRoomInfo(string roomName)
     {
 		string query = "execute RetrieveVCRoomInfo";
 		SQLParameter parameters = new SQLParameter();
@@ -97,15 +126,18 @@ public class DataBaseCommunicator : MonoBehaviour
 			try
 			{
 				hirebeatprojectdb_videochatsavailable row = result.Get<hirebeatprojectdb_videochatsavailable>()[0]; //result contains only 1 info of 1 room
-												//then here's a vc room display object
-				//thatObject.UpdateRoomDisplay(... )
+																													//then here's a vc room display object
+				return row;
 			}
 			catch (Exception ex)
 			{
 				// May throw an Illegal Cast Exception if the local database is missing
 				Debug.Log(ex.Message);
+				return null;
 			}
 		}
+		Debug.LogError("Error during room info retrieving");
+		return null;
 	}
 
 	//Grab all vc room infos in the database
@@ -207,7 +239,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		SQLResult result = new SQLResult();
 		sql.Command(query, result, parameters);
 
-		Debug.LogError("Deleting the selected VC Room! Here's the result: " + result.message);
+		Debug.LogError("Deleting the selected VC Room! Here's the result: ");// + result.message);
 	}
     #endregion
 

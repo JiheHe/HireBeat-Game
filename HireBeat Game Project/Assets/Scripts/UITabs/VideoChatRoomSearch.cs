@@ -81,7 +81,19 @@ public class VideoChatRoomSearch : MonoBehaviour
     public GameObject videoChatRoomDisplayPrefab; //this is the prefab for each room display in list
     public RectTransform vcRoomDisplayPanel; //this is the content where room will be child of.
 
-    DataBaseCommunicator dbc; //the real time database!
+    DataBaseCommunicator dbc = null; //the real time database!
+
+
+    public Toggle publicSwitch;
+    public Toggle privateSwitch;
+    public InputField vcRoomSearchField;
+    public Text searchMessage;
+    public GameObject vcRoomCreatePanel;
+    public InputField vcRoomCreateField;
+    public Toggle vcRoomPublicSwitch;
+    public Button vcRoomCreateButton;
+
+    public string myID;
 
     void Start() //conf the permanent netConf at start.
     {
@@ -92,6 +104,16 @@ public class VideoChatRoomSearch : MonoBehaviour
 
         dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
         vcRoomList = new Dictionary<string, VidCRoomInfo>(); //key will be roomName, it stays fixed.
+        myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
+
+        dbc.GrabAllVCRoomInfo(); //called once at init.
+    }
+
+    public void OnEnable() //called everytime when panel gets active
+    {
+        publicSwitch.isOn = false;
+        privateSwitch.isOn = false;
+        if(dbc != null) dbc.GrabAllVCRoomInfo(); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
     }
 
     // Update is called once per frame
@@ -99,12 +121,16 @@ public class VideoChatRoomSearch : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.O))
         {
-            InitializeVideoChatRoomPanel(); //this is for testing only.
+            //InitializeVideoChatRoomPanel(); //this is for testing only.
         }
         if(Input.GetKeyDown(KeyCode.T))
         {
-            dbc.CreateNewVCRoom("test", "asbfasd", true);
-            dbc.CreateNewVCRoom("IamJack", ";fsdafasd", false);
+            //dbc.UpdateVCRoomProps("test", "billyJones", 4, true);
+            //dbc.DeleteVCRoom("");
+            //dbc.CreateNewVCRoom("test", "asbfasd", true);
+            //dbc.CreateNewVCRoom("IamJack", ";fsdafasd", false);
+            //dbc.CheckVCRoomExists("test");
+            //dbc.CheckVCRoomExists("monka");
         }
     }
 
@@ -128,7 +154,7 @@ public class VideoChatRoomSearch : MonoBehaviour
         //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
     }
 
-    #region Buttons
+    #region UIButtons
     public void CloseVideoChatRoomSearchPanel()
     {
         gameObject.SetActive(false);
@@ -136,9 +162,214 @@ public class VideoChatRoomSearch : MonoBehaviour
 
     public void OnRefreshVCRoomButtonPressed()
     {
-        dbc.GrabAllVCRoomInfo();
+        if(publicSwitch.isOn || privateSwitch.isOn) //if user selects one, then update only that part.
+        {
+            SortVCRoomsByPublicity();
+        }
+        else dbc.GrabAllVCRoomInfo();
+    }
+
+    public void OnSearchVCRoomButtonClicked()
+    {
+        if(!vcRoomSearchField.gameObject.activeSelf) //not on, then turn on!
+        {
+            vcRoomSearchField.gameObject.SetActive(true);
+            vcRoomSearchField.Select();
+        } 
+        else //on, then turn off!
+        {
+            vcRoomSearchField.text = "";
+            vcRoomSearchField.gameObject.SetActive(false);
+        }
+    }
+
+    public void OnCreateVCRoomButtonClicked()
+    {
+        if(!vcRoomCreatePanel.activeSelf)
+        {
+            vcRoomCreateField.text = "";
+            vcRoomPublicSwitch.isOn = true; //default to public!
+            vcRoomCreatePanel.SetActive(true);
+        }
+        else
+        {
+            vcRoomCreatePanel.SetActive(false); //already cleared every open start, no need to clear at end.
+        }
     }
     #endregion 
+
+    //When create new vc room button is pressed
+    public void OnCreateNewVCRoom()
+    {
+        //check if roomName is unique:
+        string roomName = vcRoomCreateField.text.Trim(); //remove spaces beginning & end
+        bool isPublic = vcRoomPublicSwitch.isOn;
+        if (roomName.Length == 0)
+        {
+            string msg = "Sorry, the room name cannot be empty.";
+            StartCoroutine(DisplaySearchMessage(3, msg));
+        }
+        else if (dbc.CheckVCRoomExists(roomName)) 
+        {
+            //roomname already exists, go tell user...
+            string msg = "Sorry, this room name already exists!";
+            StartCoroutine(DisplaySearchMessage(3, msg));
+        }
+        else
+        {
+            dbc.CreateNewVCRoom(roomName, myID, isPublic); //member default to 1
+            OnCreateVCRoomButtonClicked(); //auto closes after room creation
+            //InitializeVideoChatPanel...
+        }
+    }
+
+    //On search field value changed, execute this. (Gonna refresh everytime?)
+    public void ListVCRoomsWithKeyword()
+    {
+        if (vcRoomSearchField.text.Trim().Length == 0)
+        {
+            OnRefreshVCRoomButtonPressed();
+            return; //this counts as default: nothing
+        }
+
+        dbc.GrabAllVCRoomInfo(); //grab newest info first
+        string keyword = vcRoomSearchField.text.Trim();
+        var roomNames = vcRoomList.Keys.ToList();
+
+        if (publicSwitch.isOn)
+        {
+            foreach (var roomName in roomNames)
+            {
+                if (!roomName.Contains(keyword) || !vcRoomList[roomName].isPublic) //Won't do startWith, maybe give them a higher priority? idk
+                {
+                    Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+                    vcRoomList.Remove(roomName);
+                }
+            }
+        }
+        else if (privateSwitch.isOn)
+        {
+            foreach (var roomName in roomNames)
+            {
+                if (!roomName.Contains(keyword) || vcRoomList[roomName].isPublic) //Won't do startWith, maybe give them a higher priority? idk
+                {
+                    Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+                    vcRoomList.Remove(roomName);
+                }
+            }
+        }
+        else
+        {
+            foreach (var roomName in roomNames)
+            {
+                if (!roomName.Contains(keyword)) //Won't do startWith, maybe give them a higher priority? idk
+                {
+                    Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+                    vcRoomList.Remove(roomName);
+                }
+            }
+        }
+    }
+
+    //This will delete all the rooms except the target, if the target exists. 
+    //This should grab roomInfo based on roomName. Call this on when Enter is pressed in search box.
+    public void SearchSpecificRoom(string roomName)
+    {
+        roomName = roomName.Trim();
+
+        if (roomName.Length == 0)
+        {
+            string msg = "Sorry, the room you enter cannot be empty.";
+            StartCoroutine(DisplaySearchMessage(3, msg));
+            return;
+        }
+
+        foreach (var rNam in vcRoomList.Keys.ToList()) //delete everything first, committed
+        {
+            Destroy(vcRoomList[rNam].roomDisplayTab.gameObject);
+            vcRoomList.Remove(rNam);
+        }
+
+        if (!dbc.CheckVCRoomExists(roomName))
+        {
+            //do something to show that the room doesn't exist
+            string msg = "Sorry, the room you entered does not exist.";
+            StartCoroutine(DisplaySearchMessage(3, msg));
+        }
+        else
+        {
+            //create that specific room
+            hirebeatprojectdb_videochatsavailable targetRoom = dbc.RetrieveVCRoomInfo(roomName);
+            AddNewRoomToList(roomName, targetRoom.CurrOwnerID, targetRoom.NumMembers, targetRoom.IsPublic);
+        }
+
+        //when you want a room, disregard it's status so more convenient.
+        if (publicSwitch.isOn)
+        {
+            comeFromSpecSearch = true;
+            publicSwitch.isOn = false;
+        } 
+        else if(privateSwitch.isOn)
+        {
+            comeFromSpecSearch = true;
+            privateSwitch.isOn = false;
+        }
+        //privateSwitch.isOn = false; //they triggered on value changed...
+    }
+
+    IEnumerator DisplaySearchMessage(float time, string message)
+    {
+        searchMessage.gameObject.SetActive(true);
+        searchMessage.text = message;
+        yield return new WaitForSeconds(time);
+        searchMessage.gameObject.SetActive(false);
+        searchMessage.text = ""; //this is pointless
+    }
+
+    bool comeFromSpecSearch = false; //don't want this to trigger again after disable, from spec search
+    //Alternative: A good idea for public/private: instead of grab then destroy extra, use grab to directly grab non extra? (A bit more work tho, ehhh we’ll see)
+    public void SortVCRoomsByPublicity() //xor, if both off then default! 
+    {
+        if(comeFromSpecSearch)
+        {
+            comeFromSpecSearch = false;
+            return;
+        }
+
+        if (!(vcRoomSearchField.text.Trim().Length == 0)) { //if user has something, then allow the switch to filter too!
+            ListVCRoomsWithKeyword();
+            return;
+        }
+
+        //First, grab the newest info
+        dbc.GrabAllVCRoomInfo();
+
+        if (publicSwitch.isOn) //destroy all private tabs
+        {
+            var roomNames = vcRoomList.Keys.ToList();
+            foreach(var roomName in roomNames)
+            {
+                if(!vcRoomList[roomName].isPublic)
+                {
+                    Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+                    vcRoomList.Remove(roomName);
+                }
+            }
+        }
+        else if (privateSwitch.isOn) //destroy all public tabs
+        {
+            var roomNames = vcRoomList.Keys.ToList();
+            foreach (var roomName in roomNames)
+            {
+                if (vcRoomList[roomName].isPublic)
+                {
+                    Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+                    vcRoomList.Remove(roomName);
+                }
+            }
+        }
+    }
+
 
     private void AddNewRoomToList(string roomName, string currOwnerID, int numMembers, bool isPublic)
     {
