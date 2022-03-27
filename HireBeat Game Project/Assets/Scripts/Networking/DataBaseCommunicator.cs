@@ -4,6 +4,9 @@ using SQL4Unity;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 public class DataBaseCommunicator : MonoBehaviour
 {
@@ -11,6 +14,9 @@ public class DataBaseCommunicator : MonoBehaviour
 	public string Database = "HireBeatProjectDB";
 	public string UserName = string.Empty;
 	public string IpAddress = "54.229.65.122"; // Local IP for testing. Updated to TCP
+
+	public string myOwnIpAddress = string.Empty;
+	public string myID = string.Empty;
 
 	public bool secure = false;
 	int Port = 19390; // Default Client TCP Port. Replaced
@@ -23,7 +29,8 @@ public class DataBaseCommunicator : MonoBehaviour
 
 	void Start()
 	{
-		//UserName = UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //playfab user id as the username
+		myID = UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //playfab user id as the username
+		myOwnIpAddress = GetLocalIPv4(); //this is the ip address that the user connects to the server with.
 
 		// Must be WebSocket for WebGL
 		if (Application.platform == RuntimePlatform.WebGLPlayer) Protocol = SQL4Unity.Server.Protocol.WebSocket;
@@ -41,6 +48,14 @@ public class DataBaseCommunicator : MonoBehaviour
 		vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
 	}
 
+	public string GetLocalIPv4() //this returns user's current ip address!
+	{
+		return Dns.GetHostEntry(Dns.GetHostName())
+			.AddressList.First(
+				f => f.AddressFamily == AddressFamily.InterNetwork)
+			.ToString();
+	}
+
 	// Called once a connection to the server has been made
 	void ConnectCallback(bool ok)
 	{
@@ -53,7 +68,8 @@ public class DataBaseCommunicator : MonoBehaviour
 		}
 		else
 		{
-			sql.Open(Database);
+			sql.Open(Database); //no callback here...
+			OpenCallback(true);
 		}
 	}
 
@@ -61,16 +77,17 @@ public class DataBaseCommunicator : MonoBehaviour
 	void OpenCallback(bool ok)
 	{
 		// Still not on Main Thread
-
 		Debug.Log("Database Open:" + ok);
 		//sql.SyncWithServer(true); //DOn't sync with server! Everything will be server based if don't sync, which is good!
-		isOpen = true; //this is kinda pointless rn
+		isOpen = true;
+
+		AddIPAddressToUniqueID(myOwnIpAddress, myID);
 	}
 
 
-    #region VideoChatRooms
+	#region VideoChatRooms
 	//Create a new vc room in the database
-    public void CreateNewVCRoom(string roomName, string creatorID, bool isPublic)
+	public void CreateNewVCRoom(string roomName, string creatorID, bool isPublic)
     {
 		string query = "execute CreateNewVCRoom";
 		SQLParameter parameters = new SQLParameter();
@@ -375,6 +392,21 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.Log("Failed to retrieve all VC Room info.");
 		}
 	}*/
+
+	public void AddIPAddressToUniqueID(string ipAddress, string uniqueID)
+    {
+		string query = "insert into IPAdressToUniqueID (IPAddress, UniqueID) values (%ipAddress%, %uniqueID%)";
+
+		SQLParameter parameters = new SQLParameter();
+		parameters.SetValue("ipAddress", ipAddress);
+		parameters.SetValue("uniqueID", uniqueID);
+
+		sql.Command(query, null, parameters, AddIPAddressToUniqueIDCallback); //or can do if(sql.Command(query, result, parameters))
+	}
+	private void AddIPAddressToUniqueIDCallback(bool ok, SQLResult result)
+    {
+		Debug.Log("Adding ip address to unique id! Here's the result: " + result.message); //I'm not interested in the callback.
+	}
 
 	//Update a VC room property in the database
 	public void UpdateVCRoomProps(string roomName, string newOwnerID, int newNumMembers, bool newIsPublic)

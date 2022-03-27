@@ -1,0 +1,13 @@
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('test','billyJones',4,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('IamJack',';fsdafasd',1,False);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('lasdfafle~','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('ewa;fjaf','7A98A976DE472605',1,False);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('a','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('ab','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('abcd','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('asfdasdfabc','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('abc','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('moreprivate','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('RealPrivate','7A98A976DE472605',1,False);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('asdfagasdf','7A98A976DE472605',1,True);
+INSERT INTO VideoChatsAvailable (roomname,currownerid,nummembers,ispublic) VALUES ('aaaaa','7A98A976DE472605',1,False);

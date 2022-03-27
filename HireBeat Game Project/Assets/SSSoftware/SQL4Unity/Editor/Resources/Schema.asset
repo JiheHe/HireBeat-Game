@@ -21,7 +21,7 @@ MonoBehaviour:
     dropped: 0
     created: 1
     checksum: 
-    tables: 0100000004000000
+    tables: 01000000040000001a000000
     procedures: 1500000016000000170000001800000019000000
     dbKeys:
     - id: 0
@@ -65,6 +65,19 @@ MonoBehaviour:
     created: 0
     updated: 1
     dataTable: 0
+    dataPage: 0
+    bigTab: 0
+  - id: 26
+    dbId: 0
+    tableName: hirebeatprojectdb.ipadresstouniqueid
+    displayName: IPAdressToUniqueID
+    hidden: 0
+    columns: 1b001d001e00
+    indexes: 1c001f00
+    dropped: 0
+    created: 1
+    updated: 0
+    dataTable: 7
     dataPage: 0
     bigTab: 0
   columns:
@@ -203,6 +216,51 @@ MonoBehaviour:
     dropped: 1
     created: 0
     value: 
+  - id: 27
+    tabId: 26
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.ipadresstouniqueid.rowid
+    displayName: rowId
+    dataType: ushort
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 1
+    autoIncrement: 1
+    hidden: 1
+    dropped: 0
+    created: 1
+    value: 
+  - id: 29
+    tabId: 26
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.ipadresstouniqueid.ipaddress
+    displayName: IPAddress
+    dataType: string
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 1
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 30
+    tabId: 26
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.ipadresstouniqueid.uniqueid
+    displayName: UniqueID
+    dataType: string
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
   indexes:
   - id: 3
     tabId: 1
@@ -309,6 +367,36 @@ MonoBehaviour:
     dataPage: 0
     bigTab: 0
     unique: 1
+  - id: 28
+    tabId: 26
+    dbId: 0
+    indexName: hirebeatprojectdb.ipadresstouniqueid.rowidix
+    displayName: rowIdIx
+    type: List
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 1b00
+    dataType: ushort
+    dataIndex: 9
+    dataPage: 0
+    bigTab: 0
+    unique: 1
+  - id: 31
+    tabId: 26
+    dbId: 0
+    indexName: hirebeatprojectdb.ipadresstouniqueid.ipaddresspk
+    displayName: IPAddressPK
+    type: Dict
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 1d00
+    dataType: string
+    dataIndex: 8
+    dataPage: 0
+    bigTab: 0
+    unique: 1
   procedures:
   - id: 15
     dbId: 0
@@ -412,7 +500,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 4
+    lastId: 7
   - id: 23
     dbId: 0
     procedureName: hirebeatprojectdb.updatevcroomprops
@@ -449,7 +537,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 4
+    lastId: 7
   - id: 24
     dbId: 0
     procedureName: hirebeatprojectdb.deletevcroom
@@ -478,7 +566,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 4
+    lastId: 7
   - id: 25
     dbId: 0
     procedureName: hirebeatprojectdb.graballvcroominfo
@@ -516,4 +604,4 @@ MonoBehaviour:
     conditions: 
     joins: []
     lastId: 1
-  lastID: 25
+  lastID: 31
