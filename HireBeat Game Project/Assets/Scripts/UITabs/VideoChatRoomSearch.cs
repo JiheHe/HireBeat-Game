@@ -196,6 +196,22 @@ public class VideoChatRoomSearch : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    //Only vcc will call this upon leaving, to check.
+    public void RetrieveVCRoomCurrentOwner(string roomName)
+    {
+        dbc.RetrieveVCRoomCurrentOwner(roomName);
+    }
+
+    public void DeleteVCRoom(string roomName)
+    {
+        dbc.DeleteVCRoom(roomName);
+    }
+
+    public void UpdateVCRoomOwner(string roomName, string newOwnerID)
+    {
+        dbc.UpdateVCRoomOwner(roomName, newOwnerID);
+    }
+
 
     #region UIButtons
     public void CloseVideoChatRoomSearchPanel()

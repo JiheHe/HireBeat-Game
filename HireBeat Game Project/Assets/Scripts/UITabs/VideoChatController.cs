@@ -386,6 +386,12 @@ public class VideoChatController : MonoBehaviour
             uVideoOutputs[evt.ConnectionId].transform.parent.GetComponent<VidCRemoteInfo>().userAcctID = playfabID;
             if (!userInRoomIds.Contains(playfabID)) userInRoomIds.Add(playfabID);
         }
+        else if(username.Contains('=')) //this is the special symbol for a leaver request, so owner can edit the data immediately. Only will receive this if you are owner!
+        {
+            string playfabID = content;
+            userInRoomIds.Remove(playfabID); //immediately removes this, so other users can sense if req. Rest will be removed at disconnect received.
+            vcs.UpdateVCRoomNumMembers(roomName, userInRoomIds.Count + 1); //including yourself! But did -1 from prev already.
+        }
         else
         {
             //Then we update username and string (make into a printable obj) here.
@@ -540,15 +546,45 @@ public class VideoChatController : MonoBehaviour
 
     public void OnDisconnectPressed()
     {
+        vcs.RetrieveVCRoomCurrentOwner(roomName); //this creates a callback
+    }
+    public void OnDisconnectPressedSecondHalf(string roomOwnerID) //this will be called by dbc.
+    {
+        if(roomOwnerID == myID) //If you are owner, check the list of users in room., 
+        {
+            if(userInRoomIds.Count == 0) //no more connections or incoming at this point! You are the only user in room, so delete room!
+            {
+                vcs.DeleteVCRoom(roomName);
+            }
+            else
+            {
+                vcs.UpdateVCRoomNumMembers(roomName, userInRoomIds.Count); //excluding yourself, so no +1, therefore everyone but you (-1).
+                vcs.UpdateVCRoomOwner(roomName, userInRoomIds[0]); //assign new owner through database, which can easily be the first person
+            }
+        }
+        else //If you are not owner, then webrtc msg owner to - 1.
+        {
+            //'=' is indicator for leaver msg, "," is splitter, and 2nd part is content.
+            byte[] msgData = Encoding.UTF8.GetBytes("=," + myID); //This is to tell the owner you are leaving.
+            foreach(var pair in connectionIdWithPlayFabId)
+            {
+                if(pair.Value == roomOwnerID) //finding connection id through playfab id
+                {
+                    communicator.SendData(pair.Key, msgData, 0, msgData.Length, true);
+                    break;
+                }
+            }
+        }
+
         if (communicator != null)
         {
             communicator.Dispose();
             communicator = null;
 
-            userInRoomIds.Clear();
-            connectionIdWithPlayFabId.Clear();
-
-            mConnectionIds = new List<ConnectionId>();
+            //userInRoomIds.Clear();
+            //connectionIdWithPlayFabId.Clear();
+            //mConnectionIds = new List<ConnectionId>();
+            //other lists... but no need to remove! Since this obj will be destroyed, so auto gone anyway.
 
             //keep netconf: intialized once and forever at start.
             //keep mediaconf: just settings in general, save!

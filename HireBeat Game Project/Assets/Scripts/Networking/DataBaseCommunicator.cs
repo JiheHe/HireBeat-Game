@@ -219,6 +219,56 @@ public class DataBaseCommunicator : MonoBehaviour
 
 
 
+	//This is a simple function for vCC to grab current room owner, we are sure that the room exists.
+	SQLResult retrieveVCRoomCurrentOwnerResult;
+	bool retrieveVCRoomCurrentOwnerReady;
+	//Retrieve one vc room info in the database
+	public void RetrieveVCRoomCurrentOwner(string roomName) //this will only be used by vCC, so....
+	{
+		retrieveVCRoomCurrentOwnerReady = false;
+
+		string query = "Select CurrOwnerID from VideoChatsAvailable where RoomName = %roomName%";
+
+		SQLParameter parameters = new SQLParameter();
+		parameters.SetValue("roomName", roomName);
+
+		sql.Command(query, null, parameters, RetrieveVCRoomCurrentOwnerCallback); //no tis more. 
+
+		StartCoroutine(SendVCRoomOwnerInfo());
+	}
+
+	void RetrieveVCRoomCurrentOwnerCallback(bool ok, SQLResult result)
+	{
+		// NOT on Main Thread
+		retrieveVCRoomCurrentOwnerResult = result;
+		retrieveVCRoomCurrentOwnerReady = true;
+	}
+
+	IEnumerator SendVCRoomOwnerInfo()
+	{
+		yield return new WaitUntil(() => retrieveVCRoomCurrentOwnerReady);
+		if (retrieveVCRoomCurrentOwnerResult.status) //this if statement might not be necessarily
+		{
+			try
+			{
+				string roomOwnerID = retrieveVCRoomCurrentOwnerResult.Get<hirebeatprojectdb_videochatsavailable>()[0].CurrOwnerID;
+				//No need for callback since only vCC will be needing this.
+				if(vcs.vCC != null) vcs.vCC.OnDisconnectPressedSecondHalf(roomOwnerID); //we know vCC won't be null, but it could be null after first call
+			}
+			catch (Exception ex) //this could be possible if the room no longer exists, cuz the top one will error.
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError(ex.Message);
+			}
+		}
+		else
+		{
+			Debug.LogError("Error during room owner info retrieving");
+		}
+	}
+
+
+
 	SQLResult grabAllVCRoomInfoResult;
 	bool grabAllVCRoomInfoReady;
 	//Grab all vc room infos in the database
@@ -358,6 +408,21 @@ public class DataBaseCommunicator : MonoBehaviour
 	private void UpdateVCRoomNumMembersCallback(bool ok, SQLResult result)
 	{
 		Debug.Log("Updating room numMembers! Here's the result: " + result.message); //I'm not interested in the callback.
+	}
+
+	public void UpdateVCRoomOwner(string roomName, string newOwnerID)
+	{
+		string query = "update VideoChatsAvailable set CurrOwnerID = %newCurrOwnerID% where RoomName = %roomName%";
+
+		SQLParameter parameter = new SQLParameter();
+		parameter.SetValue("newCurrOwnerID", newOwnerID);
+		parameter.SetValue("roomName", roomName);
+
+		sql.Command(query, null, parameter, UpdateVCRoomOwnerCallback);
+	}
+	private void UpdateVCRoomOwnerCallback(bool ok, SQLResult result)
+	{
+		Debug.Log("Updating room owner! Here's the result: " + result.message); //I'm not interested in the callback.
 	}
 
 	//Delete a VC room in the database
