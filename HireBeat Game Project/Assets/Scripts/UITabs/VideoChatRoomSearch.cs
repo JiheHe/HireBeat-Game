@@ -108,14 +108,14 @@ public class VideoChatRoomSearch : MonoBehaviour
         vcRoomList = new Dictionary<string, VidCRoomInfo>(); //key will be roomName, it stays fixed.
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
 
-        dbc.GrabAllVCRoomInfo(); //called once at init.
+        dbc.GrabAllVCRoomInfo("VCRoomListTotalUpdate"); //called once at init.
     }
 
     public void OnEnable() //called everytime when panel gets active
     {
         publicSwitch.isOn = false;
         privateSwitch.isOn = false;
-        if(dbc != null) dbc.GrabAllVCRoomInfo(); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
+        if(dbc != null) dbc.GrabAllVCRoomInfo("VCRoomListTotalUpdate"); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
     }
 
     // Update is called once per frame
@@ -134,30 +134,38 @@ public class VideoChatRoomSearch : MonoBehaviour
     //Basically, connect button only shows if the room is public or you've been invited, either case you should be able to join directly
     //When connect is pressed, this method in vcs will be called. Use roomName to grab the room stats and and request.
     //Wouldn't the ownerid stored in the display tab be useless then LOL, since database everything basically.
+    string connectRoomName;
     public void OnConnectPressed(string roomName) //address should be HireBeatProjVidC + myID //this is to avoid connect to other
     {
+        connectRoomName = roomName;
+        Debug.Log("Connecting to VC_ROOM: " + roomName);
         //Check amount of current users. If full then fail... but if not full then immediately add 1 to the current count! (cuz you gona connect!)
         //Actually don't do it from your end! Remember only 1 user should edit a row, which should be the owner, so:
-        var RoomInfo = dbc.RetrieveVCRoomInfo(roomName);
-
-        if(RoomInfo == null) //nothing was returned, so special result! This means that the room no longer exists.
+        dbc.RetrieveVCRoomInfo(roomName, "ConnectRoomCheck"); //dbc calls second half
+    }
+    public void OnConnectPressedSecondHalf(hirebeatprojectdb_videochatsavailable roomInfo) //called by dbc
+    {
+        if (roomInfo == null) //nothing was returned, so special result! This means that the room no longer exists.
         {
-            //Do something
-
-            Debug.Log("The room requested no longer exists!");
+            //Print alert message
+            DisplaySearchMessage(3, "The room no longer exists!");
+            //Destroy the room immediately from user's view
+            Destroy(vcRoomList[connectRoomName].roomDisplayTab.gameObject);
+            vcRoomList.Remove(connectRoomName);
             return;
-        } 
-        if(RoomInfo.NumMembers >= 6) //Room's already full
+        }
+        if (roomInfo.NumMembers >= 6) //Room's already full
         {
-            //Do something
-
-            Debug.Log("The room is full! 6/6");
+            //Print alert message
+            DisplaySearchMessage(3, "The room is full! 6/6");
+            //Don't destroy the room (even if it's in invite!), but set numUsers to 6
+            vcRoomList[connectRoomName].roomDisplayTab.gameObject.GetComponent<VidCDisplayTab>().UpdateNumMembers(6);
             return;
         }//else:
 
         //Check who the owner is
-        string currOwnerID = RoomInfo.CurrOwnerID;
-        prevRoomName = roomName;
+        string currOwnerID = roomInfo.CurrOwnerID;
+        prevRoomName = connectRoomName;
 
         //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
         //Then the owner will add 1 to member and send back info upon receiving.
@@ -201,7 +209,7 @@ public class VideoChatRoomSearch : MonoBehaviour
         {
             SortVCRoomsByPublicity();
         }
-        else dbc.GrabAllVCRoomInfo();
+        else dbc.GrabAllVCRoomInfo("VCRoomListTotalUpdate");
     }
 
     public void OnSearchVCRoomButtonClicked()
@@ -239,18 +247,24 @@ public class VideoChatRoomSearch : MonoBehaviour
         dbc.UpdateVCRoomNumMembers(roomName, numMembers);
     }
 
+    string newRoomRoomName;
+    bool newRoomIsPublic;
     //When create new vc room button is pressed
     public void OnCreateNewVCRoom()
     {
         //check if roomName is unique:
-        string roomName = vcRoomCreateField.text.Trim(); //remove spaces beginning & end
-        bool isPublic = vcRoomPublicSwitch.isOn;
-        if (roomName.Length == 0)
+        newRoomRoomName = vcRoomCreateField.text.Trim(); //remove spaces beginning & end
+        newRoomIsPublic = vcRoomPublicSwitch.isOn;
+        if (newRoomRoomName.Length == 0)
         {
             string msg = "Sorry, the room name cannot be empty.";
             StartCoroutine(DisplaySearchMessage(3, msg));
         }
-        else if (dbc.CheckVCRoomExists(roomName)) 
+        dbc.CheckVCRoomExists(newRoomRoomName, "CreateRoomCheck"); //initiates second half check.
+    }
+    public void OnCreateNewVCRoomSecondHalf(bool doesNameExist) //this is called by DBC callback.
+    {
+        if(doesNameExist)
         {
             //roomname already exists, go tell user...
             string msg = "Sorry, this room name already exists!";
@@ -258,10 +272,10 @@ public class VideoChatRoomSearch : MonoBehaviour
         }
         else
         {
-            dbc.CreateNewVCRoom(roomName, myID, isPublic); //member default to 1
+            dbc.CreateNewVCRoom(newRoomRoomName, myID, newRoomIsPublic); //member default to 1
             OnCreateVCRoomButtonClicked(); //auto closes after room creation
 
-            prevRoomName = roomName;
+            prevRoomName = newRoomRoomName;
             InitializeVideoChatRoomPanel(new List<string>()); //pass in an empty list, so nothing to connect to => create
         }
     }
@@ -275,10 +289,17 @@ public class VideoChatRoomSearch : MonoBehaviour
             return; //this counts as default: nothing
         }
 
-        dbc.GrabAllVCRoomInfo(); //grab newest info first
+        dbc.GrabAllVCRoomInfo("VCRoomKeyword"); //grab newest info first, triggers callback
+    }
+    public void ListVCRoomsWithKeywordSecondHalf(hirebeatprojectdb_videochatsavailable[] dbRooms) //called by callback.
+    {
+        //Turn all these info into actual stuff
+        UpdateVCRoomList(dbRooms);
+
         string keyword = vcRoomSearchField.text.Trim();
         var roomNames = vcRoomList.Keys.ToList();
 
+        //Then sort through deletion. (Any better methods?)
         if (publicSwitch.isOn)
         {
             foreach (var roomName in roomNames)
@@ -316,11 +337,12 @@ public class VideoChatRoomSearch : MonoBehaviour
 
     //This will delete all the rooms except the target, if the target exists. 
     //This should grab roomInfo based on roomName. Call this on when Enter is pressed in search box.
+    string searchRoomRoomName;
     public void SearchSpecificRoom(string roomName)
     {
-        roomName = roomName.Trim();
+        searchRoomRoomName = roomName.Trim();
 
-        if (roomName.Length == 0)
+        if (searchRoomRoomName.Length == 0)
         {
             string msg = "Sorry, the room you enter cannot be empty.";
             StartCoroutine(DisplaySearchMessage(3, msg));
@@ -333,7 +355,11 @@ public class VideoChatRoomSearch : MonoBehaviour
             vcRoomList.Remove(rNam);
         }
 
-        if (!dbc.CheckVCRoomExists(roomName))
+        dbc.CheckVCRoomExists(searchRoomRoomName, "SearchRoomCheck"); //initiates second half callback
+    }
+    public void SearchSpecificRoomSecondHalf(bool doesNameExist) //this is called by the dbc room exist callback
+    {
+        if (!doesNameExist)
         {
             //do something to show that the room doesn't exist
             string msg = "Sorry, the room you entered does not exist.";
@@ -341,18 +367,27 @@ public class VideoChatRoomSearch : MonoBehaviour
         }
         else
         {
-            //create that specific room
-            hirebeatprojectdb_videochatsavailable targetRoom = dbc.RetrieveVCRoomInfo(roomName);
-            AddNewRoomToList(roomName, targetRoom.CurrOwnerID, targetRoom.NumMembers, targetRoom.IsPublic);
+            dbc.RetrieveVCRoomInfo(searchRoomRoomName, "SearchRoomCheck"); //retrieve that specific room, this creates third callback
         }
+            
+    }
+    public void SearchSpecificRoomThirdHalf(hirebeatprojectdb_videochatsavailable targetRoom) //dbc calls this with retrieving specific room info
+    {
+        if(targetRoom == null)
+        {
+            Debug.LogError("This room no longer exists"); //is this the right way? is this needed here?
+            return;
+        }
+
+        AddNewRoomToList(searchRoomRoomName, targetRoom.CurrOwnerID, targetRoom.NumMembers, targetRoom.IsPublic);
 
         //when you want a room, disregard it's status so more convenient.
         if (publicSwitch.isOn)
         {
             comeFromSpecSearch = true;
             publicSwitch.isOn = false;
-        } 
-        else if(privateSwitch.isOn)
+        }
+        else if (privateSwitch.isOn)
         {
             comeFromSpecSearch = true;
             privateSwitch.isOn = false;
@@ -385,14 +420,20 @@ public class VideoChatRoomSearch : MonoBehaviour
         }
 
         //First, grab the newest info
-        dbc.GrabAllVCRoomInfo();
+        dbc.GrabAllVCRoomInfo("VCRoomPublicity"); //also triggers callback.
+    }
+    public void SortVCRoomsByPublicitySecondHalf(hirebeatprojectdb_videochatsavailable[] dbRooms) //this is called by callback from prev.
+    {
+        //Turn all these info into actual stuff
+        UpdateVCRoomList(dbRooms); 
 
+        //Then sort through deletion! (Is sorting through addition better?)
         if (publicSwitch.isOn) //destroy all private tabs
         {
             var roomNames = vcRoomList.Keys.ToList();
-            foreach(var roomName in roomNames)
+            foreach (var roomName in roomNames)
             {
-                if(!vcRoomList[roomName].isPublic)
+                if (!vcRoomList[roomName].isPublic)
                 {
                     Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
                     vcRoomList.Remove(roomName);
