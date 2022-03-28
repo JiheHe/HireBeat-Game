@@ -101,6 +101,12 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                 reMessage = reMessage.Replace("RECEI_VCRM_INFO", ""); //thought replace replaces all occur, can do this because _ not in playfabid, so will only be first one.
                 socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().OnRoomOwnerInfoSendBack(reMessage.Split(","));
             }
+            else if(reMessage.StartsWith("INVITE_TO_"))
+            {
+                reMessage = reMessage.Substring("INVITE_TO_".Length); //this is the room name
+                Debug.Log("New Room Invite Receieved! Invited to " + reMessage);
+                socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().invitedRoomList.Add(reMessage); //you've been invited to this room!
+            }
             return;
         }
 

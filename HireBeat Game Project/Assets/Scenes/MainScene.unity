@@ -23574,6 +23574,8 @@ MonoBehaviour:
   Database: HireBeatProjectDB
   UserName: 
   IpAddress: 54.229.65.122
+  myOwnIpAddress: 
+  myID: 
   secure: 0
 --- !u!1 &549125792
 GameObject:
@@ -43967,7 +43969,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 881292261}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4264498610103000600}
+        m_TargetAssemblyTypeName: VideoChatRoomSearch, Assembly-CSharp
+        m_MethodName: OnShowRoomInviteButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &881292261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103677,6 +103691,7 @@ MonoBehaviour:
   vCC: {fileID: 0}
   videoChatRoomDisplayPrefab: {fileID: 1351898600531975745, guid: c8caa309a6ade494ea6b6105f04e9755, type: 3}
   vcRoomDisplayPanel: {fileID: 4264498610368266754}
+  invitedRoomList: []
   publicSwitch: {fileID: 547754897}
   privateSwitch: {fileID: 301038705}
   vcRoomSearchField: {fileID: 1194689025}

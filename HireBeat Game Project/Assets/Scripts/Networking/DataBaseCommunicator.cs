@@ -311,6 +311,10 @@ public class DataBaseCommunicator : MonoBehaviour
             {
 				vcs.ListVCRoomsWithKeywordSecondHalf(rows);
             }
+			else if(queuerName == "ShowInvitedRooms")
+            {
+				vcs.ShowAllInvitedVCRoomSecondHalf(rows);
+			}
 		}));
 	}
 

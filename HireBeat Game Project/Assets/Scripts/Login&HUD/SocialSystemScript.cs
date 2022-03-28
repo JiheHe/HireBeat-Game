@@ -264,6 +264,11 @@ public class SocialSystemScript : MonoBehaviour
         PCM.chatClient.SendPrivateMessage(userID, "RECEI_VCRM_INFO" + userIdsString);
     }
 
+    public void SendVidCInvite(string userID, string roomName)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "INVITE_TO_" + roomName);
+    }
+
     public void CreatePublicRoomPanel()
     {
         publicRoomChatPanel = Instantiate(chatPanel, msgViewPort.transform);

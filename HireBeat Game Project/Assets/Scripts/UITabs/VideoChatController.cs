@@ -7,6 +7,7 @@ using Byn.Awrtc.Unity;
 using Byn.Unity.Examples;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 
 public class VideoChatController : MonoBehaviour
 {
@@ -56,8 +57,9 @@ public class VideoChatController : MonoBehaviour
     private Texture2D rTex3;
     private Texture2D rTex4;
     private Dictionary<ConnectionId, int> textureIndex = new Dictionary<ConnectionId, int>();
-    
 
+    //invite people into the room
+    public TMP_InputField inviteInput;
 
     [Header("Text chat panel")]
     public GameObject vidCTextChatObj;
@@ -759,6 +761,18 @@ public class VideoChatController : MonoBehaviour
     public void CloseVideoChatPanel()
     {
         gameObject.SetActive(false);
+    }
+
+    public void OnInviteUserButtonPressed()
+    {
+        string userInvited = inviteInput.text; //input will only be alphanumeric (username or playfabid, alphabet + num), so no space!
+
+        //currently, only id. A future database that links id with name will be used
+        //also can use a database to check if the person is online.
+        vcs.socialSystem.SendVidCInvite(userInvited, roomName);
+        Debug.Log("Room invite sent to user " + userInvited);
+
+        inviteInput.text = "";
     }
     #endregion
 

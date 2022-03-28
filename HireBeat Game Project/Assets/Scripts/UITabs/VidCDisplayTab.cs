@@ -13,7 +13,7 @@ public class VidCDisplayTab : MonoBehaviour
 
     //should I add a reference to vcs here?
     
-    public void SetRoomInfo(string roomName, int numMembers, bool isPublic, string currOwnerID)
+    public void SetRoomInfo(string roomName, int numMembers, bool isPublic, string currOwnerID, bool invited = false)
     {
         this.roomName.text = roomName;
         this.numMembers.text = numMembers.ToString();
@@ -25,6 +25,7 @@ public class VidCDisplayTab : MonoBehaviour
         else
         {
             publicAccess.text = "Private";
+            if(invited) joinButton.gameObject.SetActive(true);
         }
         this.currOwnerID = currOwnerID;
     }
@@ -37,6 +38,12 @@ public class VidCDisplayTab : MonoBehaviour
     public void UpdateCurrOwnerID(string currOwnerID)
     {
         this.currOwnerID = currOwnerID;
+    }
+
+    public void UpdateJoinAccess(bool invited)
+    {
+        if (invited) joinButton.gameObject.SetActive(true);
+        else joinButton.gameObject.SetActive(false);
     }
 
     public void OnConnectPressed() //the objects below should be active by the time connect is pressed.

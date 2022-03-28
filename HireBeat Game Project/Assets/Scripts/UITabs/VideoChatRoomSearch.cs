@@ -81,6 +81,8 @@ public class VideoChatRoomSearch : MonoBehaviour
     public GameObject videoChatRoomDisplayPrefab; //this is the prefab for each room display in list
     public RectTransform vcRoomDisplayPanel; //this is the content where room will be child of.
 
+    public List<string> invitedRoomList = new List<string>(); //can be invited by public or private! private can only join through invite tho
+
     DataBaseCommunicator dbc = null; //the real time database!
     string prevRoomName; //this gets updated at room joining, but you get to keep the previous name until overwritten.
 
@@ -255,6 +257,12 @@ public class VideoChatRoomSearch : MonoBehaviour
             vcRoomCreatePanel.SetActive(false); //already cleared every open start, no need to clear at end.
         }
     }
+
+    public void OnShowRoomInviteButtonClicked()
+    {
+        //public/private shouldn't matter on invite.
+        ShowAllInvitedVCRooms();
+    }
     #endregion 
 
     //won't change from server's end, will do overwrite from owner's local end
@@ -293,6 +301,40 @@ public class VideoChatRoomSearch : MonoBehaviour
 
             prevRoomName = newRoomRoomName;
             InitializeVideoChatRoomPanel(new List<string>()); //pass in an empty list, so nothing to connect to => create
+        }
+    }
+
+    //When the show invites button is clicked
+    public void ShowAllInvitedVCRooms()
+    {
+        dbc.GrabAllVCRoomInfo("ShowInvitedRooms"); //grab newest info first, triggers callback
+    }
+    public void ShowAllInvitedVCRoomSecondHalf(hirebeatprojectdb_videochatsavailable[] dbRooms) //called by callback
+    {
+        //Turn all these info into actual stuff
+        UpdateVCRoomList(dbRooms);
+
+        //Sort through deletion...
+        var roomNames = vcRoomList.Keys.ToList();
+        foreach (var roomName in roomNames)
+        {
+            if(!invitedRoomList.Contains(roomName))
+            {
+                Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
+                vcRoomList.Remove(roomName);
+            }
+        }
+
+        //when show all invites, disregard their status so more convenient.
+        if (publicSwitch.isOn)
+        {
+            comeFromSpecSearch = true;
+            publicSwitch.isOn = false;
+        }
+        else if (privateSwitch.isOn)
+        {
+            comeFromSpecSearch = true;
+            privateSwitch.isOn = false;
         }
     }
 
@@ -475,7 +517,8 @@ public class VideoChatRoomSearch : MonoBehaviour
     {
         var newVCRoomDisplay = Instantiate(videoChatRoomDisplayPrefab, vcRoomDisplayPanel);
         newVCRoomDisplay.name = prefix + roomName;
-        newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID);
+        if(invitedRoomList.Contains(roomName)) newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID, true); //invited!
+        else newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID);
         vcRoomList.Add(roomName, new VidCRoomInfo(currOwnerID, numMembers, isPublic, newVCRoomDisplay.GetComponent<VidCDisplayTab>()));
     }
 
@@ -492,6 +535,8 @@ public class VideoChatRoomSearch : MonoBehaviour
             info.numMembers = numMembers;
             info.roomDisplayTab.UpdateNumMembers(numMembers);
         }
+
+        if (invitedRoomList.Contains(roomName)) info.roomDisplayTab.UpdateJoinAccess(true);
     }
 
     //Need to check vcRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
@@ -509,6 +554,7 @@ public class VideoChatRoomSearch : MonoBehaviour
         {
             Destroy(vcRoomList[roomName].roomDisplayTab.gameObject);
             vcRoomList.Remove(roomName);
+            invitedRoomList.Remove(roomName); //if any
         }
         foreach (string roomName in ToBeUpdated)
         {
