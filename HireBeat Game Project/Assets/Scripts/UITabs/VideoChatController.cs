@@ -182,7 +182,7 @@ public class VideoChatController : MonoBehaviour
     public void ConnectToVidCAddress(string targetUserID)
     {
         communicator.Connect("HireBeatProjVidC" + targetUserID);
-        Debug.LogError("VidCAddressSubmitted to " + targetUserID);
+        Debug.LogError("VidCAddressSubmitted to " + "HireBeatProjVidC" + targetUserID);
     }
 
 
@@ -281,6 +281,7 @@ public class VideoChatController : MonoBehaviour
         switch (evt.Type)
         {
             case NetEventType.NewConnection:
+                Debug.LogError("New connection received!");
                 //'-' is indicator for playfab id msg, "," is splitter, and 2nd part is content.
                 byte[] msgData = Encoding.UTF8.GetBytes("-," + myID); //This is to tell the person you just connected to who are you.
                 communicator.SendData(evt.ConnectionId, msgData, 0, msgData.Length, true);

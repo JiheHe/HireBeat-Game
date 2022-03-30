@@ -104,7 +104,18 @@ public class VideoChatRoomSearch : MonoBehaviour
         //STEP1: instance setup
         netConf = new NetworkConfig();
         netConf.SignalingUrl = ExampleGlobals.Signaling; //will change the urls and servers later, post testing
+                                                         //watch out the signaling server needs to be configured properly for this to work:
+                                                         //flag "address_sharing" needs to be set to true in config.json
+                                                         //e.g. "ws://signaling.because-why-not.com/testshared"
+        //netConf.SignalingUrl = ExampleGlobals.SharedSignaling;
+
         netConf.IceServers.Add(new IceServer(ExampleGlobals.StunUrl));
+        //The current version doesn't deal well with failed direct connections
+        //thus a turn server is used to ensure users can connect.
+        //
+        netConf.IceServers.Add(new IceServer(ExampleGlobals.TurnUrl,
+            ExampleGlobals.TurnUser,
+            ExampleGlobals.TurnPass));
 
         dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
         vcRoomList = new Dictionary<string, VidCRoomInfo>(); //key will be roomName, it stays fixed.
