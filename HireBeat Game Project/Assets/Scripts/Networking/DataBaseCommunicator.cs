@@ -30,7 +30,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	void Start()
 	{
 		myID = UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //playfab user id as the username
-		myOwnIpAddress = GetLocalIPv4(); //this is the ip address that the user connects to the server with.
+		myOwnIpAddress = GetPublicIpAddress(); //this is the ip address that the user connects to the server with.
 
 		// Must be WebSocket for WebGL
 		if (Application.platform == RuntimePlatform.WebGLPlayer) Protocol = SQL4Unity.Server.Protocol.WebSocket;
@@ -54,6 +54,21 @@ public class DataBaseCommunicator : MonoBehaviour
 			.AddressList.First(
 				f => f.AddressFamily == AddressFamily.InterNetwork)
 			.ToString();
+	}
+
+	public string GetPublicIpAddress()
+    {
+		string url = "http://checkip.dyndns.org";
+		WebRequest req = System.Net.WebRequest.Create(url);
+		WebResponse resp = req.GetResponse();
+		System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+		string response = sr.ReadToEnd().Trim();
+		string[] ipAddressWithText = response.Split(':');
+		string ipAddressWithHTMLEnd = ipAddressWithText[1].Substring(1);
+		string[] ipAddress = ipAddressWithHTMLEnd.Split('<');
+		string mainIP = ipAddress[0];
+		Debug.Log("My public ip address is: " + mainIP);
+		return mainIP;
 	}
 
 	// Called once a connection to the server has been made
