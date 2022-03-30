@@ -91,21 +91,27 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().CheckCurrentSpeakerNames();
                     return;
                 case "REQSTING VCRM INFO": //normally only owner receieve this, and he usually has a room panel avail, so...
-                    string userIdsString = socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().vCC.GetUserInVidCRoomIDsInString(sender);
-                    socialSystem.SendVidCRoomInfo(sender, userIdsString); //sends back to the requester!
+                    if(sender != GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID) //sender sends a msg to myself too, avoid!
+                    {
+                        string userIdsString = socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().vCC.GetUserInVidCRoomIDsInString(sender);
+                        socialSystem.SendVidCRoomInfo(sender, userIdsString); //sends back to the requester!
+                    }
                     return;
             }
-            var reMessage = (string)message;
-            if(reMessage.StartsWith("RECEI_VCRM_INFO")) //this is the callback from the owner
+            if (sender != GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID)
             {
-                reMessage = reMessage.Replace("RECEI_VCRM_INFO", ""); //thought replace replaces all occur, can do this because _ not in playfabid, so will only be first one.
-                socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().OnRoomOwnerInfoSendBack(reMessage.Split(","));
-            }
-            else if(reMessage.StartsWith("INVITE_TO_"))
-            {
-                reMessage = reMessage.Substring("INVITE_TO_".Length); //this is the room name
-                Debug.Log("New Room Invite Receieved! Invited to " + reMessage);
-                socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().invitedRoomList.Add(reMessage); //you've been invited to this room!
+                var reMessage = (string)message;
+                if (reMessage.StartsWith("RECEI_VCRM_INFO")) //this is the callback from the owner
+                {
+                    reMessage = reMessage.Replace("RECEI_VCRM_INFO", ""); //thought replace replaces all occur, can do this because _ not in playfabid, so will only be first one.
+                    socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().OnRoomOwnerInfoSendBack(reMessage.Split(","));
+                }
+                else if (reMessage.StartsWith("INVITE_TO_"))
+                {
+                    reMessage = reMessage.Substring("INVITE_TO_".Length); //this is the room name
+                    Debug.Log("New Room Invite Receieved! Invited to " + reMessage);
+                    socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().invitedRoomList.Add(reMessage); //you've been invited to this room!
+                }
             }
             return;
         }
