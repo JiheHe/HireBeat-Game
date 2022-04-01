@@ -10,6 +10,7 @@ public class PlayerMenuUIController : MonoBehaviour
     public GameObject settingsUI;
     public GameObject questsUI;
     public GameObject socialSystemUI;
+    public GameObject roomSystemUI;
 
     // Start is called before the first frame update
     void Start()
@@ -71,6 +72,16 @@ public class PlayerMenuUIController : MonoBehaviour
             settingsTab.transform.localScale = new Vector2(1, 1);*/
             socialSystemUI.SetActive(true); //want to keep data!
             socialSystemUI.GetComponent<SocialSystemScript>().OnTabOpen();
+        }
+    }
+
+    public void instantiateRoomSystemUI()
+    {
+        if(!hasOneOn)
+        {
+            hasOneOn = true;
+            roomSystemUI.SetActive(true);
+            roomSystemUI.GetComponent<RoomSystemPanelScript>().OnTabOpen();
         }
     }
 }

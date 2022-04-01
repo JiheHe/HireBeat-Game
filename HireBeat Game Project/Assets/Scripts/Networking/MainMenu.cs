@@ -19,7 +19,18 @@ public class MainMenu : MonoBehaviourPunCallbacks //this is inheritance! for ove
     public void CreateRoom()
     {
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 3; //will change
+
+        /*Most Photon multiplayer games have 2 - 16 players, but the theoretical limit of players/ peers per room can be quite high. 
+        There are Photon games live with 32 or even 64 players and in virtual conferencing scenarios it can be in the hundreds.However, 
+        sending too many messages per second (msg/s per room) can cause performance issues depending on the client's processing power 
+        coping with data. While high player numbers in e.g. turnbased games are totally fine, more than 8 players in a fast-paced action
+        game likely will require you to implement interest management. This way not every player receives every message from all the 
+        other players. The number of players per room is the main factor for increasing data traffic inside the game room: This is why
+        we recommend keeping your msg/s per room count below 500. Photon does not enforce this limit, but relies on a fair use policy.
+        Keeping an eye on your bandwidth usage is always important and it helps to ensure you stay within your plans included traffic 
+        range of 3GB per CCU.*/
+
+        roomOptions.MaxPlayers = 5; //will change
         roomOptions.PublishUserId = true;
 
         //roomOptions.IsOpen = true; //allows other users to join

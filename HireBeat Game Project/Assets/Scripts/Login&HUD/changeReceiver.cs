@@ -62,4 +62,9 @@ public class changeReceiver : MonoBehaviour
     {
         pui.instantiateSocialSystemUI();
     }
+
+    public void startRoomSystemTab()
+    {
+        pui.instantiateRoomSystemUI();
+    }
 }
