@@ -21,8 +21,20 @@ MonoBehaviour:
     dropped: 0
     created: 1
     checksum: 
-    tables: 01000000040000001a000000
+    tables: 01000000040000001a00000021000000
     procedures: 1500000016000000170000001800000019000000
+    dbKeys:
+    - id: 0
+      foreignKeys: []
+      positions: []
+  - id: 32
+    databaseName: usesdatastorage
+    displayName: UsesDataStorage
+    dropped: 1
+    created: 0
+    checksum: 
+    tables: 
+    procedures: 
     dbKeys:
     - id: 0
       foreignKeys: []
@@ -78,6 +90,19 @@ MonoBehaviour:
     created: 1
     updated: 0
     dataTable: 7
+    dataPage: 0
+    bigTab: 0
+  - id: 33
+    dbId: 0
+    tableName: hirebeatprojectdb.userdatastorage
+    displayName: UserDataStorage
+    hidden: 0
+    columns: 220024002500260027002800
+    indexes: 23002900
+    dropped: 0
+    created: 1
+    updated: 0
+    dataTable: 10
     dataPage: 0
     bigTab: 0
   columns:
@@ -261,6 +286,96 @@ MonoBehaviour:
     dropped: 0
     created: 1
     value: 
+  - id: 34
+    tabId: 33
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userdatastorage.rowid
+    displayName: rowId
+    dataType: ushort
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 1
+    autoIncrement: 1
+    hidden: 1
+    dropped: 0
+    created: 1
+    value: 
+  - id: 36
+    tabId: 33
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userdatastorage.username
+    displayName: UserName
+    dataType: string
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 1
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: ...
+  - id: 37
+    tabId: 33
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userdatastorage.userid
+    displayName: UserId
+    dataType: string
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 38
+    tabId: 33
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userdatastorage.email
+    displayName: Email
+    dataType: string
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 39
+    tabId: 33
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userdatastorage.isroompublic
+    displayName: IsRoomPublic
+    dataType: bool
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 40
+    tabId: 33
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userdatastorage.numplayersinroom
+    displayName: NumPlayersInRoom
+    dataType: int
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
   indexes:
   - id: 3
     tabId: 1
@@ -397,6 +512,36 @@ MonoBehaviour:
     dataPage: 0
     bigTab: 0
     unique: 1
+  - id: 35
+    tabId: 33
+    dbId: 0
+    indexName: hirebeatprojectdb.userdatastorage.rowidix
+    displayName: rowIdIx
+    type: List
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 2200
+    dataType: ushort
+    dataIndex: 12
+    dataPage: 0
+    bigTab: 0
+    unique: 1
+  - id: 41
+    tabId: 33
+    dbId: 0
+    indexName: hirebeatprojectdb.userdatastorage.usernamepk
+    displayName: UserNamePK
+    type: Dict
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 2400
+    dataType: string
+    dataIndex: 11
+    dataPage: 0
+    bigTab: 0
+    unique: 1
   procedures:
   - id: 15
     dbId: 0
@@ -500,7 +645,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 7
+    lastId: 9
   - id: 23
     dbId: 0
     procedureName: hirebeatprojectdb.updatevcroomprops
@@ -537,7 +682,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 7
+    lastId: 9
   - id: 24
     dbId: 0
     procedureName: hirebeatprojectdb.deletevcroom
@@ -566,7 +711,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 7
+    lastId: 9
   - id: 25
     dbId: 0
     procedureName: hirebeatprojectdb.graballvcroominfo
@@ -604,4 +749,4 @@ MonoBehaviour:
     conditions: 
     joins: []
     lastId: 1
-  lastID: 31
+  lastID: 41

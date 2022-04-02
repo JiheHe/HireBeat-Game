@@ -58,15 +58,17 @@ public class DataBaseCommunicator : MonoBehaviour
 
 	public string GetPublicIpAddress()
     {
-		string url = "http://checkip.dyndns.org";
-		WebRequest req = System.Net.WebRequest.Create(url);
+		//string url = "http://checkip.dyndns.org";
+		string url = "https://api.ipify.org?format=json";
+		WebRequest req = WebRequest.Create(url);
 		WebResponse resp = req.GetResponse();
 		System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
 		string response = sr.ReadToEnd().Trim();
 		string[] ipAddressWithText = response.Split(':');
-		string ipAddressWithHTMLEnd = ipAddressWithText[1].Substring(1);
+		string mainIP = ipAddressWithText[1].Substring(1, ipAddressWithText[1].Length - 3); //remove " and "}
+		/*string ipAddressWithHTMLEnd = ipAddressWithText[1].Substring(1);
 		string[] ipAddress = ipAddressWithHTMLEnd.Split('<');
-		string mainIP = ipAddress[0];
+		string mainIP = ipAddress[0];*/
 		Debug.Log("My public ip address is: " + mainIP);
 		return mainIP;
 	}
@@ -97,12 +99,26 @@ public class DataBaseCommunicator : MonoBehaviour
 		isOpen = true;
 
 		AddIPAddressToUniqueID(myOwnIpAddress, myID);
+
+		//The comments below are for testing:
 	}
 
+    private void Update()
+    {
+        /*if(Input.GetKeyDown(KeyCode.G))
+        {
+			AddNewPlayer("7A98A976DE472605", "jaxmasterofleague@gmail.com");
+			AddNewPlayer("B5EF892E35CD7E86", "nickhe2003@gmail.com");
+			AddNewPlayer("FCC363B28E64818C", "nhe21siprep@gmail.com");
+			AddNewPlayer("1807DB258420A50A", "fenixking1994@gmail.com");
+		}*/
+    }
 
-	#region VideoChatRooms
-	//Create a new vc room in the database
-	public void CreateNewVCRoom(string roomName, string creatorID, bool isPublic)
+
+    #region Video Chat System
+    #region VideoChatRooms
+    //Create a new vc room in the database
+    public void CreateNewVCRoom(string roomName, string creatorID, bool isPublic)
     {
 		string query = "execute CreateNewVCRoom";
 		SQLParameter parameters = new SQLParameter();
@@ -503,6 +519,80 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.Log("Deleting ALL VC Rooms!"); //I'm not interested in the callback.
 	}
 	#endregion
+	#endregion
+
+	SQLResult ChangeUserNameResult;
+	bool changeUserNameResultReady;
+	//Since username is primary key, I assume it would be a good double-safe check.
+	public void ChangeUserName(string userId, string newUserName, ContentChangerScript nameChangerObj) 
+    {
+		changeUserNameResultReady = false;
+
+		string query = "UPDATE UserDataStorage SET UserName = %newUserName% WHERE UserId = %userId%";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("newUserName", newUserName);
+		parameters.SetValue("userId", userId);
+
+		sql.Command(query, null, parameters, ChangeUserNameCallback); //or can do if(sql.Command(query, result, parameters))
+
+		StartCoroutine(ReturnChangeUserNameResult((wentThru) =>
+		{
+			nameChangerObj.ChangeUserNameResultCallback(wentThru);
+		}
+		));// StartCoroutine on Main Thread
+	}
+	private void ChangeUserNameCallback(bool ok, SQLResult result)
+    {
+		ChangeUserNameResult = result;
+		changeUserNameResultReady = true;
+    }
+	IEnumerator ReturnChangeUserNameResult(Action<bool> callback)
+	{
+		yield return new WaitUntil(() => changeUserNameResultReady);
+
+		// Back on Main Thread
+		if (ChangeUserNameResult.status)
+		{
+			try
+			{
+				if (ChangeUserNameResult.rowsAffected == 0)
+				{
+					callback(false); //0 rows affected if name already exists
+				}
+				else
+				{
+					callback(true); //went through! A unique username indeed.
+				}
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError(ex.Message);
+			}
+		}
+	}
+
+	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
+	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
+	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
+	{
+		string query = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic,NumPlayersInRoom) VALUES (%userName%, %userId%, %email%, %isRmPublic%, %numPInRm%)";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("userName", ",,,...;;;" + userId); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		parameters.SetValue("userId", userId);
+		parameters.SetValue("email", userEmail);
+		parameters.SetValue("isRmPublic", roomPublic);
+		parameters.SetValue("numPInRm", numPlayersInRm);
+
+		sql.Command(query, null, parameters, AddNewPlayerCallback); 
+	}
+	private void AddNewPlayerCallback(bool ok, SQLResult result)
+    {
+		Debug.Log("New player registration! Adding in data: " + result.message.ToString());
+		//Don't forget to trigger a "enter new name plz" for new players right after!
+    }
 
 	private void OnDestroy()
     {
