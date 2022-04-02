@@ -26,6 +26,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	bool isOpen = false;
 
 	VideoChatRoomSearch vcs; //where info will be published for video chat
+	RoomSystemPanelScript rsps;
 
 	void Start()
 	{
@@ -46,6 +47,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		sql.Connect(Protocol, IpAddress, Port, UUID, secure, false, UserName, ConnectCallback);
 
 		vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
+		rsps = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
 	}
 
 	public string GetLocalIPv4() //this returns user's current ip address!
@@ -103,16 +105,57 @@ public class DataBaseCommunicator : MonoBehaviour
 		//The comments below are for testing:
 	}
 
+	//int i = 0;
     private void Update()
     {
-        /*if(Input.GetKeyDown(KeyCode.G))
-        {
-			AddNewPlayer("7A98A976DE472605", "jaxmasterofleague@gmail.com");
+		if(Input.GetKeyDown(KeyCode.G))
+		{
+			/*AddNewPlayer("7A98A976DE472605", "jaxmasterofleague@gmail.com");
 			AddNewPlayer("B5EF892E35CD7E86", "nickhe2003@gmail.com");
 			AddNewPlayer("FCC363B28E64818C", "nhe21siprep@gmail.com");
-			AddNewPlayer("1807DB258420A50A", "fenixking1994@gmail.com");
-		}*/
+			AddNewPlayer("1807DB258420A50A", "fenixking1994@gmail.com");*/ //data patching for tester accounts
+																		   //hopefully in future I don't lose service to server all the sudden... else a pain in the ass... 
+																		   //maybe prep a safe check? no registeration if cannot connect to dbc, or fix later?
+
+			//gonna remove everything where id = a, for testing.
+			//StartCoroutine(testAdd());
+			/*CreateNewVCRoom("IDK" + i, "helo", true);
+			i += 1;*/
+		}
     }
+
+	IEnumerator testAdd()
+    {
+		AddNewPlayerWithFullDetail("Tester1", "a", "c", true, 1);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester2", "a", "c", true, 2);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester7", "a", "c", true, 7);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester6", "a", "c", true, 6);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester3", "a", "c", true, 3);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester4", "a", "c", true, 4);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester8", "a", "c", true, 8);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Tester5", "a", "c", true, 5);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("AEG", "a", "c", true, 2);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("B", "a", "c", true, 13);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("ABC", "a", "c", true, 6);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("C", "a", "c", true, 3);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("DE", "a", "c", true, 4);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("Z", "a", "c", true, 4);
+		yield return new WaitForSeconds(2);
+		AddNewPlayerWithFullDetail("KSK", "a", "c", true, 5);
+	}
 
 
     #region Video Chat System
@@ -524,6 +567,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	SQLResult ChangeUserNameResult;
 	bool changeUserNameResultReady;
 	//Since username is primary key, I assume it would be a good double-safe check.
+	//Also should call this after user registeratoin, in a name entering box.
 	public void ChangeUserName(string userId, string newUserName, ContentChangerScript nameChangerObj) 
     {
 		changeUserNameResultReady = false;
@@ -593,6 +637,105 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.Log("New player registration! Adding in data: " + result.message.ToString());
 		//Don't forget to trigger a "enter new name plz" for new players right after!
     }
+	//This is a variation of the above, but for internal testing only
+	public void AddNewPlayerWithFullDetail(string userName, string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
+	{
+		string query = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic,NumPlayersInRoom) VALUES (%userName%, %userId%, %email%, %isRmPublic%, %numPInRm%)";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("userName", userName); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		parameters.SetValue("userId", userId);
+		parameters.SetValue("email", userEmail);
+		parameters.SetValue("isRmPublic", roomPublic);
+		parameters.SetValue("numPInRm", numPlayersInRm);
+
+		sql.Command(query, null, parameters, AddNewPlayerCallback);
+	}
+
+	SQLResult grabAllPublicRoomsResult;
+	bool grabAllPublicRoomsResultReady;
+	public void GrabAllPublicRooms()
+    {
+		grabAllPublicRoomsResultReady = false;
+
+		string query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true"; //public-only for now
+
+		sql.Command(query, null, GrabAllPublicRoomsCallback);
+
+		StartCoroutine(ReturnAllPublicRoomsResult((rows) =>
+		{
+			//Do something with the rows.
+			rsps.UpdatePlayerRoomList(rows);
+		}
+		));// StartCoroutine on Main Thread
+	}
+	private void GrabAllPublicRoomsCallback(bool ok, SQLResult result)
+    {
+		grabAllPublicRoomsResultReady = true;
+		grabAllPublicRoomsResult = result;
+    }
+	IEnumerator ReturnAllPublicRoomsResult(Action<hirebeatprojectdb_userdatastorage[]> callback)
+	{
+		yield return new WaitUntil(() => grabAllPublicRoomsResultReady);
+
+		Debug.Log("Retrieving all room info! Here's the result: " + grabAllPublicRoomsResult.resultType.ToString() + " " +
+			grabAllPublicRoomsResult.status.ToString() + " " + grabAllPublicRoomsResult.message);
+		if (grabAllPublicRoomsResult.status)
+		{
+			try
+			{
+				hirebeatprojectdb_userdatastorage[] rows = grabAllPublicRoomsResult.Get<hirebeatprojectdb_userdatastorage>();
+				callback(rows);
+				//grabAllPublicRoomsResult.Clear();
+				//grabAllPublicRoomsResultReady = false;
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError("Grabbing player room database failed: " + ex.Message);
+				callback(null);
+			}
+		}
+		else
+		{
+			Debug.LogError("Retrieving ALL player room info failed!");
+			callback(null);
+		}
+	}
+
+
+
+	//This simply changes room's public status. Can only be called from the official owner.
+	public void ChangeRoomPublicStatus(string userId, bool isPublic) //we know id is 100% unique.
+    {
+		string query = "UPDATE UserDataStorage SET IsRoomPublic = %isPublic% WHERE UserId = %userId%";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("isPublic", isPublic); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		parameters.SetValue("userId", userId);
+
+		sql.Command(query, null, parameters, ChangeRoomPublicStatusCallback);
+	}
+	private void ChangeRoomPublicStatusCallback(bool ok, SQLResult result)
+    {
+		Debug.Log("Changed room status! Result: " + result.message.ToString());
+	}
+
+	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc
+	public void UpdateNumPlayersInRoom(string roomOwnerName, int numPlayers) //hopefully our effort has ensured name's uniqueness.
+    {
+		string query = "UPDATE UserDataStorage SET NumPlayersInRoom = %numPlayers% WHERE UserName = %roomOwnerName%";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("numPlayers", numPlayers); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		parameters.SetValue("roomOwnerName", roomOwnerName);
+
+		sql.Command(query, null, parameters, UpdateNumPlayersInRoomCallback);
+	}
+	private void UpdateNumPlayersInRoomCallback(bool ok, SQLResult result)
+    {
+		Debug.Log("Update Num players in current room! Result: " + result.message.ToString());
+	}
 
 	private void OnDestroy()
     {

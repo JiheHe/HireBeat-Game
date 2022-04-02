@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
+using System.Linq;
 
 public class RoomSystemPanelScript : MonoBehaviour
 {
@@ -38,16 +40,166 @@ public class RoomSystemPanelScript : MonoBehaviour
     public InputField searchRoomBar;
     public GameObject ownRoomSettingsPanel;
 
+    [Serializable]
+    public class PlayerRoomInfo //roomName is the key
+    {
+        public string userId; //this is useless
+        public int numPlayersInRoom;
+        public bool isPublic; //this  might be useless too
+        public PlayerRoomDisplayTab roomDisplayTab;
+
+        public PlayerRoomInfo(string userId, int numPlayersInRoom, bool isPublic, PlayerRoomDisplayTab roomDisplayTab)
+        {
+            this.userId = userId;
+            this.numPlayersInRoom = numPlayersInRoom;
+            this.isPublic = isPublic;
+            this.roomDisplayTab = roomDisplayTab;
+        }
+    }
+
+    public Dictionary<string, PlayerRoomInfo> playerRoomList = new Dictionary<string, PlayerRoomInfo>(); //a cache for userName, rest of info
+    public GameObject playerRoomDisplayPrefab; //this is the prefab for each player room display in list
+    public RectTransform playerRoomDisplayPanel; //this is the content where room will be child of.
+    public List<string> invitedRoomList = new List<string>(); //can be invited by public or private! private can only join through invite tho
+
+    DataBaseCommunicator dbc = null; //the real time database!
     // Start is called before the first frame update
     void Start()
     {
-        
+        dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+    }
+
+    public void CheckToggles()
+    {
+        //code like this for clean layout: want to avoid double queueing!
+        if(sortByNumPlayers.isOn)
+        {
+            OnRefreshButtonPressed();
+        }
+        else if(sortByAlphanumeric.isOn)
+        {
+            OnRefreshButtonPressed();
+        }
+        else if(!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn)
+        {
+            OnRefreshButtonPressed();
+        }
+    }
+
+    private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic)
+    {
+        var newPlayerRoomDisplay = Instantiate(playerRoomDisplayPrefab, playerRoomDisplayPanel);
+        //newVCRoomDisplay.name = prefix + roomName; //no need for prefix...
+        //if (invitedRoomList.Contains(roomName)) newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID, true); //invited!
+        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID);
+        playerRoomList.Add(roomName, new PlayerRoomInfo(ownerID, numMembers, isPublic, newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>()));
+    }
+
+    private void UpdateRoomInfo(string roomName, int numMembers) 
+    {
+        var info = playerRoomList[roomName]; //I think this is by reference eh?
+        if (info.numPlayersInRoom != numMembers)
+        {
+            info.numPlayersInRoom = numMembers;
+            info.roomDisplayTab.UpdateNumMembers(numMembers);
+        }
+        //if (invitedRoomList.Contains(roomName)) info.roomDisplayTab.UpdateJoinAccess(true);
+    }
+
+    public Toggle sortByNumPlayers; //if this is true by toggling, then...
+    public Toggle sortByAlphanumeric;
+    //Need to check playerRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
+    //not in room then add, if in both then update.
+    public void UpdatePlayerRoomList(hirebeatprojectdb_userdatastorage[] dbRooms)
+    {
+        //Is doing the below more efficient than two nested forloops?
+        var dbRoomsConverted = ConvertToReadableFormat(dbRooms);
+        Debug.Log("Length of result is: " + dbRoomsConverted.Count);
+        if (sortByNumPlayers.isOn) //toggle group!
+        {
+            Debug.Log("Sort by num players");
+            //no need for update/delete/add! Delete everything, sort, and redo!
+            List<string> allRoomNames = dbRooms.Select(r => r.UserName).ToList();
+            List<int> allNumPInRm = dbRooms.Select(r => r.NumPlayersInRoom).ToList();
+            var result = allRoomNames.Zip(allNumPInRm, (rm, num) => new Tuple<string, int>(rm, num)).ToList();
+            result.Sort((t1, t2) => t2.Item2 - t1.Item2); //hopefully this sorts from max to min.
+
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+
+            //Readd in order from largest to smallest, hopefully
+            foreach (string roomName in result.Select(t => t.Item1))
+            {
+                var newInfo = dbRoomsConverted[roomName];
+                AddNewRoomToList(roomName, newInfo.userId, newInfo.numPlayersInRoom, newInfo.isPublic);
+            }
+        }
+        else if(sortByAlphanumeric.isOn)
+        {
+            Debug.Log("Sort by alphabet");
+            List<string> allRoomNames = dbRooms.Select(r => r.UserName).ToList();
+            allRoomNames.Sort((n1, n2) => n1.CompareTo(n2)); //sorts from a-z and num etc
+
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+
+            //Readd in order from largest to smallest, hopefully
+            foreach (string roomName in allRoomNames)
+            {
+                var newInfo = dbRoomsConverted[roomName];
+                AddNewRoomToList(roomName, newInfo.userId, newInfo.numPlayersInRoom, newInfo.isPublic);
+            }
+        }
+        else
+        {
+            List<string> listRoomNames = playerRoomList.Keys.ToList(); //Roomnames (ownernames) are unique
+            List<string> dbRoomNames = dbRoomsConverted.Keys.ToList(); //dbRooms.Select(r => r.RoomName).ToList(); //Select(r => (string)r["RoomName"]).ToList(); //was a list of dicts
+            List<string> ToBeUpdated = listRoomNames.Intersect(dbRoomNames).ToList();
+            List<string> ToBeDeleted = listRoomNames.Except(ToBeUpdated).ToList(); //they've become private!
+            List<string> ToBeAdded = dbRoomNames.Except(ToBeUpdated).ToList(); //new public rooms!
+            foreach (string roomName in ToBeDeleted)
+            {
+                Destroy(playerRoomList[roomName].roomDisplayTab.gameObject);
+                playerRoomList.Remove(roomName);
+            }
+            foreach (string roomName in ToBeUpdated)
+            {
+                UpdateRoomInfo(roomName, dbRoomsConverted[roomName].numPlayersInRoom);    //dbRooms.Find()
+            }
+            foreach (string roomName in ToBeAdded)
+            {
+                var newInfo = dbRoomsConverted[roomName];
+                AddNewRoomToList(roomName, newInfo.userId, newInfo.numPlayersInRoom, newInfo.isPublic);
+            }
+        }
+    }
+
+    private Dictionary<string, PlayerRoomInfo> ConvertToReadableFormat(hirebeatprojectdb_userdatastorage[] dbRooms)
+    {
+        Dictionary<string, PlayerRoomInfo> result = new Dictionary<string, PlayerRoomInfo>();
+        foreach (var dbRoom in dbRooms) //can do some arrangements here maybe
+        {
+            string roomName = dbRoom.UserName;
+            string ownerID = dbRoom.UserId;
+            int numMembers = dbRoom.NumPlayersInRoom;
+            bool isPublic = true; //all public rooms btw!
+
+            result.Add(roomName, new PlayerRoomInfo(ownerID, numMembers, isPublic, null));
+        }
+        return result;
     }
 
     public void OnCurrentRoomInfoClicked()
@@ -104,6 +256,11 @@ public class RoomSystemPanelScript : MonoBehaviour
         {
             ownRoomSettingsPanel.SetActive(false);
         }
+    }
+
+    public void OnRefreshButtonPressed()
+    {
+        dbc.GrabAllPublicRooms();
     }
 
     public void OnTabOpen()
