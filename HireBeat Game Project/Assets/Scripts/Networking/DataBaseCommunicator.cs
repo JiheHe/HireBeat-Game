@@ -564,6 +564,16 @@ public class DataBaseCommunicator : MonoBehaviour
 	#endregion
 	#endregion
 
+	SQLResult getUserIdResult;
+	bool getUserIdResultReady;
+	//we know that username / id / email are unique, but just in case username = someone's id... so will have user enter
+	//to search by id or by name or by email.
+	//Nvm the logic above; I thought of a good one, pasted in discord.
+	public void GetUserIdFromInfo(string input)
+    {
+
+    }
+
 	SQLResult ChangeUserNameResult;
 	bool changeUserNameResultReady;
 	//Since username is primary key, I assume it would be a good double-safe check.
@@ -617,6 +627,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		}
 	}
 
+
 	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
 	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
 	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
@@ -652,20 +663,43 @@ public class DataBaseCommunicator : MonoBehaviour
 		sql.Command(query, null, parameters, AddNewPlayerCallback);
 	}
 
+
 	SQLResult grabAllPublicRoomsResult;
 	bool grabAllPublicRoomsResultReady;
-	public void GrabAllPublicRooms()
+	public void GrabAllPublicRooms(int sortType) //0 is normal, 1 is numCount, 2 is alphabet
     {
 		grabAllPublicRoomsResultReady = false;
 
-		string query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true"; //public-only for now
+		string query = "";
+		if(sortType == 0 || sortType == 3) 
+			query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true"; //public-only for now
+		else if(sortType == 1) 
+			query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true ORDER BY NumPlayersInRoom";
+		else if(sortType == 2)
+			query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true ORDER BY UserName";
 
 		sql.Command(query, null, GrabAllPublicRoomsCallback);
 
 		StartCoroutine(ReturnAllPublicRoomsResult((rows) =>
 		{
 			//Do something with the rows.
-			rsps.UpdatePlayerRoomList(rows);
+
+			switch(sortType)
+            {
+				case 0:
+					rsps.UpdatePlayerRoomList(rows, 0);
+					break;
+				case 1:
+					rsps.UpdatePlayerRoomList(rows, 1);
+					break;
+				case 2:
+					rsps.UpdatePlayerRoomList(rows, 2);
+					break;
+				case 3:
+					rsps.UpdatePlayerRoomList(rows, 3);
+					break;
+			}
+			
 		}
 		));// StartCoroutine on Main Thread
 	}

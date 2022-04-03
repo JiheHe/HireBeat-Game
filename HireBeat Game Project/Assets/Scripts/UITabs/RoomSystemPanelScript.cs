@@ -67,6 +67,14 @@ public class RoomSystemPanelScript : MonoBehaviour
     void Start()
     {
         dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
+        dbc.GrabAllPublicRooms(0);
+    }
+
+    public void OnEnable() //called everytime when panel gets active
+    {
+        sortByAlphanumeric.isOn = false;
+        sortByNumPlayers.isOn = false;
+        if (dbc != null) dbc.GrabAllPublicRooms(0); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
     }
 
     // Update is called once per frame
@@ -74,22 +82,40 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
     }
 
-    public void CheckToggles()
+    int previousOn = 0; //1 is num, 2 is alpha, 0 is none.
+    //Since it's a toggle group, on value change both calls will be triggered!
+    //Will try condense in future.
+    public void OnSortByNumToggleChanged()
     {
-        //code like this for clean layout: want to avoid double queueing!
-        if(sortByNumPlayers.isOn)
+        if (sortByNumPlayers.isOn)
         {
-            OnRefreshButtonPressed();
+            Debug.Log("Starting to sort by num");
+            dbc.GrabAllPublicRooms(1);
+            previousOn = 1;
         }
-        else if(sortByAlphanumeric.isOn)
+        else if(!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn && previousOn == 1)
         {
-            OnRefreshButtonPressed();
-        }
-        else if(!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn)
-        {
-            OnRefreshButtonPressed();
+            dbc.GrabAllPublicRooms(3);
+            previousOn = 0;
         }
     }
+
+    public void OnSortByAlphaToggleChanged()
+    {
+        if (sortByAlphanumeric.isOn)
+        {
+            Debug.Log("Starting to sort by alpha");
+            dbc.GrabAllPublicRooms(2);
+            previousOn = 2;
+        }
+        else if (!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn && previousOn == 2)
+        {
+            dbc.GrabAllPublicRooms(3); //3 initializes the room list destruction system.
+            previousOn = 0;
+        }
+    }
+    //This is used to create the effect that you've exited a sort mode
+
 
     private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic)
     {
@@ -115,16 +141,14 @@ public class RoomSystemPanelScript : MonoBehaviour
     public Toggle sortByAlphanumeric;
     //Need to check playerRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
     //not in room then add, if in both then update.
-    public void UpdatePlayerRoomList(hirebeatprojectdb_userdatastorage[] dbRooms)
+    public void UpdatePlayerRoomList(hirebeatprojectdb_userdatastorage[] dbRooms, int sortType)
     {
         //Is doing the below more efficient than two nested forloops?
-        var dbRoomsConverted = ConvertToReadableFormat(dbRooms);
-        Debug.Log("Length of result is: " + dbRoomsConverted.Count);
-        if (sortByNumPlayers.isOn) //toggle group!
+        if (sortType == 1) //toggle group!
         {
             Debug.Log("Sort by num players");
             //no need for update/delete/add! Delete everything, sort, and redo!
-            List<string> allRoomNames = dbRooms.Select(r => r.UserName).ToList();
+            /*List<string> allRoomNames = dbRooms.Select(r => r.UserName).ToList();
             List<int> allNumPInRm = dbRooms.Select(r => r.NumPlayersInRoom).ToList();
             var result = allRoomNames.Zip(allNumPInRm, (rm, num) => new Tuple<string, int>(rm, num)).ToList();
             result.Sort((t1, t2) => t2.Item2 - t1.Item2); //hopefully this sorts from max to min.
@@ -141,12 +165,26 @@ public class RoomSystemPanelScript : MonoBehaviour
             {
                 var newInfo = dbRoomsConverted[roomName];
                 AddNewRoomToList(roomName, newInfo.userId, newInfo.numPlayersInRoom, newInfo.isPublic);
+            }*/
+
+            //Fast way: order by directly from SQL call
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+
+            for(int i = dbRooms.Length-1; i >= 0; i--) 
+            {
+                var roomPair = dbRooms[i];
+                AddNewRoomToList(roomPair.UserName, roomPair.UserId, roomPair.NumPlayersInRoom, true); //public indeed
             }
         }
-        else if(sortByAlphanumeric.isOn)
+        else if(sortType == 2)
         {
             Debug.Log("Sort by alphabet");
-            List<string> allRoomNames = dbRooms.Select(r => r.UserName).ToList();
+            /*List<string> allRoomNames = dbRooms.Select(r => r.UserName).ToList();
             allRoomNames.Sort((n1, n2) => n1.CompareTo(n2)); //sorts from a-z and num etc
 
             //Delete everything
@@ -161,10 +199,34 @@ public class RoomSystemPanelScript : MonoBehaviour
             {
                 var newInfo = dbRoomsConverted[roomName];
                 AddNewRoomToList(roomName, newInfo.userId, newInfo.numPlayersInRoom, newInfo.isPublic);
+            }*/
+
+            //Fast way: order by directly from SQL call
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+
+            for (int i = 0; i < dbRooms.Length; i++)
+            {
+                var roomPair = dbRooms[i];
+                AddNewRoomToList(roomPair.UserName, roomPair.UserId, roomPair.NumPlayersInRoom, true); //public indeed
             }
         }
-        else
+        else //sort type is 0
         {
+            if(sortType == 3) //initiate destruction sequence ;D
+            {
+                foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+                {
+                    Destroy(roomTabObj);
+                }
+                playerRoomList.Clear();
+            }
+
+            var dbRoomsConverted = ConvertToReadableFormat(dbRooms);
             List<string> listRoomNames = playerRoomList.Keys.ToList(); //Roomnames (ownernames) are unique
             List<string> dbRoomNames = dbRoomsConverted.Keys.ToList(); //dbRooms.Select(r => r.RoomName).ToList(); //Select(r => (string)r["RoomName"]).ToList(); //was a list of dicts
             List<string> ToBeUpdated = listRoomNames.Intersect(dbRoomNames).ToList();
@@ -260,7 +322,18 @@ public class RoomSystemPanelScript : MonoBehaviour
 
     public void OnRefreshButtonPressed()
     {
-        dbc.GrabAllPublicRooms();
+        if (sortByNumPlayers.isOn)
+        {
+            dbc.GrabAllPublicRooms(1);
+        }
+        else if (sortByAlphanumeric.isOn)
+        {
+            dbc.GrabAllPublicRooms(2);
+        }
+        else if (!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn)
+        {
+            dbc.GrabAllPublicRooms(0);
+        }
     }
 
     public void OnTabOpen()
