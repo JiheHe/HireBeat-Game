@@ -18,11 +18,12 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-public partial class hirebeatprojectdb_userdatastorage: SQL4Unity.SQLRow {
-public new ushort rowId { get { return Get<ushort>(34); } }
-public string UserName { get { return Get<string>(36); } set { Set(36, value); } }
-public string UserId { get { return Get<string>(37); } set { Set(37, value); } }
-public string Email { get { return Get<string>(38); } set { Set(38, value); } }
+public partial class hirebeatprojectdb_userroomsassociated: SQL4Unity.SQLRow {
+public new ushort rowId { get { return Get<ushort>(5); } }
+public string TrueOwnerID { get { return Get<string>(42); } set { Set(42, value); } }
+public bool IsRoomPublic { get { return Get<bool>(43); } set { Set(43, value); } }
+public int NumPlayersInRoom { get { return Get<int>(45); } set { Set(45, value); } }
+public string CurrOwnerID { get { return Get<string>(46); } set { Set(46, value); } }
 /// <summary>
 /// Depreciated. This method included for legacy reasons only
 /// </summary>

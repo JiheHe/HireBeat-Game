@@ -13924,17 +13924,19 @@ MonoBehaviour:
   playerZoneTab: {fileID: 0}
   UIController: {fileID: 0}
   playerHud: {fileID: 0}
+  currentRoomTrueOwnerID: 
   roomInfoPanel: {fileID: 674883352}
   roomNameTxt: {fileID: 1554744933}
   numPlayersInRoomTxt: {fileID: 1455824596}
   roomAccessTxt: {fileID: 1402289834}
   searchRoomBar: {fileID: 1298323658}
   ownRoomSettingsPanel: {fileID: 1752600727}
+  sortByNumPlayers: {fileID: 1938569702}
+  sortByAlphanumeric: {fileID: 21320}
+  selfRoomPublicStatus: {fileID: 0}
   playerRoomDisplayPrefab: {fileID: 1351898600531975745, guid: ee4495757fc61304eb40d625a5c83e10, type: 3}
   playerRoomDisplayPanel: {fileID: 1609535302}
   invitedRoomList: []
-  sortByNumPlayers: {fileID: 1938569702}
-  sortByAlphanumeric: {fileID: 21320}
 --- !u!1 &296474707
 GameObject:
   m_ObjectHideFlags: 0
@@ -16144,7 +16146,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 714.01917
+      value: 723.41235
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.y
@@ -16152,7 +16154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 457.00958
+      value: 461.70618
       objectReference: {fileID: 0}
     - target: {fileID: 1803349068894566672, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -16260,7 +16262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 914.01917
+      value: 923.41235
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_SizeDelta.y
@@ -16268,7 +16270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 457.00958
+      value: 461.70618
       objectReference: {fileID: 0}
     - target: {fileID: 8320177464913627310, guid: b69e206908d5a3d4e9a305eddd837360, type: 3}
       propertyPath: m_AnchoredPosition.y

@@ -103,6 +103,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		AddIPAddressToUniqueID(myOwnIpAddress, myID);
 
 		//The comments below are for testing:
+		AddNewPlayerWithFullDetail("Tester1", "a", "c", true, 1);
 	}
 
 	//int i = 0;
@@ -127,34 +128,34 @@ public class DataBaseCommunicator : MonoBehaviour
 	IEnumerator testAdd()
     {
 		AddNewPlayerWithFullDetail("Tester1", "a", "c", true, 1);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester2", "a", "c", true, 2);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester7", "a", "c", true, 7);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester6", "a", "c", true, 6);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester3", "a", "c", true, 3);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester4", "a", "c", true, 4);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester8", "a", "c", true, 8);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Tester5", "a", "c", true, 5);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("AEG", "a", "c", true, 2);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("B", "a", "c", true, 13);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("ABC", "a", "c", true, 6);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("C", "a", "c", true, 3);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("DE", "a", "c", true, 4);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("Z", "a", "c", true, 4);
-		yield return new WaitForSeconds(2);
-		AddNewPlayerWithFullDetail("KSK", "a", "c", true, 5);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester2", "b", "c", true, 2);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester7", "c", "c", true, 7);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester6", "d", "c", true, 6);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester3", "e", "c", true, 3);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester4", "f", "c", true, 4);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester8", "g", "c", true, 8);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Tester5", "h", "c", true, 5);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("AEG", "i", "c", true, 2);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("B", "j", "c", true, 13);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("ABC", "k", "c", true, 6);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("C", "l", "c", true, 3);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("DE", "m", "c", true, 4);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("Z", "n", "c", true, 4);
+		yield return new WaitForSeconds(1);
+		AddNewPlayerWithFullDetail("KSK", "o", "c", true, 5);
 	}
 
 
@@ -628,39 +629,154 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 
 
+	bool addNewPlayerResultReady;
 	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
 	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
 	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
 	{
-		string query = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic,NumPlayersInRoom) VALUES (%userName%, %userId%, %email%, %isRmPublic%, %numPInRm%)";
-		SQLParameter parameters = new SQLParameter();
+		addNewPlayerResultReady = false;
 
-		parameters.SetValue("userName", ",,,...;;;" + userId); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
-		parameters.SetValue("userId", userId);
-		parameters.SetValue("email", userEmail);
-		parameters.SetValue("isRmPublic", roomPublic);
-		parameters.SetValue("numPInRm", numPlayersInRm);
+		string infoQuery = "INSERT INTO UserDataStorage (UserName,UserId,Email) VALUES (%userName%, %userId%, %email%)";
+		SQLParameter infoParameters = new SQLParameter();
+		infoParameters.SetValue("userName", ",,,...;;;" + userId); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		infoParameters.SetValue("userId", userId);
+		infoParameters.SetValue("email", userEmail);
 
-		sql.Command(query, null, parameters, AddNewPlayerCallback); 
+		sql.Command(infoQuery, null, infoParameters, AddNewPlayerCallback);
+
+		StartCoroutine(AddNewPlayerSecondPart(userId, roomPublic, numPlayersInRm));
 	}
 	private void AddNewPlayerCallback(bool ok, SQLResult result)
     {
-		Debug.Log("New player registration! Adding in data: " + result.message.ToString());
+		addNewPlayerResultReady = true;
+		Debug.Log("New player registration (info or room, twice)! Adding in data: " + result.message.ToString());
 		//Don't forget to trigger a "enter new name plz" for new players right after!
     }
+	IEnumerator AddNewPlayerSecondPart(string userId, bool roomPublic, int numPlayersInRm)
+	{
+		yield return new WaitUntil(() => addNewPlayerResultReady);
+
+		try
+		{
+			string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,IsRoomPublic,NumPlayersInRoom,CurrOwnerID) " +
+				"VALUES (%userId%, %rmPublic%, %numPInRm%, %currOwnerId%)";
+			SQLParameter roomParameters = new SQLParameter();
+			roomParameters.SetValue("userId", userId);
+			roomParameters.SetValue("rmPublic", roomPublic);
+			roomParameters.SetValue("numPInRm", numPlayersInRm);
+			roomParameters.SetValue("currOwnerId", userId);
+
+			sql.Command(roomQuery, null, roomParameters, AddNewPlayerCallback);
+		}
+		catch (Exception ex)
+		{
+			// May throw an Illegal Cast Exception if the local database is missing
+			Debug.LogError(ex.Message);
+		}
+	}
+
+
 	//This is a variation of the above, but for internal testing only
 	public void AddNewPlayerWithFullDetail(string userName, string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
 	{
-		string query = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic,NumPlayersInRoom) VALUES (%userName%, %userId%, %email%, %isRmPublic%, %numPInRm%)";
+		addNewPlayerResultReady = false;
+
+		string infoQuery = "INSERT INTO UserDataStorage (UserName,UserId,Email) VALUES (%userName%, %userId%, %email%)";
+		SQLParameter infoParameters = new SQLParameter();
+		infoParameters.SetValue("userName", userName); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		infoParameters.SetValue("userId", userId);
+		infoParameters.SetValue("email", userEmail);
+
+		sql.Command(infoQuery, null, infoParameters, AddNewPlayerCallback);
+
+		StartCoroutine(AddNewPlayerSecondPart(userId, roomPublic, numPlayersInRm));
+	}
+
+
+	SQLResult grabAllUsernamesFromGivenIdsResult;
+	bool grabAllUsernamesFromGivenIdsReady;
+	public void GrabAllUsernamesFromGivenIds(string[] userIds, int sortType)
+    {
+		grabAllUsernamesFromGivenIdsReady = false;
+
+		string query;
 		SQLParameter parameters = new SQLParameter();
 
-		parameters.SetValue("userName", userName); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
-		parameters.SetValue("userId", userId);
-		parameters.SetValue("email", userEmail);
-		parameters.SetValue("isRmPublic", roomPublic);
-		parameters.SetValue("numPInRm", numPlayersInRm);
+		if (userIds.Length < 2) //1 or 0, rare case.
+		{
+			query = "SELECT UserName, UserId FROM UserDataStorage WHERE UserId = %userId%"; //only 1 element.
+			if (userIds.Length == 1) parameters.SetValue("userId", userIds[0]); 
+			else parameters.SetValue("userId", ",,,"); //,,, is not possible, meaning the result will be empty.
 
-		sql.Command(query, null, parameters, AddNewPlayerCallback);
+			sql.Command(query, null, parameters, GrabAllUsernamesFromGivenIdsCallback);
+		}
+		else
+		{
+			if (sortType == 2) //sort by alpha
+				query = "SELECT UserName, UserId FROM UserDataStorage WHERE UserId IN ({0}) ORDER BY UserName"; //sort username here!
+			else
+				query = "SELECT UserName, UserId FROM UserDataStorage WHERE UserId IN ({0})";
+
+
+			/*string[] paramNames = userIds.Select(
+				(s, i) => "@id" + i.ToString() //string, index 
+			).ToArray(); //this assigns each tag an index based on userIds length
+
+			string inClause = string.Join(", ", paramNames); //@id0, @id1, @id2... format
+			query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+
+			for (int i = 0; i < paramNames.Length; i++)
+			{
+				parameters.SetValue(paramNames[i], userIds[i]); //@id0 = firstId, etc...
+			}*/
+
+			//Might be simpler? no need for parameters.
+			string inClause = string.Join(",", userIds.Select(id=> string.Concat("'", id, "'"))); //'id1','id2'... directly!
+			query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+
+			sql.Command(query, null, GrabAllUsernamesFromGivenIdsCallback);
+		}
+
+		//sql.Command(query, null, parameters, GrabAllUsernamesFromGivenIdsCallback);
+
+		StartCoroutine(GrabAllUsernamesFromGivenIdsResult((rows) =>
+		{
+			//Do something with the rows.
+			Dictionary<string, string> userIdToUserName = rows.ToDictionary(r => r.UserId, r => r.UserName);
+			rsps.UpdatePlayerRoomList(userIdToUserName, sortType);
+		}
+		));// StartCoroutine on Main Thread
+	}
+	private void GrabAllUsernamesFromGivenIdsCallback(bool ok, SQLResult result)
+    {
+		grabAllUsernamesFromGivenIdsReady = true;
+		grabAllUsernamesFromGivenIdsResult = result;
+	}
+	IEnumerator GrabAllUsernamesFromGivenIdsResult(Action<hirebeatprojectdb_userdatastorage[]> callback)
+	{
+		yield return new WaitUntil(() => grabAllUsernamesFromGivenIdsReady);
+
+		Debug.Log("Retrieving all usernames from given ids info! Here's the result: " + grabAllUsernamesFromGivenIdsResult.resultType.ToString() + " " +
+			grabAllUsernamesFromGivenIdsResult.status.ToString() + " " + grabAllUsernamesFromGivenIdsResult.message);
+		if (grabAllUsernamesFromGivenIdsResult.status)
+		{
+			try
+			{
+				hirebeatprojectdb_userdatastorage[] rows = grabAllUsernamesFromGivenIdsResult.Get<hirebeatprojectdb_userdatastorage>();
+				callback(rows);
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError("Grabbing player name database failed: " + ex.Message);
+				callback(null);
+			}
+		}
+		else
+		{
+			Debug.LogError("Retrieving player name info failed!");
+			callback(null);
+		}
 	}
 
 
@@ -671,35 +787,17 @@ public class DataBaseCommunicator : MonoBehaviour
 		grabAllPublicRoomsResultReady = false;
 
 		string query = "";
-		if(sortType == 0 || sortType == 3) 
-			query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true"; //public-only for now
+		if(sortType == 0 || sortType == 3 || sortType == 2) 
+			query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE IsRoomPublic = true"; //public-only for now
 		else if(sortType == 1) 
-			query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true ORDER BY NumPlayersInRoom";
-		else if(sortType == 2)
-			query = "SELECT UserName, UserId, NumPlayersInRoom FROM UserDataStorage WHERE IsRoomPublic = true ORDER BY UserName";
-
+			query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE IsRoomPublic = true ORDER BY NumPlayersInRoom";
+		
 		sql.Command(query, null, GrabAllPublicRoomsCallback);
 
 		StartCoroutine(ReturnAllPublicRoomsResult((rows) =>
 		{
 			//Do something with the rows.
-
-			switch(sortType)
-            {
-				case 0:
-					rsps.UpdatePlayerRoomList(rows, 0);
-					break;
-				case 1:
-					rsps.UpdatePlayerRoomList(rows, 1);
-					break;
-				case 2:
-					rsps.UpdatePlayerRoomList(rows, 2);
-					break;
-				case 3:
-					rsps.UpdatePlayerRoomList(rows, 3);
-					break;
-			}
-			
+			rsps.GrabAllPublicRoomInfo(rows, sortType);
 		}
 		));// StartCoroutine on Main Thread
 	}
@@ -708,7 +806,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		grabAllPublicRoomsResultReady = true;
 		grabAllPublicRoomsResult = result;
     }
-	IEnumerator ReturnAllPublicRoomsResult(Action<hirebeatprojectdb_userdatastorage[]> callback)
+	IEnumerator ReturnAllPublicRoomsResult(Action<hirebeatprojectdb_userroomsassociated[]> callback)
 	{
 		yield return new WaitUntil(() => grabAllPublicRoomsResultReady);
 
@@ -718,7 +816,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		{
 			try
 			{
-				hirebeatprojectdb_userdatastorage[] rows = grabAllPublicRoomsResult.Get<hirebeatprojectdb_userdatastorage>();
+				hirebeatprojectdb_userroomsassociated[] rows = grabAllPublicRoomsResult.Get<hirebeatprojectdb_userroomsassociated>();
 				callback(rows);
 				//grabAllPublicRoomsResult.Clear();
 				//grabAllPublicRoomsResultReady = false;
@@ -738,14 +836,13 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 
 
-
 	//This simply changes room's public status. Can only be called from the official owner.
 	public void ChangeRoomPublicStatus(string userId, bool isPublic) //we know id is 100% unique.
     {
-		string query = "UPDATE UserDataStorage SET IsRoomPublic = %isPublic% WHERE UserId = %userId%";
+		string query = "UPDATE UserRoomsAssociated SET IsRoomPublic = %isPublic% WHERE UserId = %userId%";
 		SQLParameter parameters = new SQLParameter();
 
-		parameters.SetValue("isPublic", isPublic); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		parameters.SetValue("isPublic", isPublic); 
 		parameters.SetValue("userId", userId);
 
 		sql.Command(query, null, parameters, ChangeRoomPublicStatusCallback);
@@ -755,14 +852,15 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.Log("Changed room status! Result: " + result.message.ToString());
 	}
 
-	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc
-	public void UpdateNumPlayersInRoom(string roomOwnerName, int numPlayers) //hopefully our effort has ensured name's uniqueness.
+	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc not anymore
+	//Can access id through the "currentRoomTrueOwnerID" in rsps! Which is stored when connect button is pressed.
+	public void UpdateNumPlayersInRoom(string roomOwnerId, int numPlayers) //hopefully our effort has ensured name's uniqueness.
     {
-		string query = "UPDATE UserDataStorage SET NumPlayersInRoom = %numPlayers% WHERE UserName = %roomOwnerName%";
+		string query = "UPDATE UserRoomsAssociated SET NumPlayersInRoom = %numPlayers% WHERE UserId = %userId%";
 		SQLParameter parameters = new SQLParameter();
 
-		parameters.SetValue("numPlayers", numPlayers); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
-		parameters.SetValue("roomOwnerName", roomOwnerName);
+		parameters.SetValue("numPlayers", numPlayers); 
+		parameters.SetValue("userId", roomOwnerId);
 
 		sql.Command(query, null, parameters, UpdateNumPlayersInRoomCallback);
 	}

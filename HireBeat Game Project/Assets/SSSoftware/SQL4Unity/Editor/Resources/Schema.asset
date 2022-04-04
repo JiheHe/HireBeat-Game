@@ -55,15 +55,15 @@ MonoBehaviour:
     bigTab: 0
   - id: 4
     dbId: 0
-    tableName: hirebeatprojectdb.userroomsavailable
-    displayName: UserRoomsAvailable
+    tableName: hirebeatprojectdb.userroomsassociated
+    displayName: UserRoomsAssociated
     hidden: 0
-    columns: 0500
-    indexes: 0600
+    columns: 05002a002b002d002e00
+    indexes: 06002c00
     dropped: 0
-    created: 0
-    updated: 1
-    dataTable: 0
+    created: 1
+    updated: 0
+    dataTable: 7
     dataPage: 0
     bigTab: 0
   - id: 16
@@ -89,7 +89,7 @@ MonoBehaviour:
     dropped: 0
     created: 1
     updated: 0
-    dataTable: 7
+    dataTable: 10
     dataPage: 0
     bigTab: 0
   - id: 33
@@ -97,12 +97,12 @@ MonoBehaviour:
     tableName: hirebeatprojectdb.userdatastorage
     displayName: UserDataStorage
     hidden: 0
-    columns: 220024002500260027002800
+    columns: 2200240025002600
     indexes: 23002900
     dropped: 0
     created: 1
     updated: 0
-    dataTable: 10
+    dataTable: 13
     dataPage: 0
     bigTab: 0
   columns:
@@ -125,7 +125,7 @@ MonoBehaviour:
     tabId: 4
     dbId: 0
     seq: 0
-    columnName: hirebeatprojectdb.userroomsavailable.rowid
+    columnName: hirebeatprojectdb.userroomsassociated.rowid
     displayName: rowId
     dataType: ushort
     dataLength: 0
@@ -134,7 +134,7 @@ MonoBehaviour:
     autoIncrement: 1
     hidden: 1
     dropped: 0
-    created: 0
+    created: 1
     value: 
   - id: 7
     tabId: 1
@@ -315,7 +315,7 @@ MonoBehaviour:
     hidden: 0
     dropped: 0
     created: 1
-    value: ...
+    value: 
   - id: 37
     tabId: 33
     dbId: 0
@@ -358,7 +358,7 @@ MonoBehaviour:
     primaryKey: 0
     autoIncrement: 0
     hidden: 0
-    dropped: 0
+    dropped: 1
     created: 1
     value: 
   - id: 40
@@ -368,6 +368,66 @@ MonoBehaviour:
     columnName: hirebeatprojectdb.userdatastorage.numplayersinroom
     displayName: NumPlayersInRoom
     dataType: int
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 1
+    created: 1
+    value: 
+  - id: 42
+    tabId: 4
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userroomsassociated.trueownerid
+    displayName: TrueOwnerID
+    dataType: string
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 1
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 43
+    tabId: 4
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userroomsassociated.isroompublic
+    displayName: IsRoomPublic
+    dataType: bool
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 45
+    tabId: 4
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userroomsassociated.numplayersinroom
+    displayName: NumPlayersInRoom
+    dataType: int
+    dataLength: 0
+    allowNull: 0
+    primaryKey: 0
+    autoIncrement: 0
+    hidden: 0
+    dropped: 0
+    created: 1
+    value: 
+  - id: 46
+    tabId: 4
+    dbId: 0
+    seq: 0
+    columnName: hirebeatprojectdb.userroomsassociated.currownerid
+    displayName: CurrOwnerID
+    dataType: string
     dataLength: 0
     allowNull: 0
     primaryKey: 0
@@ -395,15 +455,15 @@ MonoBehaviour:
   - id: 6
     tabId: 4
     dbId: 0
-    indexName: hirebeatprojectdb.userroomsavailable.rowidix
+    indexName: hirebeatprojectdb.userroomsassociated.rowidix
     displayName: rowIdIx
     type: List
     hidden: 1
     dropped: 0
-    created: 0
+    created: 1
     columns: 0500
     dataType: ushort
-    dataIndex: 0
+    dataIndex: 9
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -493,7 +553,7 @@ MonoBehaviour:
     created: 1
     columns: 1b00
     dataType: ushort
-    dataIndex: 9
+    dataIndex: 12
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -508,7 +568,7 @@ MonoBehaviour:
     created: 1
     columns: 1d00
     dataType: string
-    dataIndex: 8
+    dataIndex: 11
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -523,7 +583,7 @@ MonoBehaviour:
     created: 1
     columns: 2200
     dataType: ushort
-    dataIndex: 12
+    dataIndex: 15
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -538,7 +598,22 @@ MonoBehaviour:
     created: 1
     columns: 2400
     dataType: string
-    dataIndex: 11
+    dataIndex: 14
+    dataPage: 0
+    bigTab: 0
+    unique: 1
+  - id: 44
+    tabId: 4
+    dbId: 0
+    indexName: hirebeatprojectdb.userroomsassociated.trueowneridpk
+    displayName: TrueOwnerIDPK
+    type: Dict
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 2a00
+    dataType: string
+    dataIndex: 8
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -645,7 +720,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 9
+    lastId: 10
   - id: 23
     dbId: 0
     procedureName: hirebeatprojectdb.updatevcroomprops
@@ -682,7 +757,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 9
+    lastId: 10
   - id: 24
     dbId: 0
     procedureName: hirebeatprojectdb.deletevcroom
@@ -711,7 +786,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 9
+    lastId: 10
   - id: 25
     dbId: 0
     procedureName: hirebeatprojectdb.graballvcroominfo
@@ -749,4 +824,4 @@ MonoBehaviour:
     conditions: 
     joins: []
     lastId: 1
-  lastID: 41
+  lastID: 46
