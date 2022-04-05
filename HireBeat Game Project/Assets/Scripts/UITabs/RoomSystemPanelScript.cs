@@ -63,6 +63,19 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
+    //This quick struct stores player-only information, as database grabs from it
+    public struct QuickRoomInfo //just contains roomName and isPublic
+    {
+        public string roomName;
+        public bool isPublic;
+
+        public QuickRoomInfo(string roomName, bool isPublic)
+        {
+            this.roomName = roomName;
+            this.isPublic = isPublic;
+        }
+    }
+
     // Each room is identified here by id!
     public Dictionary<string, PlayerRoomInfo> playerRoomList = new Dictionary<string, PlayerRoomInfo>(); //a cache for userName, rest of info
     public GameObject playerRoomDisplayPrefab; //this is the prefab for each player room display in list
@@ -82,8 +95,7 @@ public class RoomSystemPanelScript : MonoBehaviour
 
     public void OnEnable() //called everytime when panel gets active
     {
-        sortByAlphanumeric.isOn = false;
-        sortByNumPlayers.isOn = false;
+        //User can keep its previous preference, just a simple refresh!
         if (dbc != null) dbc.GrabAllPublicRooms(0); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
     }
 
@@ -141,6 +153,41 @@ public class RoomSystemPanelScript : MonoBehaviour
     //This is used to create the effect that you've exited a sort mode
 
 
+    Dictionary<string, QuickRoomInfo> userIdToQRICache; 
+    //This method is the callback from dbc once you've asked to grab room(user) search results.
+    public void StoreInputSearchResults(hirebeatprojectdb_userdatastorage[] userData)
+    {
+        if(userData == null) //speical value for not found or error
+        {
+            Debug.LogError("Input not found!"); // prob better feedback
+        }
+        else
+        {
+            userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
+            dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray()); //removes duplicate!
+            //just in case grabbing someone whose name == id twice. Diff row diff id.
+        }
+    }
+    //This method is the callback from dbc to grab all room info from given list of ids, above
+    public void DisplayInputSearchResults(hirebeatprojectdb_userroomsassociated[] dbRooms)
+    {
+        //Delete everything
+        foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+        {
+            Destroy(roomTabObj);
+        }
+        playerRoomList.Clear();
+
+        foreach (var room in dbRooms)
+        {
+            //If is not invited, then set join button to false. (join button default to true). very easy
+            //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
+            var QRIObj = userIdToQRICache[room.TrueOwnerID];
+            AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic);
+        }
+    }
+
+
     private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic) //this uses roomName
     {
         var newPlayerRoomDisplay = Instantiate(playerRoomDisplayPrefab, playerRoomDisplayPanel);
@@ -167,19 +214,19 @@ public class RoomSystemPanelScript : MonoBehaviour
     }
 
     //callback from dbc, now need to get username to match the ids
-    hirebeatprojectdb_userroomsassociated[] dbRoomsCache;
-    public void GrabAllPublicRoomInfo(hirebeatprojectdb_userroomsassociated[] dbRooms, int sortType)
+    Dictionary<string, string> userIdToUserNameCache;
+    public void GrabAllPublicRoomInfo(hirebeatprojectdb_userdatastorage[] userInfo, int sortType)
     {
-        string[] idsThatNeedNames = dbRooms.Select(r => r.TrueOwnerID).ToArray();
-        dbRoomsCache = dbRooms;
+        userIdToUserNameCache = userInfo.ToDictionary(r=>r.UserId, r=>r.UserName); //all public rooms! no need to record.
+        string[] idsThatNeedRoomInfo = userIdToUserNameCache.Keys.ToArray();
 
-        dbc.GrabAllUsernamesFromGivenIds(idsThatNeedNames, sortType);
+        dbc.GrabAllUsernamesFromGivenIds(idsThatNeedRoomInfo, sortType);
     }
 
     //The below should hopefully be the callback from name grab above, from dbc.
     //Need to check playerRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
     //not in room then add, if in both then update.
-    public void UpdatePlayerRoomList(Dictionary<string, string> userIdToUserName, int sortType)
+    public void UpdatePlayerRoomList(Dictionary<string, int> userIdToNumPlayersInRm, int sortType)
     {
         //Is doing the below more efficient than two nested forloops?
         if (sortType == 1) //toggle group!
@@ -213,12 +260,11 @@ public class RoomSystemPanelScript : MonoBehaviour
             }
             playerRoomList.Clear();
 
-            //Directly go element by element from dbRoomsCache, because everything in it is sorted to num
-            for(int i = dbRoomsCache.Length-1; i >= 0; i--) 
+            //Directly go element by element from userId to NumPlayers, because everything in it is sorted to num
+            foreach (var idNumPair in userIdToNumPlayersInRm) 
             {
-                var roomPair = dbRoomsCache[i];
-                AddNewRoomToList(userIdToUserName[roomPair.TrueOwnerID], 
-                    roomPair.TrueOwnerID, roomPair.NumPlayersInRoom, true); //public indeed
+                AddNewRoomToList(userIdToUserNameCache[idNumPair.Key], 
+                    idNumPair.Key, idNumPair.Value, true); //public indeed
             }
         }
         else if(sortType == 2)
@@ -241,8 +287,6 @@ public class RoomSystemPanelScript : MonoBehaviour
                 AddNewRoomToList(roomName, newInfo.userId, newInfo.numPlayersInRoom, newInfo.isPublic);
             }*/
 
-            var dbRoomsConverted = ConvertToReadableFormat(); //id is key
-
             //Fast way: order by directly from SQL call
             //Delete everything
             foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
@@ -251,11 +295,10 @@ public class RoomSystemPanelScript : MonoBehaviour
             }
             playerRoomList.Clear();
 
-            //Directly go element by element from userIdToUserName, because everything in it is sorted to username
-            foreach(var idNamePair in userIdToUserName)
+            //Directly go element by element from userIdToUserNameCache, because everything in it is sorted to username
+            foreach(var idNamePair in userIdToUserNameCache)
             {
-                var roomInfo = dbRoomsConverted[idNamePair.Key]; //key is id
-                AddNewRoomToList(idNamePair.Value, idNamePair.Key, roomInfo.numPlayersInRoom, true); //public indeed
+                AddNewRoomToList(idNamePair.Value, idNamePair.Key, userIdToNumPlayersInRm[idNamePair.Key], true); //public indeed
             }
         }
         else //sort type is 0
@@ -270,9 +313,8 @@ public class RoomSystemPanelScript : MonoBehaviour
             }
 
             //playerRoomList no longer stores roomName as key, so gonna compare using ids now (room = id here.)
-            var dbRoomsConverted = ConvertToReadableFormat();
             List<string> listIds = playerRoomList.Keys.ToList(); //Roomnames (ownernames) are unique, but we doing id here.
-            List<string> dbRoomIds = userIdToUserName.Keys.ToList(); //dbRooms.Select(r => r.RoomName).ToList(); //Select(r => (string)r["RoomName"]).ToList(); //was a list of dicts
+            List<string> dbRoomIds = userIdToUserNameCache.Keys.ToList(); //dbRooms.Select(r => r.RoomName).ToList(); //Select(r => (string)r["RoomName"]).ToList(); //was a list of dicts
             List<string> ToBeUpdated = listIds.Intersect(dbRoomIds).ToList();
             List<string> ToBeDeleted = listIds.Except(ToBeUpdated).ToList(); //they've become private!
             List<string> ToBeAdded = dbRoomIds.Except(ToBeUpdated).ToList(); //new public rooms!
@@ -283,16 +325,16 @@ public class RoomSystemPanelScript : MonoBehaviour
             }
             foreach (string roomId in ToBeUpdated)
             {
-                UpdateRoomInfo(roomId, userIdToUserName[roomId], dbRoomsConverted[roomId].numPlayersInRoom);    //dbRooms.Find()
+                UpdateRoomInfo(roomId, userIdToUserNameCache[roomId], userIdToNumPlayersInRm[roomId]);    //dbRooms.Find()
             }
             foreach (string roomId in ToBeAdded)
             {
-                var newInfo = dbRoomsConverted[roomId];
-                AddNewRoomToList(userIdToUserName[roomId], roomId, newInfo.numPlayersInRoom, newInfo.isPublic);
+                AddNewRoomToList(userIdToUserNameCache[roomId], roomId, userIdToNumPlayersInRm[roomId], true); //public indeed.
             }
         }
     }
 
+    /* //This is no longer needed. Was needed back when messiness was a thing.
     private Dictionary<string, PlayerRoomInfo> ConvertToReadableFormat()
     {
         //user id as key, rest info as values!
@@ -307,7 +349,7 @@ public class RoomSystemPanelScript : MonoBehaviour
             result.Add(ownerID, new PlayerRoomInfo(null, numMembers, isPublic, null));
         }
         return result;
-    }
+    }*/
 
     public void OnCurrentRoomInfoClicked()
     {
@@ -350,6 +392,13 @@ public class RoomSystemPanelScript : MonoBehaviour
         {
             searchRoomBar.gameObject.SetActive(false);
         }
+    }
+
+    // Since playfabId and Username can only be alphanumeric, and email address is alphanumeric + @ + . basically
+    // ,,,...;;; won't be found! still safe. No character limit tho to keep user able to enter long email.
+    public void OnSearchRoomBarSubmit() //enter key
+    {
+        dbc.GetUserIdFromInfo(searchRoomBar.text, "rsps");
     }
 
     public void OnOwnRoomSettingsClicked()

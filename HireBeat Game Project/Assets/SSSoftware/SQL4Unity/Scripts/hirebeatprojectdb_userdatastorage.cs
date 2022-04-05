@@ -23,6 +23,7 @@ public new ushort rowId { get { return Get<ushort>(34); } }
 public string UserName { get { return Get<string>(36); } set { Set(36, value); } }
 public string UserId { get { return Get<string>(37); } set { Set(37, value); } }
 public string Email { get { return Get<string>(38); } set { Set(38, value); } }
+public bool IsRoomPublic { get { return Get<bool>(47); } set { Set(47, value); } }
 /// <summary>
 /// Depreciated. This method included for legacy reasons only
 /// </summary>

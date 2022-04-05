@@ -4985,9 +4985,9 @@ RectTransform:
   - {fileID: 829715405}
   - {fileID: 734582061}
   - {fileID: 524161129}
+  - {fileID: 1298323655}
   - {fileID: 1938569700}
   - {fileID: 21318}
-  - {fileID: 1298323655}
   - {fileID: 1882544514}
   - {fileID: 1752600728}
   m_Father: {fileID: 372130348}
@@ -34723,7 +34723,7 @@ MonoBehaviour:
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 0
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
@@ -69042,21 +69042,21 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1298323656}
   m_TextComponent: {fileID: 680991975}
   m_Placeholder: {fileID: 0}
-  m_ContentType: 0
+  m_ContentType: 6
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 0
-  m_LineType: 1
+  m_KeyboardType: 7
+  m_LineType: 0
   m_HideMobileInput: 0
-  m_CharacterValidation: 0
-  m_CharacterLimit: 16
+  m_CharacterValidation: 5
+  m_CharacterLimit: 0
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: VideoChatRoomSearch, Assembly-CSharp
-        m_MethodName: SearchSpecificRoom
-        m_Mode: 0
+      - m_Target: {fileID: 296055293}
+        m_TargetAssemblyTypeName: RoomSystemPanelScript, Assembly-CSharp
+        m_MethodName: OnSearchRoomBarSubmit
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -69070,19 +69070,7 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: VideoChatRoomSearch, Assembly-CSharp
-        m_MethodName: ListVCRoomsWithKeyword
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
