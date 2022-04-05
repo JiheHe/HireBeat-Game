@@ -8,10 +8,10 @@ public class PlayerRoomDisplayTab : MonoBehaviour
     public Text roomOwnerName;
     public Text numMembers;
     public Text publicAccess; //this defaults to public, unless it's by invite then private.
-    //Join button is always active! by default!
+    public Button joinButton; //Join button is always active! by default!
     string roomOwnerId; //idk maybe do a profile show with this? //wait this is good 
 
-    public void SetRoomInfo(string roomOwnerName, int numMembers, bool isPublic, string roomOwnerId)
+    public void SetRoomInfo(string roomOwnerName, int numMembers, bool isPublic, string roomOwnerId, bool isInvited = false)
     {
         this.roomOwnerName.text = roomOwnerName;
         this.numMembers.text = numMembers.ToString();
@@ -24,6 +24,9 @@ public class PlayerRoomDisplayTab : MonoBehaviour
             publicAccess.text = "Private"; //this only show up in invite tab
         }
         this.roomOwnerId = roomOwnerId;
+
+        //Usually public rooms only show in public, private rooms only show in invites. This is for specific room search only.
+        if (!isPublic && !isInvited) joinButton.gameObject.SetActive(false);
     }
 
     public void UpdateNumMembers(int numMembers)

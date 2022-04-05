@@ -598,7 +598,8 @@ public class DataBaseCommunicator : MonoBehaviour
 		{
 			switch (from) {
 				case "rsps":
-					rsps.StoreInputSearchResults(rows);
+					if (rows == null) rsps.StoreInputSearchResults(rows, input);
+					else rsps.StoreInputSearchResults(rows);
 					break;
             }
 			//just send rows back, and unity will process from that end.
@@ -767,7 +768,6 @@ public class DataBaseCommunicator : MonoBehaviour
 
 
 	bool addNewPlayerResultReady;
-	SQLResult addNewPlayerResult;
 	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
 	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
 	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
@@ -787,7 +787,6 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 	private void AddNewPlayerCallback(bool ok, SQLResult result)
     {
-		addNewPlayerResult = result;
 		addNewPlayerResultReady = true;
 		Debug.Log("New player registration (info or room, twice)! Adding in data: " + result.message.ToString());
 		//Don't forget to trigger a "enter new name plz" for new players right after!
@@ -796,29 +795,22 @@ public class DataBaseCommunicator : MonoBehaviour
 	{
 		yield return new WaitUntil(() => addNewPlayerResultReady);
 
-		if (addNewPlayerResult.rowsAffected != 0) //no dup! If nothing is affected then dup.
+		try
 		{
-			try
-			{
-				string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,NumPlayersInRoom,CurrOwnerID) " +
-					"VALUES (%userId%, %numPInRm%, %currOwnerId%)";
-				SQLParameter roomParameters = new SQLParameter();
-				roomParameters.SetValue("userId", userId);
-				roomParameters.SetValue("numPInRm", numPlayersInRm);
-				roomParameters.SetValue("currOwnerId", userId);
+			string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,NumPlayersInRoom,CurrOwnerID) " +
+				"VALUES (%userId%, %numPInRm%, %currOwnerId%)";
+			SQLParameter roomParameters = new SQLParameter();
+			roomParameters.SetValue("userId", userId);
+			roomParameters.SetValue("numPInRm", numPlayersInRm);
+			roomParameters.SetValue("currOwnerId", userId);
 
-				sql.Command(roomQuery, null, roomParameters, AddNewPlayerCallback);
-			}
-			catch (Exception ex)
-			{
-				// May throw an Illegal Cast Exception if the local database is missing
-				Debug.LogError(ex.Message);
-			}
+			sql.Command(roomQuery, null, roomParameters, AddNewPlayerCallback);
 		}
-		else
-        {
-			Debug.LogError("Duplicated values found. NOPE");
-        }
+		catch (Exception ex)
+		{
+			// May throw an Illegal Cast Exception if the local database is missing
+			Debug.LogError(ex.Message);
+		}
 	}
 
 

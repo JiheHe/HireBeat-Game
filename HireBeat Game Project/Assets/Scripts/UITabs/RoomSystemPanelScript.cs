@@ -45,6 +45,9 @@ public class RoomSystemPanelScript : MonoBehaviour
     public Toggle sortByAlphanumeric;
     public Toggle selfRoomPublicStatus;
 
+    public Text errorMsg;
+    private IEnumerator errorMsgDisplay;
+
     [Serializable]
     public class PlayerRoomInfo //roomName is the key
     {
@@ -79,7 +82,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     public Dictionary<string, PlayerRoomInfo> playerRoomList = new Dictionary<string, PlayerRoomInfo>(); //a cache for userName, rest of info
     public GameObject playerRoomDisplayPrefab; //this is the prefab for each player room display in list
     public RectTransform playerRoomDisplayPanel; //this is the content where room will be child of.
-    public List<string> invitedRoomList = new List<string>(); //can be invited by public or private! private can only join through invite tho
+    public List<string> listOfInvitedRoomIds = new List<string>(); //can be invited by public or private! private can only join through invite tho
 
     DataBaseCommunicator dbc = null; //the real time database!
     // Start is called before the first frame update
@@ -139,11 +142,14 @@ public class RoomSystemPanelScript : MonoBehaviour
 
     Dictionary<string, QuickRoomInfo> userIdToQRICache; 
     //This method is the callback from dbc once you've asked to grab room(user) search results.
-    public void StoreInputSearchResults(hirebeatprojectdb_userdatastorage[] userData)
+    public void StoreInputSearchResults(hirebeatprojectdb_userdatastorage[] userData, string input = null)
     {
         if(userData == null) //speical value for not found or error
         {
-            Debug.LogError("Input not found!"); // prob better feedback
+            if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+            errorMsgDisplay = DisplayErrorMessage(3f, "Cannot find an username, id, or email associated with \"" +
+                input + "\""); //each time a coro is called, a new obj is formed.
+            StartCoroutine(errorMsgDisplay);
         }
         else
         {
@@ -167,17 +173,26 @@ public class RoomSystemPanelScript : MonoBehaviour
             //If is not invited, then set join button to false. (join button default to true). very easy
             //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
             var QRIObj = userIdToQRICache[room.TrueOwnerID];
-            AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic);
+            bool isInvited = listOfInvitedRoomIds.Contains(room.TrueOwnerID);  
+            AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, isInvited);
         }
     }
 
+    IEnumerator DisplayErrorMessage(float time, string message)
+    {
+        errorMsg.gameObject.SetActive(true);
+        errorMsg.text = message;
+        yield return new WaitForSeconds(time);
+        errorMsg.gameObject.SetActive(false);
+    }
 
-    private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic) //this uses roomName
+
+    private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic, bool isInvited = false) //this uses roomName
     {
         var newPlayerRoomDisplay = Instantiate(playerRoomDisplayPrefab, playerRoomDisplayPanel);
         //newVCRoomDisplay.name = prefix + roomName; //no need for prefix...
         //if (invitedRoomList.Contains(roomName)) newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID, true); //invited!
-        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID);
+        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID, isInvited);
         playerRoomList.Add(ownerID, new PlayerRoomInfo(roomName, numMembers, isPublic, newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>()));
     }
 
@@ -460,6 +475,12 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
         roomInfoPanel.SetActive(false);
         ownRoomSettingsPanel.SetActive(false);
+
+        if (errorMsgDisplay != null)
+        {
+            StopCoroutine(errorMsgDisplay);
+            errorMsg.gameObject.SetActive(false);
+        }
 
         gameObject.SetActive(false); //want to keep data!
         if (!playerZoneTab.hasOneOn)

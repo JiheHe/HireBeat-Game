@@ -59,7 +59,7 @@ MonoBehaviour:
     displayName: UserRoomsAssociated
     hidden: 0
     columns: 050030002d002e00
-    indexes: 0600
+    indexes: 06003500
     dropped: 0
     created: 1
     updated: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
     dropped: 0
     created: 1
     updated: 0
-    dataTable: 9
+    dataTable: 10
     dataPage: 0
     bigTab: 0
   - id: 33
@@ -102,7 +102,7 @@ MonoBehaviour:
     dropped: 0
     created: 1
     updated: 0
-    dataTable: 12
+    dataTable: 13
     dataPage: 0
     bigTab: 0
   columns:
@@ -460,7 +460,7 @@ MonoBehaviour:
     dataType: string
     dataLength: 0
     allowNull: 0
-    primaryKey: 0
+    primaryKey: 1
     autoIncrement: 0
     hidden: 0
     dropped: 0
@@ -508,7 +508,7 @@ MonoBehaviour:
     created: 1
     columns: 0500
     dataType: ushort
-    dataIndex: 8
+    dataIndex: 9
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -598,7 +598,7 @@ MonoBehaviour:
     created: 1
     columns: 1b00
     dataType: ushort
-    dataIndex: 11
+    dataIndex: 12
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -613,7 +613,7 @@ MonoBehaviour:
     created: 1
     columns: 1d00
     dataType: string
-    dataIndex: 10
+    dataIndex: 11
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -628,7 +628,7 @@ MonoBehaviour:
     created: 1
     columns: 2200
     dataType: ushort
-    dataIndex: 14
+    dataIndex: 15
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -643,7 +643,7 @@ MonoBehaviour:
     created: 1
     columns: 2400
     dataType: string
-    dataIndex: 13
+    dataIndex: 14
     dataPage: 0
     bigTab: 0
     unique: 1
@@ -702,6 +702,21 @@ MonoBehaviour:
     dropped: 1
     created: 1
     columns: 3200
+    dataType: string
+    dataIndex: 8
+    dataPage: 0
+    bigTab: 0
+    unique: 1
+  - id: 53
+    tabId: 4
+    dbId: 0
+    indexName: hirebeatprojectdb.userroomsassociated.trueowneridpk
+    displayName: TrueOwnerIDPK
+    type: Dict
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 3000
     dataType: string
     dataIndex: 8
     dataPage: 0
@@ -810,7 +825,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 15
+    lastId: 16
   - id: 23
     dbId: 0
     procedureName: hirebeatprojectdb.updatevcroomprops
@@ -847,7 +862,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 15
+    lastId: 16
   - id: 24
     dbId: 0
     procedureName: hirebeatprojectdb.deletevcroom
@@ -876,7 +891,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 15
+    lastId: 16
   - id: 25
     dbId: 0
     procedureName: hirebeatprojectdb.graballvcroominfo
@@ -914,4 +929,4 @@ MonoBehaviour:
     conditions: 
     joins: []
     lastId: 1
-  lastID: 52
+  lastID: 53
