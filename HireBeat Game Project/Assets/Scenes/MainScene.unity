@@ -609,7 +609,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 296055293}
+        m_TargetAssemblyTypeName: RoomSystemPanelScript, Assembly-CSharp
+        m_MethodName: OnSelfRoomPublicStatusChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &8542247
 GameObject:
@@ -13933,7 +13945,7 @@ MonoBehaviour:
   ownRoomSettingsPanel: {fileID: 1752600727}
   sortByNumPlayers: {fileID: 1938569702}
   sortByAlphanumeric: {fileID: 21320}
-  selfRoomPublicStatus: {fileID: 0}
+  selfRoomPublicStatus: {fileID: 8112247}
   playerRoomDisplayPrefab: {fileID: 1351898600531975745, guid: ee4495757fc61304eb40d625a5c83e10, type: 3}
   playerRoomDisplayPanel: {fileID: 1609535302}
   invitedRoomList: []

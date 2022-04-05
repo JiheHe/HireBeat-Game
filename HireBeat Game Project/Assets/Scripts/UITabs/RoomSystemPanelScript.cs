@@ -34,7 +34,6 @@ public class RoomSystemPanelScript : MonoBehaviour
     }
 
     string myID;
-    public string currentRoomTrueOwnerID;
 
     public GameObject roomInfoPanel;
     public Text roomNameTxt;
@@ -90,7 +89,6 @@ public class RoomSystemPanelScript : MonoBehaviour
         dbc.GrabAllPublicRooms(0);
 
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
-        currentRoomTrueOwnerID = myID; //you start the game by entering your own room, so it's you!
     }
 
     public void OnEnable() //called everytime when panel gets active
@@ -102,20 +100,6 @@ public class RoomSystemPanelScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-    }
-
-    //Gonna outline the structure here: (due to row level locking)
-    //Each room will have dedicated Photon room owner (the Master client). He deals with all the database calls (doesn't have to be owner)
-    //Photon will cover the automatic master client transition for us so no worries. If no one in room then room is auto-closed.
-    //After room is autoclosed, set its access to private to hide it from others' eyes (last person leaving do a check (he'll be master client),
-    //if so then send change to database. If he immediately leaves via exiting the tab, then SQLAdmin will check and set currOwner to null and
-    //numplayersinroom to 0.
-    //Have a feedback on the official owner's end telling him numPlayersinHisRoom?
-    //Every user will update the room info upon people leaving, etc
-    //But official room owner (not photon, just name) can still open the room up again
-    public void OnSelfRoomPublicStatusChanged() 
-    {
-        dbc.ChangeRoomPublicStatus(myID, selfRoomPublicStatus.isOn);
     }
 
     int previousOn = 0; //1 is num, 2 is alpha, 0 is none.
@@ -355,22 +339,24 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
         if(!roomInfoPanel.activeSelf)
         {
-            roomInfoPanel.SetActive(true);
-            roomNameTxt.text = PhotonNetwork.CurrentRoom.Name;
+            dbc.GetCurrentRoomInfo(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM, "CurrentRoomInfo");
+            //roomNameTxt.text = PhotonNetwork.CurrentRoom.Name; //Don't do this! Actual Photon room name will be playfab id since it's fixed.
             //Haven't set a cap on max player per room count yet, current it is 5. In MainMenu script.
-            numPlayersInRoomTxt.text = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
-
-            SetRoomAccessText(false); //this should be a dbq database call to grab current access, direct for testing.
         }
         else
         {
             roomInfoPanel.SetActive(false);
         }
     }
-    //This is the callback from DBC
-    public void SetRoomAccessText(bool isPublic) //gonna consort the database on this. Photon room privacy not helpful.
+    //This is the callback from DBC from the above.
+    public void SetCurrentRoomInfoTexts(hirebeatprojectdb_userdatastorage roomInfo) //gonna consort the database on this. Photon room privacy not helpful.
     {
-        if(isPublic)
+        ownRoomSettingsPanel.SetActive(false); //this is a sneaky way to get user click n call refresh
+
+        roomNameTxt.text = roomInfo.UserName; //can add some modifications to the name here if wanted.
+        numPlayersInRoomTxt.text = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
+
+        if (roomInfo.IsRoomPublic)
         {
             roomAccessTxt.text = "Open to Public";
         }
@@ -378,6 +364,8 @@ public class RoomSystemPanelScript : MonoBehaviour
         {
             roomAccessTxt.text = "Private Invites Only";
         }
+
+        roomInfoPanel.SetActive(true);
     }
 
     public void OnSearchRoomClicked()
@@ -401,17 +389,46 @@ public class RoomSystemPanelScript : MonoBehaviour
         dbc.GetUserIdFromInfo(searchRoomBar.text, "rsps");
     }
 
+    //Sneaky way: grab your own room setting here then, because you can't see unless you clicked this!
     public void OnOwnRoomSettingsClicked()
     {
         //add more settings in future!
         if(!ownRoomSettingsPanel.activeSelf)
         {
             ownRoomSettingsPanel.SetActive(true);
+            dbc.GetCurrentRoomInfo(myID, "SettingsPublicCheck");
+            roomInfoPanel.SetActive(false);
         }
         else
         {
             ownRoomSettingsPanel.SetActive(false);
         }
+    }
+
+    bool changedDueToDBCheck = false; //toggle is triggererd everytime it is opened, so just in case.
+    //This is the callback function from dbc upon own room settings open.
+    public void UpdateSelfRoomPublicStatusFromDB(bool isPublic)
+    {
+        if (isPublic != selfRoomPublicStatus.isOn)
+        {
+            changedDueToDBCheck = true;
+            selfRoomPublicStatus.isOn = isPublic; //this is only triggered if isOn is different from database.
+        }
+    }
+
+    //Gonna outline the structure here: (due to row level locking)
+    //Each room will have dedicated Photon room owner (the Master client). He deals with all the database calls (doesn't have to be owner)
+    //Photon will cover the automatic master client transition for us so no worries. If no one in room then room is auto-closed.
+    //After room is autoclosed, set its access to private to hide it from others' eyes (last person leaving do a check (he'll be master client),
+    //if so then send change to database. If he immediately leaves via exiting the tab, then SQLAdmin will check and set currOwner to null and
+    //numplayersinroom to 0.
+    //Have a feedback on the official owner's end telling him numPlayersinHisRoom?
+    //Every user will update the room info upon people leaving, etc
+    //But official room owner (not photon, just name) can still open the room up again
+    public void OnSelfRoomPublicStatusChanged()
+    {
+        if (!changedDueToDBCheck) dbc.ChangeRoomPublicStatus(myID, selfRoomPublicStatus.isOn);
+        else changedDueToDBCheck = false;
     }
 
     public void OnRefreshButtonPressed()
@@ -441,6 +458,9 @@ public class RoomSystemPanelScript : MonoBehaviour
 
     public void CloseWindow()
     {
+        roomInfoPanel.SetActive(false);
+        ownRoomSettingsPanel.SetActive(false);
+
         gameObject.SetActive(false); //want to keep data!
         if (!playerZoneTab.hasOneOn)
         {

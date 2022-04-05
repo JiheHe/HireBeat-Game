@@ -39,8 +39,12 @@ public class PlayerRoomDisplayTab : MonoBehaviour
 
     public void OnConnectPressed() //the objects below should be active by the time connect is pressed.
     {
+        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = roomOwnerId;
         //GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>().OnConnectPressed(roomName.text);
-        //rsps.currentRoomTrueOwnerID = roomOwnerId. It's not useless! Good data tracking
+
+        //PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = roomOwnerId;
         Debug.Log("Connecting...");    
+
+        //Only connect forreal after everything is ready with callbacks n stuff
     }
 }

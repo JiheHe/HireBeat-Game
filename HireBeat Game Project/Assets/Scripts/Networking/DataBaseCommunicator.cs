@@ -110,19 +110,31 @@ public class DataBaseCommunicator : MonoBehaviour
     {
 		if(Input.GetKeyDown(KeyCode.G))
 		{
-			/*AddNewPlayer("7A98A976DE472605", "jaxmasterofleague@gmail.com");
-			AddNewPlayer("B5EF892E35CD7E86", "nickhe2003@gmail.com");
-			AddNewPlayer("FCC363B28E64818C", "nhe21siprep@gmail.com");
-			AddNewPlayer("1807DB258420A50A", "fenixking1994@gmail.com");*/ //data patching for tester accounts
-																		   //hopefully in future I don't lose service to server all the sudden... else a pain in the ass... 
-																		   //maybe prep a safe check? no registeration if cannot connect to dbc, or fix later?
 
+			//StartCoroutine(AddActualTestPlayers());
 			//gonna remove everything where id = a, for testing.
 			//StartCoroutine(testAdd());
 			/*CreateNewVCRoom("IDK" + i, "helo", true);
 			i += 1;*/
 		}
-    }
+		if(Input.GetKeyDown(KeyCode.K))
+        {
+			//StartCoroutine(AddActualTestPlayers());
+		}
+	}
+	IEnumerator AddActualTestPlayers()
+    {
+		//data patching for tester accounts
+		//hopefully in future I don't lose service to server all the sudden... else a pain in the ass... 
+		//maybe prep a safe check? no registeration if cannot connect to dbc, or fix later?
+		AddNewPlayer("7A98A976DE472605", "jaxmasterofleague@gmail.com");
+		yield return new WaitForSeconds(1);
+		AddNewPlayer("B5EF892E35CD7E86", "nickhe2003@gmail.com");
+		yield return new WaitForSeconds(1);
+		AddNewPlayer("FCC363B28E64818C", "nhe21siprep@gmail.com");
+		yield return new WaitForSeconds(1);
+		AddNewPlayer("1807DB258420A50A", "fenixking1994@gmail.com");
+	}
 
 	IEnumerator testAdd()
     {
@@ -666,8 +678,8 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 	private void GrabAllRoomInfoFromGivenIdsCallback(bool ok, SQLResult result)
 	{
-		grabAllRoomInfoFromGivenIdsReady = true;
 		grabAllRoomInfoFromGivenIdsResult = result;
+		grabAllRoomInfoFromGivenIdsReady = true;
 	}
 	IEnumerator GrabAllRoomInfoFromGivenIdsResult(Action<hirebeatprojectdb_userroomsassociated[]> callback)
 	{
@@ -755,6 +767,7 @@ public class DataBaseCommunicator : MonoBehaviour
 
 
 	bool addNewPlayerResultReady;
+	SQLResult addNewPlayerResult;
 	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
 	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
 	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
@@ -774,6 +787,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 	private void AddNewPlayerCallback(bool ok, SQLResult result)
     {
+		addNewPlayerResult = result;
 		addNewPlayerResultReady = true;
 		Debug.Log("New player registration (info or room, twice)! Adding in data: " + result.message.ToString());
 		//Don't forget to trigger a "enter new name plz" for new players right after!
@@ -782,22 +796,29 @@ public class DataBaseCommunicator : MonoBehaviour
 	{
 		yield return new WaitUntil(() => addNewPlayerResultReady);
 
-		try
+		if (addNewPlayerResult.rowsAffected != 0) //no dup! If nothing is affected then dup.
 		{
-			string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,NumPlayersInRoom,CurrOwnerID) " +
-				"VALUES (%userId%, %numPInRm%, %currOwnerId%)";
-			SQLParameter roomParameters = new SQLParameter();
-			roomParameters.SetValue("userId", userId);
-			roomParameters.SetValue("numPInRm", numPlayersInRm);
-			roomParameters.SetValue("currOwnerId", userId);
+			try
+			{
+				string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,NumPlayersInRoom,CurrOwnerID) " +
+					"VALUES (%userId%, %numPInRm%, %currOwnerId%)";
+				SQLParameter roomParameters = new SQLParameter();
+				roomParameters.SetValue("userId", userId);
+				roomParameters.SetValue("numPInRm", numPlayersInRm);
+				roomParameters.SetValue("currOwnerId", userId);
 
-			sql.Command(roomQuery, null, roomParameters, AddNewPlayerCallback);
+				sql.Command(roomQuery, null, roomParameters, AddNewPlayerCallback);
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError(ex.Message);
+			}
 		}
-		catch (Exception ex)
-		{
-			// May throw an Illegal Cast Exception if the local database is missing
-			Debug.LogError(ex.Message);
-		}
+		else
+        {
+			Debug.LogError("Duplicated values found. NOPE");
+        }
 	}
 
 
@@ -879,8 +900,8 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 	private void GrabAllUsernamesFromGivenIdsCallback(bool ok, SQLResult result)
     {
-		grabAllUsernamesFromGivenIdsReady = true;
 		grabAllUsernamesFromGivenIdsResult = result;
+		grabAllUsernamesFromGivenIdsReady = true;
 	}
 	IEnumerator GrabAllUsernamesFromGivenIdsResult(Action<hirebeatprojectdb_userroomsassociated[]> callback)
 	{
@@ -933,8 +954,8 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 	private void GrabAllPublicRoomsCallback(bool ok, SQLResult result)
     {
-		grabAllPublicRoomsResultReady = true;
 		grabAllPublicRoomsResult = result;
+		grabAllPublicRoomsResultReady = true;
     }
 	IEnumerator ReturnAllPublicRoomsResult(Action<hirebeatprojectdb_userdatastorage[]> callback)
 	{
@@ -981,6 +1002,68 @@ public class DataBaseCommunicator : MonoBehaviour
 	private void ChangeRoomPublicStatusCallback(bool ok, SQLResult result)
     {
 		Debug.Log("Changed room status! Result: " + result.message.ToString());
+	}
+
+	//This grabs own room's public status and owner name, so on login/room switch etc user can get correct feedback on room status.
+	//Can also use this to grab the public status of the current room you are in, using the id.
+	SQLResult getCurrentRoomInfoResult;
+	bool getCurrentRoomInfoResultReady;
+	public void GetCurrentRoomInfo(string trueOwnerID, string purpose)
+    {
+		getCurrentRoomInfoResultReady = false;
+
+		string query = "SELECT UserName, IsRoomPublic FROM UserDataStorage WHERE UserId = %userId%";
+		SQLParameter parameters = new SQLParameter();
+
+		parameters.SetValue("userId", trueOwnerID);
+
+		sql.Command(query, null, parameters, GetGetCurrentRoomInfoCallback);
+
+		StartCoroutine(ReturnGetCurrentRoomInfoResult((roomInfo) =>
+		{
+			switch (purpose)
+            {
+				case "CurrentRoomInfo":
+					rsps.SetCurrentRoomInfoTexts(roomInfo);
+					break;
+				case "SettingsPublicCheck":
+					rsps.UpdateSelfRoomPublicStatusFromDB(roomInfo.IsRoomPublic);
+					break;
+			}
+
+		}
+		));// StartCoroutine on Main Thread
+	}
+	private void GetGetCurrentRoomInfoCallback(bool ok, SQLResult result)
+    {
+		getCurrentRoomInfoResult = result;
+		getCurrentRoomInfoResultReady = true;
+	}
+	IEnumerator ReturnGetCurrentRoomInfoResult(Action<hirebeatprojectdb_userdatastorage> callback)
+	{
+		yield return new WaitUntil(() => getCurrentRoomInfoResultReady);
+
+		if (getCurrentRoomInfoResult.status)
+		{
+			try
+			{
+				hirebeatprojectdb_userdatastorage roomInfo = getCurrentRoomInfoResult.Get<hirebeatprojectdb_userdatastorage>()[0];
+				callback(roomInfo);
+				//grabAllPublicRoomsResult.Clear();
+				//grabAllPublicRoomsResultReady = false;
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError("Grabbing current room info database failed: " + ex.Message);
+				callback(null);
+			}
+		}
+		else
+		{
+			Debug.LogError("Retrieving current room info failed!");
+			callback(null);
+		}
 	}
 
 	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc not anymore
