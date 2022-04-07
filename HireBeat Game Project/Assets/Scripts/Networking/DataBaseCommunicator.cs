@@ -597,11 +597,12 @@ public class DataBaseCommunicator : MonoBehaviour
 		StartCoroutine(ReturnGetUserIdFromInfoResult((rows) =>
 		{
 			switch (from) {
+				case "invplayer": //like an "or"
 				case "rsps":
-					if (rows == null) rsps.StoreInputSearchResults(rows, input);
-					else rsps.StoreInputSearchResults(rows);
+					if (rows == null) rsps.StoreInputSearchResults(rows, "doesntmatter", input);
+					else rsps.StoreInputSearchResults(rows, from);
 					break;
-            }
+			}
 			//just send rows back, and unity will process from that end.
 			//if null then...
 		}
@@ -705,6 +706,71 @@ public class DataBaseCommunicator : MonoBehaviour
 		else
 		{
 			Debug.LogError("Retrieving player room info failed!");
+			callback(null);
+		}
+	}
+
+	//This function is for grabbing user status by checking if that id is present in the ip address table.
+	SQLResult grabAllUserStatusFromGivenIdsResult;
+	bool grabAllUserStatusFromGivenIdsReady;
+	public void GrabAllUserStatusFromGivenIds(string[] userIds) //sort type doesn't matter, max 1-2 results.
+	{
+		grabAllUserStatusFromGivenIdsReady = false;
+
+		string query;
+		SQLParameter parameters = new SQLParameter();
+
+		if (userIds.Length < 2) //1 
+		{
+			query = "SELECT UniqueID FROM IPAdressToUniqueID WHERE UniqueID = %userId%"; //only 1 element.
+			parameters.SetValue("userId", userIds[0]);
+
+			sql.Command(query, null, parameters, GrabAllUserStatusFromGivenIdsCallback);
+		}
+		else //2 
+		{
+			query = "SELECT UniqueID FROM IPAdressToUniqueID WHERE UniqueID IN ({0})";
+
+			string inClause = string.Join(",", userIds.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+			query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+
+			sql.Command(query, null, GrabAllUserStatusFromGivenIdsCallback);
+		}
+
+		StartCoroutine(GrabAllUserStatusFromGivenIdsResult((rows) =>
+		{
+			rsps.DisplayUserStatusResults(rows);
+		}
+		));// StartCoroutine on Main Thread
+	}
+	private void GrabAllUserStatusFromGivenIdsCallback(bool ok, SQLResult result)
+	{
+		grabAllUserStatusFromGivenIdsResult = result;
+		grabAllUserStatusFromGivenIdsReady = true;
+	}
+	IEnumerator GrabAllUserStatusFromGivenIdsResult(Action<List<string>> callback)
+	{
+		yield return new WaitUntil(() => grabAllUserStatusFromGivenIdsReady);
+
+		Debug.Log("Retrieving all user status from given ids info! Here's the result: " + grabAllUserStatusFromGivenIdsResult.resultType.ToString() + " " +
+			grabAllUserStatusFromGivenIdsResult.status.ToString() + " " + grabAllUserStatusFromGivenIdsResult.message);
+		if (grabAllUserStatusFromGivenIdsResult.status)
+		{
+			try
+			{
+				List<string> rows = grabAllUserStatusFromGivenIdsResult.Get<hirebeatprojectdb_ipadresstouniqueid>().Select(r=>r.UniqueID).ToList();
+				callback(rows); //hopefully if row is empty, then still wouldn't be error.
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError("Grabbing user status database failed: " + ex.Message);
+				callback(null);
+			}
+		}
+		else
+		{
+			Debug.LogError("Retrieving user status info failed!");
 			callback(null);
 		}
 	}

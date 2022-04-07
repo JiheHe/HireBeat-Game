@@ -44,6 +44,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     public Toggle sortByNumPlayers; //if this is true by toggling, then...
     public Toggle sortByAlphanumeric;
     public Toggle selfRoomPublicStatus;
+    public InputField searchUserBar;
 
     public Text errorMsg;
     private IEnumerator errorMsgDisplay;
@@ -83,6 +84,8 @@ public class RoomSystemPanelScript : MonoBehaviour
     public GameObject playerRoomDisplayPrefab; //this is the prefab for each player room display in list
     public RectTransform playerRoomDisplayPanel; //this is the content where room will be child of.
     public List<string> listOfInvitedRoomIds = new List<string>(); //can be invited by public or private! private can only join through invite tho
+    public GameObject playerSearchDisplayPrefab; //this is the prefab for each user display in search results
+    public List<InvitePlayerToRoomTab> playerTabsOnDisplay = new List<InvitePlayerToRoomTab>();
 
     DataBaseCommunicator dbc = null; //the real time database!
     // Start is called before the first frame update
@@ -140,9 +143,10 @@ public class RoomSystemPanelScript : MonoBehaviour
     //This is used to create the effect that you've exited a sort mode
 
 
-    Dictionary<string, QuickRoomInfo> userIdToQRICache; 
+    Dictionary<string, QuickRoomInfo> userIdToQRICache;
+    Dictionary<string, string> userIdToUserNameCacheForPlayerSearch; //I'm too scared to reuse userIdToUserNameCache later below...;
     //This method is the callback from dbc once you've asked to grab room(user) search results.
-    public void StoreInputSearchResults(hirebeatprojectdb_userdatastorage[] userData, string input = null)
+    public void StoreInputSearchResults(hirebeatprojectdb_userdatastorage[] userData, string cmd, string input = null)
     {
         if(userData == null) //speical value for not found or error
         {
@@ -153,9 +157,18 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
         else
         {
-            userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
-            dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray()); //removes duplicate!
-            //just in case grabbing someone whose name == id twice. Diff row diff id.
+            switch (cmd)
+            {
+                case "rsps": //searching for a room
+                    userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
+                    dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray()); //removes duplicate!
+                    //just in case grabbing someone whose name == id twice. Diff row diff id.
+                    break;
+                case "invplayer": //searching for a player
+                    userIdToUserNameCacheForPlayerSearch = userData.ToDictionary(r => r.UserId, r => r.UserName);
+                    dbc.GrabAllUserStatusFromGivenIds(userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray());
+                    break;
+            }
         }
     }
     //This method is the callback from dbc to grab all room info from given list of ids, above
@@ -167,6 +180,11 @@ public class RoomSystemPanelScript : MonoBehaviour
             Destroy(roomTabObj);
         }
         playerRoomList.Clear();
+        foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+        {
+            Destroy(playerTabObj);
+        }
+        playerTabsOnDisplay.Clear();
 
         foreach (var room in dbRooms)
         {
@@ -178,6 +196,28 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
+    //This method is the callback from dbc after grabbing user online status from a list of ids
+    public void DisplayUserStatusResults(List<string> idsOnline)
+    {
+        //Delete everything
+        foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+        {
+            Destroy(roomTabObj);
+        }
+        playerRoomList.Clear();
+        foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+        {
+            Destroy(playerTabObj);
+        }
+        playerTabsOnDisplay.Clear();
+
+        foreach (var user in userIdToUserNameCacheForPlayerSearch)
+        {
+            bool isOnline = idsOnline.Contains(user.Key);
+            AddNewUserToList(user.Value, user.Key, isOnline);
+        }
+    }
+
     IEnumerator DisplayErrorMessage(float time, string message)
     {
         errorMsg.gameObject.SetActive(true);
@@ -186,6 +226,12 @@ public class RoomSystemPanelScript : MonoBehaviour
         errorMsg.gameObject.SetActive(false);
     }
 
+    private void AddNewUserToList(string userName, string userId, bool isOnline)
+    {
+        var newPlayerSearchDisplay = Instantiate(playerSearchDisplayPrefab, playerRoomDisplayPanel); //using same panel as parent
+        newPlayerSearchDisplay.GetComponent<InvitePlayerToRoomTab>().SetUserInfo(userName, userId, isOnline);
+        playerTabsOnDisplay.Add(newPlayerSearchDisplay.GetComponent<InvitePlayerToRoomTab>());
+    }
 
     private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic, bool isInvited = false) //this uses roomName
     {
@@ -227,6 +273,16 @@ public class RoomSystemPanelScript : MonoBehaviour
     //not in room then add, if in both then update.
     public void UpdatePlayerRoomList(Dictionary<string, int> userIdToNumPlayersInRm, int sortType)
     {
+        //First, check if there are still tabs from player search. If yes then bye bye
+        if(playerTabsOnDisplay.Count != 0)
+        {
+            foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+            {
+                Destroy(playerTabObj);
+            }
+            playerTabsOnDisplay.Clear();
+        }
+
         //Is doing the below more efficient than two nested forloops?
         if (sortType == 1) //toggle group!
         {
@@ -361,6 +417,7 @@ public class RoomSystemPanelScript : MonoBehaviour
         else
         {
             roomInfoPanel.SetActive(false);
+            searchUserBar.gameObject.SetActive(false);
         }
     }
     //This is the callback from DBC from the above.
@@ -404,6 +461,11 @@ public class RoomSystemPanelScript : MonoBehaviour
         dbc.GetUserIdFromInfo(searchRoomBar.text, "rsps");
     }
 
+    public void OnInviteUserSearchSubmit()
+    {
+        dbc.GetUserIdFromInfo(searchUserBar.text, "invplayer");
+    }
+
     //Sneaky way: grab your own room setting here then, because you can't see unless you clicked this!
     public void OnOwnRoomSettingsClicked()
     {
@@ -413,6 +475,7 @@ public class RoomSystemPanelScript : MonoBehaviour
             ownRoomSettingsPanel.SetActive(true);
             dbc.GetCurrentRoomInfo(myID, "SettingsPublicCheck");
             roomInfoPanel.SetActive(false);
+            searchUserBar.gameObject.SetActive(false);
         }
         else
         {
@@ -462,6 +525,18 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
+    public void OnInviteUserButtonPressed()
+    {
+        if (!searchUserBar.gameObject.activeSelf)
+        {
+            searchUserBar.gameObject.SetActive(true);
+        }
+        else
+        {
+            searchUserBar.gameObject.SetActive(false);
+        }
+    }
+
     public void OnTabOpen()
     {
         if (!playerZoneTab.hasOneOn) //prevents zone + UI
@@ -475,6 +550,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
         roomInfoPanel.SetActive(false);
         ownRoomSettingsPanel.SetActive(false);
+        searchUserBar.gameObject.SetActive(false); //this should close with info panel.
 
         if (errorMsgDisplay != null)
         {
