@@ -646,19 +646,21 @@ public class DataBaseCommunicator : MonoBehaviour
 	}
 
 	//This function is an extension of the utility function above, only needed for rsps
+	//Can overlap and use this for room invites probably
 	SQLResult grabAllRoomInfoFromGivenIdsResult;
 	bool grabAllRoomInfoFromGivenIdsReady;
-	public void GrabAllRoomInfoFromGivenIds(string[] userIds) //sort type doesn't matter, max 1-2 results.
+	public void GrabAllRoomInfoFromGivenIds(string[] userIds, string cmd) //sort type doesn't matter, max 1-2 results. NOT ANYMORE
 	{
 		grabAllRoomInfoFromGivenIdsReady = false;
 
 		string query;
 		SQLParameter parameters = new SQLParameter();
 
-		if (userIds.Length < 2) //1 
+		if (userIds.Length < 2) //1 if room search, but could be 0 if invite ids!
 		{
 			query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID = %userId%"; //only 1 element.
-			parameters.SetValue("userId", userIds[0]);
+			if(userIds.Length == 1) parameters.SetValue("userId", userIds[0]);
+			else parameters.SetValue("userId", ";;;,,,"); //no way this is in the database lol
 
 			sql.Command(query, null, parameters, GrabAllRoomInfoFromGivenIdsCallback);
 		}
@@ -674,7 +676,7 @@ public class DataBaseCommunicator : MonoBehaviour
 
 		StartCoroutine(GrabAllRoomInfoFromGivenIdsResult((rows) =>
 		{
-			rsps.DisplayInputSearchResults(rows);
+			rsps.DisplayInputSearchResults(rows, cmd);
 		}
 		));// StartCoroutine on Main Thread
 	}
@@ -694,6 +696,7 @@ public class DataBaseCommunicator : MonoBehaviour
 			try
 			{
 				hirebeatprojectdb_userroomsassociated[] rows = grabAllRoomInfoFromGivenIdsResult.Get<hirebeatprojectdb_userroomsassociated>();
+				foreach (var row in rows) Debug.Log("This is from rows: " + row.TrueOwnerID);
 				callback(rows);
 			}
 			catch (Exception ex)
@@ -777,6 +780,75 @@ public class DataBaseCommunicator : MonoBehaviour
 
 	//To avoid search spam, not gonna do the type & filter: just gonna do a collective search at the end.
 	// The collective search targets the room entered EXACTLY (name, id, or email). => does not exist vs. room is private.
+
+	//This part is for invites
+	SQLResult grabAllInvitedRoomNameResult;
+	bool grabAllInvitedRoomNameResultReady;
+	public void GrabAllInvitedRoomNameFromGivenIds(List<string> userIds) //sort type doesn't matter, max 1-2 results. NOT ANYMORE
+	{
+		grabAllRoomInfoFromGivenIdsReady = false;
+
+		string query;
+		SQLParameter parameters = new SQLParameter();
+
+		if (userIds.Count < 2) //1 or 0
+		{
+			query = "SELECT UserName, UserId, IsRoomPublic FROM UserDataStorage WHERE UserId = %userId%"; //only 1 element.
+			if (userIds.Count == 1) parameters.SetValue("userId", userIds[0]);
+			else parameters.SetValue("userId", ";;;,,,"); //this is not possible, so let's see if it returns empty ;D
+
+			sql.Command(query, null, parameters, GrabAllInvitedRoomNameFromGivenIdsCallback);
+		}
+		else //2 or more invites
+		{
+			query = "SELECT UserName, UserId, IsRoomPublic FROM UserDataStorage WHERE UserId IN ({0})";
+
+			string inClause = string.Join(",", userIds.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+			query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+
+			sql.Command(query, null, GrabAllInvitedRoomNameFromGivenIdsCallback);
+		}
+
+		StartCoroutine(GrabAllInvitedRoomNameFromGivenIdsResult((rows) =>
+		{
+			rsps.StoreInputSearchResults(rows, "chkinvts");
+		}
+		));// StartCoroutine on Main Thread
+	}
+	private void GrabAllInvitedRoomNameFromGivenIdsCallback(bool ok, SQLResult result)
+    {
+		grabAllInvitedRoomNameResult = result;
+		grabAllInvitedRoomNameResultReady = true;
+	}
+	IEnumerator GrabAllInvitedRoomNameFromGivenIdsResult(Action<hirebeatprojectdb_userdatastorage[]> callback)
+	{
+		yield return new WaitUntil(() => grabAllInvitedRoomNameResultReady);
+
+		Debug.Log("Retrieving invited room info from given ids! Here's the result: " + grabAllInvitedRoomNameResult.resultType.ToString() + " " +
+			grabAllInvitedRoomNameResult.status.ToString() + " " + grabAllInvitedRoomNameResult.message);
+		if (grabAllInvitedRoomNameResult.status)
+		{
+			try
+			{
+				hirebeatprojectdb_userdatastorage[] rows = grabAllInvitedRoomNameResult.Get<hirebeatprojectdb_userdatastorage>();
+				callback(rows); //hopefully if row is empty, then still wouldn't be error.
+			}
+			catch (Exception ex)
+			{
+				// May throw an Illegal Cast Exception if the local database is missing
+				Debug.LogError("Grabbing invited rooms database failed: " + ex.Message);
+				callback(null);
+			}
+		}
+		else
+		{
+			Debug.LogError("Retrieving invited room info failed!");
+			callback(null);
+		}
+	}
+
+
+	//invites
 
 
 	SQLResult ChangeUserNameResult;

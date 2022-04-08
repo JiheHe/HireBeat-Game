@@ -95,6 +95,10 @@ public class RoomSystemPanelScript : MonoBehaviour
         dbc.GrabAllPublicRooms(0);
 
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
+
+
+        //this is for testing
+        listOfInvitedRoomIds = new List<string> { "B", "f", "Z", "i", myID, "falkdfdjfsf;"};
     }
 
     public void OnEnable() //called everytime when panel gets active
@@ -143,7 +147,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     //This is used to create the effect that you've exited a sort mode
 
 
-    Dictionary<string, QuickRoomInfo> userIdToQRICache;
+    Dictionary<string, QuickRoomInfo> userIdToQRICache; //gonna share this too, just small amt.
     Dictionary<string, string> userIdToUserNameCacheForPlayerSearch; //I'm too scared to reuse userIdToUserNameCache later below...;
     //This method is the callback from dbc once you've asked to grab room(user) search results.
     public void StoreInputSearchResults(hirebeatprojectdb_userdatastorage[] userData, string cmd, string input = null)
@@ -161,18 +165,22 @@ public class RoomSystemPanelScript : MonoBehaviour
             {
                 case "rsps": //searching for a room
                     userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
-                    dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray()); //removes duplicate!
+                    dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray(), "roomsearch"); //removes duplicate!
                     //just in case grabbing someone whose name == id twice. Diff row diff id.
                     break;
                 case "invplayer": //searching for a player
                     userIdToUserNameCacheForPlayerSearch = userData.ToDictionary(r => r.UserId, r => r.UserName);
                     dbc.GrabAllUserStatusFromGivenIds(userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray());
                     break;
+                case "chkinvts":
+                    userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
+                    dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray(), "allinvites");
+                    break;
             }
         }
     }
     //This method is the callback from dbc to grab all room info from given list of ids, above
-    public void DisplayInputSearchResults(hirebeatprojectdb_userroomsassociated[] dbRooms)
+    public void DisplayInputSearchResults(hirebeatprojectdb_userroomsassociated[] dbRooms, string cmd)
     {
         //Delete everything
         foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
@@ -186,13 +194,27 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
         playerTabsOnDisplay.Clear();
 
-        foreach (var room in dbRooms)
+        switch (cmd)
         {
-            //If is not invited, then set join button to false. (join button default to true). very easy
-            //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
-            var QRIObj = userIdToQRICache[room.TrueOwnerID];
-            bool isInvited = listOfInvitedRoomIds.Contains(room.TrueOwnerID);  
-            AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, isInvited);
+            case "roomsearch": //just general room search
+                foreach (var room in dbRooms)
+                {
+                    //If is not invited, then set join button to false. (join button default to true). very easy
+                    //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
+                    var QRIObj = userIdToQRICache[room.TrueOwnerID];
+                    bool isInvited = listOfInvitedRoomIds.Contains(room.TrueOwnerID);
+                    AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, isInvited);
+                }
+                break;
+            case "allinvites": //in invite tab! //currently not sorted because I think there's no need? //since they are invites, give each accept/decline buttons as well.
+                foreach (var room in dbRooms)
+                {
+                    //If is not invited, then set join button to false. (join button default to true). very easy
+                    //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
+                    var QRIObj = userIdToQRICache[room.TrueOwnerID];
+                    AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, true, true);
+                }
+                break;
         }
     }
 
@@ -233,12 +255,13 @@ public class RoomSystemPanelScript : MonoBehaviour
         playerTabsOnDisplay.Add(newPlayerSearchDisplay.GetComponent<InvitePlayerToRoomTab>());
     }
 
-    private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic, bool isInvited = false) //this uses roomName
+    private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic, bool isInvited = false,
+        bool inInviteTab = false) //this uses roomName
     {
         var newPlayerRoomDisplay = Instantiate(playerRoomDisplayPrefab, playerRoomDisplayPanel);
         //newVCRoomDisplay.name = prefix + roomName; //no need for prefix...
         //if (invitedRoomList.Contains(roomName)) newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID, true); //invited!
-        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID, isInvited);
+        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID, isInvited, inInviteTab);
         playerRoomList.Add(ownerID, new PlayerRoomInfo(roomName, numMembers, isPublic, newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>()));
     }
 
@@ -464,6 +487,11 @@ public class RoomSystemPanelScript : MonoBehaviour
     public void OnInviteUserSearchSubmit()
     {
         dbc.GetUserIdFromInfo(searchUserBar.text, "invplayer");
+    }
+
+    public void OnCheckInviteTabPressed()
+    {
+        dbc.GrabAllInvitedRoomNameFromGivenIds(listOfInvitedRoomIds);
     }
 
     //Sneaky way: grab your own room setting here then, because you can't see unless you clicked this!
