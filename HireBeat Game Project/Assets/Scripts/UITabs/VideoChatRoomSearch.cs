@@ -156,8 +156,21 @@ public class VideoChatRoomSearch : MonoBehaviour
         //Actually don't do it from your end! Remember only 1 user should edit a row, which should be the owner, so:
         dbc.RetrieveVCRoomInfo(roomName, "ConnectRoomCheck"); //dbc calls second half
     }
-    public void OnConnectPressedSecondHalf(hirebeatprojectdb_videochatsavailable roomInfo) //called by dbc
+    public void OnConnectPressedSecondHalf(SQL4Unity.SQLResult result) //called by dbc
     {
+        hirebeatprojectdb_videochatsavailable roomInfo;
+        try
+        {
+            roomInfo = result.Get<hirebeatprojectdb_videochatsavailable>()[0];
+            //result contains only 1 info of 1 room //then here's a vc room display object
+        }
+        catch (Exception ex) //this could be possible if the room no longer exists, cuz the top one will error.
+        {
+            // May throw an Illegal Cast Exception if the local database is missing
+            Debug.Log(ex.Message);
+            roomInfo = null;
+        }
+
         if (roomInfo == null) //nothing was returned, so special result! This means that the room no longer exists.
         {
             //Print alert message
@@ -297,9 +310,10 @@ public class VideoChatRoomSearch : MonoBehaviour
         }
         dbc.CheckVCRoomExists(newRoomRoomName, "CreateRoomCheck"); //initiates second half check.
     }
-    public void OnCreateNewVCRoomSecondHalf(bool doesNameExist) //this is called by DBC callback.
+    public void OnCreateNewVCRoomSecondHalf(SQL4Unity.SQLResult result) //this is called by DBC callback.
     {
-        if(doesNameExist)
+        bool doesNameExist = result.rowsAffected != 0;
+        if (doesNameExist)
         {
             //roomname already exists, go tell user...
             string msg = "Sorry, this room name already exists!";
@@ -320,10 +334,22 @@ public class VideoChatRoomSearch : MonoBehaviour
     {
         dbc.GrabAllVCRoomInfo("ShowInvitedRooms"); //grab newest info first, triggers callback
     }
-    public void ShowAllInvitedVCRoomSecondHalf(hirebeatprojectdb_videochatsavailable[] dbRooms) //called by callback
+    public void ShowAllInvitedVCRoomSecondHalf(SQL4Unity.SQLResult result) //called by callback
     {
+        hirebeatprojectdb_videochatsavailable[] dbRooms = null;
+        try
+        {
+            dbRooms = result.Get<hirebeatprojectdb_videochatsavailable>();
+        }
+        catch (Exception ex)
+        {
+            // May throw an Illegal Cast Exception if the local database is missing
+            Debug.LogError("Grabbing database failed: " + ex.Message);
+            return;
+        }
+
         //Turn all these info into actual stuff
-        UpdateVCRoomList(dbRooms);
+        UpdateVCRoomList(result);
 
         //Sort through deletion...
         var roomNames = vcRoomList.Keys.ToList();
@@ -360,10 +386,22 @@ public class VideoChatRoomSearch : MonoBehaviour
 
         dbc.GrabAllVCRoomInfo("VCRoomKeyword"); //grab newest info first, triggers callback
     }
-    public void ListVCRoomsWithKeywordSecondHalf(hirebeatprojectdb_videochatsavailable[] dbRooms) //called by callback.
+    public void ListVCRoomsWithKeywordSecondHalf(SQL4Unity.SQLResult result) //called by callback.
     {
+        hirebeatprojectdb_videochatsavailable[] dbRooms = null;
+        try
+        {
+            dbRooms = result.Get<hirebeatprojectdb_videochatsavailable>();
+        }
+        catch (Exception ex)
+        {
+            // May throw an Illegal Cast Exception if the local database is missing
+            Debug.LogError("Grabbing database failed: " + ex.Message);
+            return;
+        }
+
         //Turn all these info into actual stuff
-        UpdateVCRoomList(dbRooms);
+        UpdateVCRoomList(result);
 
         string keyword = vcRoomSearchField.text.Trim();
         var roomNames = vcRoomList.Keys.ToList();
@@ -426,8 +464,9 @@ public class VideoChatRoomSearch : MonoBehaviour
 
         dbc.CheckVCRoomExists(searchRoomRoomName, "SearchRoomCheck"); //initiates second half callback
     }
-    public void SearchSpecificRoomSecondHalf(bool doesNameExist) //this is called by the dbc room exist callback
+    public void SearchSpecificRoomSecondHalf(SQL4Unity.SQLResult result) //this is called by the dbc room exist callback
     {
+        bool doesNameExist = result.rowsAffected != 0;
         if (!doesNameExist)
         {
             //do something to show that the room doesn't exist
@@ -440,9 +479,22 @@ public class VideoChatRoomSearch : MonoBehaviour
         }
             
     }
-    public void SearchSpecificRoomThirdHalf(hirebeatprojectdb_videochatsavailable targetRoom) //dbc calls this with retrieving specific room info
+    public void SearchSpecificRoomThirdHalf(SQL4Unity.SQLResult result) //dbc calls this with retrieving specific room info
     {
-        if(targetRoom == null)
+        hirebeatprojectdb_videochatsavailable targetRoom;
+        try
+        {
+            targetRoom = result.Get<hirebeatprojectdb_videochatsavailable>()[0];
+            //result contains only 1 info of 1 room //then here's a vc room display object
+        }
+        catch (Exception ex) //this could be possible if the room no longer exists, cuz the top one will error.
+        {
+            // May throw an Illegal Cast Exception if the local database is missing
+            Debug.Log(ex.Message);
+            targetRoom = null;
+        }
+
+        if (targetRoom == null)
         {
             Debug.LogError("This room no longer exists"); //is this the right way? is this needed here?
             return;
@@ -491,10 +543,22 @@ public class VideoChatRoomSearch : MonoBehaviour
         //First, grab the newest info
         dbc.GrabAllVCRoomInfo("VCRoomPublicity"); //also triggers callback.
     }
-    public void SortVCRoomsByPublicitySecondHalf(hirebeatprojectdb_videochatsavailable[] dbRooms) //this is called by callback from prev.
+    public void SortVCRoomsByPublicitySecondHalf(SQL4Unity.SQLResult result) //this is called by callback from prev.
     {
+        hirebeatprojectdb_videochatsavailable[] dbRooms = null;
+        try
+        {
+            dbRooms = result.Get<hirebeatprojectdb_videochatsavailable>();
+        }
+        catch (Exception ex)
+        {
+            // May throw an Illegal Cast Exception if the local database is missing
+            Debug.LogError("Grabbing database failed: " + ex.Message);
+            return;
+        }
+
         //Turn all these info into actual stuff
-        UpdateVCRoomList(dbRooms); 
+        UpdateVCRoomList(result); 
 
         //Then sort through deletion! (Is sorting through addition better?)
         if (publicSwitch.isOn) //destroy all private tabs
@@ -552,8 +616,20 @@ public class VideoChatRoomSearch : MonoBehaviour
 
     //Need to check vcRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
     //not in room then add, if in both then update.
-    public void UpdateVCRoomList(hirebeatprojectdb_videochatsavailable[] dbRooms)
+    public void UpdateVCRoomList(SQL4Unity.SQLResult result)
     {
+        hirebeatprojectdb_videochatsavailable[] dbRooms = null;
+        try
+        {
+            dbRooms = result.Get<hirebeatprojectdb_videochatsavailable>();
+        }
+        catch (Exception ex)
+        {
+            // May throw an Illegal Cast Exception if the local database is missing
+            Debug.LogError("Grabbing database failed: " + ex.Message);
+            return;
+        }
+
         //Is doing the below more efficient than two nested forloops?
         var dbRoomsConverted = ConvertToReadableFormat(dbRooms);
         List<string> listRoomNames = vcRoomList.Keys.ToList();

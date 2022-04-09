@@ -337,33 +337,43 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameters.SetValue("creatorID", creatorID);
 		parameters.SetValue("isPublic", isPublic);
 
-		sql.Command(query, null, parameters, CreateNewVCRoomCallBack); //or can do if(sql.Command(query, result, parameters))
+		Execute(query, CreateNewVCRoomCallBack, parameters);
+		//sql.Command(query, null, parameters, CreateNewVCRoomCallBack); //or can do if(sql.Command(query, result, parameters))
 		//Debug.LogError("Creating a new room! Here's the result: " + result.message);
 	}
 
-	private void CreateNewVCRoomCallBack(bool ok, SQLResult result)
+	private void CreateNewVCRoomCallBack(SQLResult result)
     {
-		Debug.Log("New VC Room created"); //I'm not interested in the callback.
+		Debug.Log("New VC Room created"); //I'm not interested in the callback. 
     }
 
 
 
-	SQLResult CheckVCRoomResult;
-	bool checkVCRoomResultReady;
+	//SQLResult CheckVCRoomResult;
+	//bool checkVCRoomResultReady;
 	//this new method can help with room name check at create or find at search!
 	public void CheckVCRoomExists(string roomName, string queuerName) 
     {
 		// Yes on Main Thread
-		checkVCRoomResultReady = false;
+		//checkVCRoomResultReady = false;
 
 		string query = "Select rowid from VideoChatsAvailable where RoomName = %roomName%";
 
 		SQLParameter parameters = new SQLParameter();
 		parameters.SetValue("roomName", roomName);
 
-		sql.Command(query, null, parameters, CheckVCRoomExistsCallback);
+		if (queuerName == "CreateRoomCheck")
+		{
+			Execute(query, vcs.OnCreateNewVCRoomSecondHalf, parameters);
+		}
+		else if (queuerName == "SearchRoomCheck")
+		{
+			Execute(query, vcs.SearchSpecificRoomSecondHalf, parameters);
+		}
 
-		StartCoroutine(ReturnIfVCRoomExists((doesExist) =>
+		//sql.Command(query, null, parameters, CheckVCRoomExistsCallback);
+
+		/*StartCoroutine(ReturnIfVCRoomExists((doesExist) =>
         {
 			if(queuerName == "CreateRoomCheck")
             {
@@ -374,10 +384,10 @@ public class DataBaseCommunicator : MonoBehaviour
 				vcs.SearchSpecificRoomSecondHalf(doesExist);
             }
         }
-		));// StartCoroutine on Main Thread
+		));// StartCoroutine on Main Thread */
 	}
 
-	void CheckVCRoomExistsCallback(bool ok, SQLResult result)
+	/*void CheckVCRoomExistsCallback(bool ok, SQLResult result)
     {
 		// NOT on Main Thread
 		CheckVCRoomResult = result;
@@ -408,23 +418,32 @@ public class DataBaseCommunicator : MonoBehaviour
 				Debug.LogError(ex.Message);
 			}
 		}
-	}
+	}*/
 
 
 
-	SQLResult retrieveVCRoomInfoResult;
-	bool retrieveVCRoomInfoReady;
+	//SQLResult retrieveVCRoomInfoResult;
+	//bool retrieveVCRoomInfoReady;
 	//Retrieve one vc room info in the database
 	public void RetrieveVCRoomInfo(string roomName, string queuerName)
     {
-		retrieveVCRoomInfoReady = false;
+		//retrieveVCRoomInfoReady = false;
 
 		string query = "execute RetrieveVCRoomInfo";
 
 		SQLParameter parameters = new SQLParameter();
 		parameters.SetValue("roomName", roomName);
 
-		sql.Command(query, null, parameters, RetrieveVCRoomInfoCallback); //no tis more. 
+		if (queuerName == "SearchRoomCheck")
+		{
+			Execute(query, vcs.SearchSpecificRoomThirdHalf, parameters);
+		}
+		else if (queuerName == "ConnectRoomCheck")
+		{
+			Execute(query, vcs.OnConnectPressedSecondHalf, parameters);
+		}
+
+		/*sql.Command(query, null, parameters, RetrieveVCRoomInfoCallback); //no tis more. 
 
 		StartCoroutine(ReturnVCRoomInfoRetrieved((row) =>
 		{
@@ -437,10 +456,10 @@ public class DataBaseCommunicator : MonoBehaviour
 				vcs.OnConnectPressedSecondHalf(row);
 			}
 		}
-		));
+		));*/
 	}
 
-	void RetrieveVCRoomInfoCallback(bool ok, SQLResult result)
+	/*void RetrieveVCRoomInfoCallback(bool ok, SQLResult result)
 	{
 		// NOT on Main Thread
 		retrieveVCRoomInfoResult = result;
@@ -473,28 +492,28 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Error during room info retrieving");
 			callback(null);
 		}
-	}
+	}*/
 
 
 
 	//This is a simple function for vCC to grab current room owner, we are sure that the room exists.
-	SQLResult retrieveVCRoomCurrentOwnerResult;
-	bool retrieveVCRoomCurrentOwnerReady;
+	//SQLResult retrieveVCRoomCurrentOwnerResult;
+	//bool retrieveVCRoomCurrentOwnerReady;
 	//Retrieve one vc room info in the database
 	public void RetrieveVCRoomCurrentOwner(string roomName) //this will only be used by vCC, so....
 	{
-		retrieveVCRoomCurrentOwnerReady = false;
+		//retrieveVCRoomCurrentOwnerReady = false;
 
 		string query = "Select CurrOwnerID from VideoChatsAvailable where RoomName = %roomName%";
 
 		SQLParameter parameters = new SQLParameter();
 		parameters.SetValue("roomName", roomName);
 
-		sql.Command(query, null, parameters, RetrieveVCRoomCurrentOwnerCallback); //no tis more. 
-
-		StartCoroutine(SendVCRoomOwnerInfo());
+		if (vcs.vCC != null) Execute(query, vcs.vCC.OnDisconnectPressedSecondHalf, parameters);
+		//sql.Command(query, null, parameters, RetrieveVCRoomCurrentOwnerCallback); //no tis more. 
+		//StartCoroutine(SendVCRoomOwnerInfo());
 	}
-
+	/*
 	void RetrieveVCRoomCurrentOwnerCallback(bool ok, SQLResult result)
 	{
 		// NOT on Main Thread
@@ -524,19 +543,35 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Error during room owner info retrieving");
 		}
 	}
+	*/
 
 
-
-	SQLResult grabAllVCRoomInfoResult;
-	bool grabAllVCRoomInfoReady;
+	//SQLResult grabAllVCRoomInfoResult;
+	//bool grabAllVCRoomInfoReady;
 	//Grab all vc room infos in the database
 	public void GrabAllVCRoomInfo(string queuerName)
     {
-		grabAllVCRoomInfoReady = false;
+		//grabAllVCRoomInfoReady = false;
 
 		string query = "execute GrabAllVCRoomInfo";
 
-		sql.Command(query, null, GrabAllVCRoomInfoCallback);
+		switch (queuerName)
+        {
+			case "VCRoomListTotalUpdate":
+				Execute(query, vcs.UpdateVCRoomList);
+				break;
+			case "VCRoomPublicity":
+				Execute(query, vcs.SortVCRoomsByPublicitySecondHalf);
+				break;
+			case "VCRoomKeyword":
+				Execute(query, vcs.ListVCRoomsWithKeywordSecondHalf);
+				break;
+			case "ShowInvitedRooms":
+				Execute(query, vcs.ShowAllInvitedVCRoomSecondHalf);
+				break;
+		}
+
+		/*sql.Command(query, null, GrabAllVCRoomInfoCallback);
 
 		StartCoroutine(ReturnAllVCRoomInfoGrabbed((rows) =>
 		{
@@ -556,9 +591,9 @@ public class DataBaseCommunicator : MonoBehaviour
             {
 				vcs.ShowAllInvitedVCRoomSecondHalf(rows);
 			}
-		}));
+		}));*/
 	}
-
+	/*
 	void GrabAllVCRoomInfoCallback(bool ok, SQLResult result)
 	{
 		// NOT on Main Thread
@@ -589,7 +624,7 @@ public class DataBaseCommunicator : MonoBehaviour
         {
 			Debug.LogError("Retrieving ALL VC room info failed!");
         }
-	}
+	}*/
 
 
 
@@ -646,9 +681,10 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameters.SetValue("ipAddress", ipAddress);
 		parameters.SetValue("uniqueID", uniqueID);
 
-		sql.Command(query, null, parameters, AddIPAddressToUniqueIDCallback); //or can do if(sql.Command(query, result, parameters))
+		Execute(query, AddIPAddressToUniqueIDCallback, parameters);
+		//sql.Command(query, null, parameters, AddIPAddressToUniqueIDCallback); //or can do if(sql.Command(query, result, parameters))
 	}
-	private void AddIPAddressToUniqueIDCallback(bool ok, SQLResult result)
+	private void AddIPAddressToUniqueIDCallback(SQLResult result)
     {
 		Debug.Log("Adding ip address to unique id! Here's the result: " + result.message); //I'm not interested in the callback.
 	}
@@ -664,9 +700,10 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameters.SetValue("newNumMembers", newNumMembers);
 		parameters.SetValue("newIsPublic", newIsPublic);
 
-		sql.Command(query, null, parameters, UpdateVCRoomPropsCallback);
+		Execute(query, UpdateVCRoomPropsCallback, parameters);
+		//sql.Command(query, null, parameters, UpdateVCRoomPropsCallback);
 	}
-	private void UpdateVCRoomPropsCallback(bool ok, SQLResult result)
+	private void UpdateVCRoomPropsCallback(SQLResult result)
 	{
 		Debug.Log("Updating room info! Here's the result: " + result.message); //I'm not interested in the callback.
 	}
@@ -680,9 +717,10 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameter.SetValue("newNumMembers", numMembers);
 		parameter.SetValue("roomName", roomName);
 
-		sql.Command(query, null, parameter, UpdateVCRoomNumMembersCallback);
+		Execute(query, UpdateVCRoomNumMembersCallback, parameter);
+		//sql.Command(query, null, parameter, UpdateVCRoomNumMembersCallback);
 	}
-	private void UpdateVCRoomNumMembersCallback(bool ok, SQLResult result)
+	private void UpdateVCRoomNumMembersCallback(SQLResult result)
 	{
 		Debug.Log("Updating room numMembers! Here's the result: " + result.message); //I'm not interested in the callback.
 	}
@@ -695,9 +733,10 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameter.SetValue("newCurrOwnerID", newOwnerID);
 		parameter.SetValue("roomName", roomName);
 
-		sql.Command(query, null, parameter, UpdateVCRoomOwnerCallback);
+		Execute(query, UpdateVCRoomOwnerCallback, parameter);
+		//sql.Command(query, null, parameter, UpdateVCRoomOwnerCallback);
 	}
-	private void UpdateVCRoomOwnerCallback(bool ok, SQLResult result)
+	private void UpdateVCRoomOwnerCallback(SQLResult result)
 	{
 		Debug.Log("Updating room owner! Here's the result: " + result.message); //I'm not interested in the callback.
 	}
@@ -710,28 +749,19 @@ public class DataBaseCommunicator : MonoBehaviour
 		SQLParameter parameters = new SQLParameter();
 		parameters.SetValue("roomName", roomName);
 
-		sql.Command(query, null, parameters, DeleteVCRoomCallback);
+		Execute(query, DeleteVCRoomCallback, parameters);
+		//sql.Command(query, null, parameters, DeleteVCRoomCallback);
 	}
-	private void DeleteVCRoomCallback(bool ok, SQLResult result)
+	private void DeleteVCRoomCallback(SQLResult result)
 	{
 		Debug.Log("Deleting the selected VC Room!"); //I'm not interested in the callback.
 	}
 
-	//Delete every VC room in the database. If you are a user PLEASE DON'T ABUSE THIS; this is for internal only.
-	public void DeleteALLVCRooms()
-	{
-		string query = "Delete from VideoChatsAvailable";
+    #endregion
+    #endregion
 
-		sql.Command(query, null, DeleteAllVCRoomCallback);
-	}
-	private void DeleteAllVCRoomCallback(bool ok, SQLResult result)
-	{
-		Debug.Log("Deleting ALL VC Rooms!"); //I'm not interested in the callback.
-	}
-	#endregion
-	#endregion
-
-	/*SQLResult getUserIdResult;
+    #region Room System
+    /*SQLResult getUserIdResult;
 	bool getUserIdResultReady;
 	//we know that username / id / email are unique, but just in case username = someone's id... so will have user enter
 	//to search by id or by name or by email.
@@ -800,9 +830,9 @@ public class DataBaseCommunicator : MonoBehaviour
         }
 	}*/
 
-	//This function is an extension of the utility function above, only needed for rsps
-	//Can overlap and use this for room invites probably
-	/*SQLResult grabAllRoomInfoFromGivenIdsResult;
+    //This function is an extension of the utility function above, only needed for rsps
+    //Can overlap and use this for room invites probably
+    /*SQLResult grabAllRoomInfoFromGivenIdsResult;
 	bool grabAllRoomInfoFromGivenIdsReady;
 	public void GrabAllRoomInfoFromGivenIds(string[] userIds, string cmd) //sort type doesn't matter, max 1-2 results. NOT ANYMORE
 	{
@@ -867,8 +897,8 @@ public class DataBaseCommunicator : MonoBehaviour
 		}
 	}*/
 
-	//This function is for grabbing user status by checking if that id is present in the ip address table.
-	/*SQLResult grabAllUserStatusFromGivenIdsResult;
+    //This function is for grabbing user status by checking if that id is present in the ip address table.
+    /*SQLResult grabAllUserStatusFromGivenIdsResult;
 	bool grabAllUserStatusFromGivenIdsReady;
 	public void GrabAllUserStatusFromGivenIds(string[] userIds) //sort type doesn't matter, max 1-2 results.
 	{
@@ -932,11 +962,11 @@ public class DataBaseCommunicator : MonoBehaviour
 		}
 	}*/
 
-	//To avoid search spam, not gonna do the type & filter: just gonna do a collective search at the end.
-	// The collective search targets the room entered EXACTLY (name, id, or email). => does not exist vs. room is private.
+    //To avoid search spam, not gonna do the type & filter: just gonna do a collective search at the end.
+    // The collective search targets the room entered EXACTLY (name, id, or email). => does not exist vs. room is private.
 
-	//This part is for invites
-	/*SQLResult grabAllInvitedRoomNameResult;
+    //This part is for invites
+    /*SQLResult grabAllInvitedRoomNameResult;
 	bool grabAllInvitedRoomNameResultReady;
 	public void GrabAllInvitedRoomNameFromGivenIds(List<string> userIds) //sort type doesn't matter, max 1-2 results. NOT ANYMORE
 	{
@@ -1001,10 +1031,10 @@ public class DataBaseCommunicator : MonoBehaviour
 		}
 	}
 	*/
-	//invites
+    //invites
 
 
-	/*SQLResult ChangeUserNameResult;
+    /*SQLResult ChangeUserNameResult;
 	bool changeUserNameResultReady;
 	//Since username is primary key, I assume it would be a good double-safe check.
 	//Also should call this after user registeratoin, in a name entering box.
@@ -1058,10 +1088,10 @@ public class DataBaseCommunicator : MonoBehaviour
 	}*/
 
 
-	//bool addNewPlayerResultReady;
-	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
-	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
-	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
+    //bool addNewPlayerResultReady;
+    //This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
+    //Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
+    public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
 	{
 		//addNewPlayerResultReady = false;
 
@@ -1396,7 +1426,9 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.Log("Update Num players in current room! Result: " + result.message.ToString());
 	}
 
-	private void OnDestroy()
+    #endregion
+
+    private void OnDestroy()
     {
 		sql.Close();
 	}

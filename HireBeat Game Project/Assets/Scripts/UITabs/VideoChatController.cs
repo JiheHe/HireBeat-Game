@@ -8,6 +8,7 @@ using Byn.Unity.Examples;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using System;
 
 public class VideoChatController : MonoBehaviour
 {
@@ -544,16 +545,28 @@ public class VideoChatController : MonoBehaviour
 
     private void OnDestroy()
     {
-        OnDisconnectPressed();
+        //OnDisconnectPressed(); // I don't think this will be triggered if the user closes the browser, still need server-side check.
     }
 
     public void OnDisconnectPressed()
     {
         vcs.RetrieveVCRoomCurrentOwner(roomName); //this creates a callback
     }
-    public void OnDisconnectPressedSecondHalf(string roomOwnerID) //this will be called by dbc.
+    public void OnDisconnectPressedSecondHalf(SQL4Unity.SQLResult result) //this will be called by dbc.
     {
-        if(roomOwnerID == myID) //If you are owner, check the list of users in room., 
+        string roomOwnerID = null;
+        try
+        {
+            roomOwnerID = result.Get<hirebeatprojectdb_videochatsavailable>()[0].CurrOwnerID;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.Message);
+            return;
+        }
+
+
+        if (roomOwnerID == myID) //If you are owner, check the list of users in room., 
         {
             if(userInRoomIds.Count == 0) //no more connections or incoming at this point! You are the only user in room, so delete room!
             {
