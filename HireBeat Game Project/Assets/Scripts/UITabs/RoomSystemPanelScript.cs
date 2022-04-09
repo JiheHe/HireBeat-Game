@@ -83,6 +83,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     public Dictionary<string, PlayerRoomInfo> playerRoomList = new Dictionary<string, PlayerRoomInfo>(); //a cache for userName, rest of info
     public GameObject playerRoomDisplayPrefab; //this is the prefab for each player room display in list
     public RectTransform playerRoomDisplayPanel; //this is the content where room will be child of.
+    bool inInvitedRoomsView = false;
     public List<string> listOfInvitedRoomIds = new List<string>(); //can be invited by public or private! private can only join through invite tho
     public GameObject playerSearchDisplayPrefab; //this is the prefab for each user display in search results
     public List<InvitePlayerToRoomTab> playerTabsOnDisplay = new List<InvitePlayerToRoomTab>();
@@ -92,7 +93,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     void Start()
     {
         dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
-        dbc.GrabAllPublicRooms(0);
+        dbc.GrabAllPublicRooms(0, OnGrabAllPublicRoomsNormCallback);
 
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
 
@@ -104,7 +105,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     public void OnEnable() //called everytime when panel gets active
     {
         //User can keep its previous preference, just a simple refresh!
-        if (dbc != null) dbc.GrabAllPublicRooms(0); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
+        if (dbc != null) dbc.GrabAllPublicRooms(0, OnGrabAllPublicRoomsNormCallback); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
     }
 
     // Update is called once per frame
@@ -120,12 +121,12 @@ public class RoomSystemPanelScript : MonoBehaviour
         if (sortByNumPlayers.isOn)
         {
             Debug.Log("Starting to sort by num");
-            dbc.GrabAllPublicRooms(1);
+            dbc.GrabAllPublicRooms(1, OnGrabAllPublicRoomsNumCallback);
             previousOn = 1;
         }
         else if(!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn && previousOn == 1)
         {
-            dbc.GrabAllPublicRooms(3);
+            dbc.GrabAllPublicRooms(3, OnGrabAllPublicRoomsDestCallback);
             previousOn = 0;
         }
     }
@@ -135,12 +136,12 @@ public class RoomSystemPanelScript : MonoBehaviour
         if (sortByAlphanumeric.isOn)
         {
             Debug.Log("Starting to sort by alpha");
-            dbc.GrabAllPublicRooms(2);
+            dbc.GrabAllPublicRooms(2, OnGrabAllPublicRoomsAlphaCallback);
             previousOn = 2;
         }
         else if (!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn && previousOn == 2)
         {
-            dbc.GrabAllPublicRooms(3); //3 initializes the room list destruction system.
+            dbc.GrabAllPublicRooms(3, OnGrabAllPublicRoomsDestCallback); //3 initializes the room list destruction system.
             previousOn = 0;
         }
     }
@@ -161,82 +162,162 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
         else
         {
+            string query;
+            SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
             switch (cmd)
             {
                 case "rsps": //searching for a room
                     userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
-                    dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray(), "roomsearch"); //removes duplicate!
+                    //dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray(), "roomsearch"); //removes duplicate!
+                    string[] userIds = userIdToQRICache.Keys.Distinct().ToArray();
+                    if (userIds.Length < 2) //1 if room search, but could be 0 if invite ids!
+                    {
+                        query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID = %userId%"; //only 1 element.
+                        if (userIds.Length == 1) parameters.SetValue("userId", userIds[0]);
+                        else parameters.SetValue("userId", ";;;,,,"); //no way this is in the database lol
+                        DataBaseCommunicator.Execute(query, DisplayRoomSearchResults, parameters);
+                    }
+                    else //2 
+                    {
+                        query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID IN ({0})";
+                        string inClause = string.Join(",", userIds.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+                        query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+                        DataBaseCommunicator.Execute(query, DisplayRoomSearchResults);
+                    }
                     //just in case grabbing someone whose name == id twice. Diff row diff id.
                     break;
                 case "invplayer": //searching for a player
                     userIdToUserNameCacheForPlayerSearch = userData.ToDictionary(r => r.UserId, r => r.UserName);
-                    dbc.GrabAllUserStatusFromGivenIds(userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray());
+                    //dbc.GrabAllUserStatusFromGivenIds(userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray());
+                    string[] userIdx = userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray();
+                    if (userIdx.Length < 2) //1 
+                    {
+                        query = "SELECT UniqueID FROM IPAdressToUniqueID WHERE UniqueID = %userId%"; //only 1 element.
+                        parameters.SetValue("userId", userIdx[0]);
+                        DataBaseCommunicator.Execute(query, DisplayUserStatusResults, parameters);
+                    }
+                    else //2 
+                    {
+                        query = "SELECT UniqueID FROM IPAdressToUniqueID WHERE UniqueID IN ({0})";
+                        string inClause = string.Join(",", userIdx.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+                        query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+                        DataBaseCommunicator.Execute(query, DisplayUserStatusResults);
+                    }
                     break;
                 case "chkinvts":
                     userIdToQRICache = userData.ToDictionary(r => r.UserId, r => new QuickRoomInfo(r.UserName, r.IsRoomPublic));
-                    dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray(), "allinvites");
+                    //dbc.GrabAllRoomInfoFromGivenIds(userIdToQRICache.Keys.Distinct().ToArray(), "allinvites");
+                    string[] userIdz = userIdToQRICache.Keys.Distinct().ToArray();
+                    if (userIdz.Length < 2) //1 if room search, but could be 0 if invite ids!
+                    {
+                        query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID = %userId%"; //only 1 element.
+                        if (userIdz.Length == 1) parameters.SetValue("userId", userIdz[0]);
+                        else parameters.SetValue("userId", ";;;,,,"); //no way this is in the database lol
+                        DataBaseCommunicator.Execute(query, DisplayInvitesSearchResults, parameters);
+                    }
+                    else //2 
+                    {
+                        query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID IN ({0})";
+                        string inClause = string.Join(",", userIdz.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+                        query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+                        DataBaseCommunicator.Execute(query, DisplayInvitesSearchResults);
+                    }
                     break;
             }
         }
     }
     //This method is the callback from dbc to grab all room info from given list of ids, above
-    public void DisplayInputSearchResults(hirebeatprojectdb_userroomsassociated[] dbRooms, string cmd)
+    public void DisplayRoomSearchResults(SQL4Unity.SQLResult result)
     {
-        //Delete everything
-        foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+        inInvitedRoomsView = true; //why here? so room you researched for will be destroyed instead of updated to make visual better ;D
+        if (result != null)
         {
-            Destroy(roomTabObj);
-        }
-        playerRoomList.Clear();
-        foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
-        {
-            Destroy(playerTabObj);
-        }
-        playerTabsOnDisplay.Clear();
+            hirebeatprojectdb_userroomsassociated[] dbRooms = result.Get<hirebeatprojectdb_userroomsassociated>();
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+            foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+            {
+                Destroy(playerTabObj);
+            }
+            playerTabsOnDisplay.Clear();
 
-        switch (cmd)
+            foreach (var room in dbRooms)
+            {
+                //If is not invited, then set join button to false. (join button default to true). very easy
+                //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
+                var QRIObj = userIdToQRICache[room.TrueOwnerID];
+                bool isInvited = listOfInvitedRoomIds.Contains(room.TrueOwnerID);
+                AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, isInvited);
+            }
+        }
+        else
         {
-            case "roomsearch": //just general room search
-                foreach (var room in dbRooms)
-                {
-                    //If is not invited, then set join button to false. (join button default to true). very easy
-                    //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
-                    var QRIObj = userIdToQRICache[room.TrueOwnerID];
-                    bool isInvited = listOfInvitedRoomIds.Contains(room.TrueOwnerID);
-                    AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, isInvited);
-                }
-                break;
-            case "allinvites": //in invite tab! //currently not sorted because I think there's no need? //since they are invites, give each accept/decline buttons as well.
-                foreach (var room in dbRooms)
-                {
-                    //If is not invited, then set join button to false. (join button default to true). very easy
-                    //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
-                    var QRIObj = userIdToQRICache[room.TrueOwnerID];
-                    AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, true, true);
-                }
-                break;
+            Debug.LogError("Error in trying to grab room search secondary info");
         }
     }
-
-    //This method is the callback from dbc after grabbing user online status from a list of ids
-    public void DisplayUserStatusResults(List<string> idsOnline)
+    public void DisplayInvitesSearchResults(SQL4Unity.SQLResult result)
     {
-        //Delete everything
-        foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+        inInvitedRoomsView = true;
+        if (result != null)
         {
-            Destroy(roomTabObj);
-        }
-        playerRoomList.Clear();
-        foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
-        {
-            Destroy(playerTabObj);
-        }
-        playerTabsOnDisplay.Clear();
+            hirebeatprojectdb_userroomsassociated[] dbRooms = result.Get<hirebeatprojectdb_userroomsassociated>();
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+            foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+            {
+                Destroy(playerTabObj);
+            }
+            playerTabsOnDisplay.Clear();
 
-        foreach (var user in userIdToUserNameCacheForPlayerSearch)
+            //in invite tab! //currently not sorted because I think there's no need? //since they are invites, give each accept/decline buttons as well.
+            foreach (var room in dbRooms)
+            {
+                //If is not invited, then set join button to false. (join button default to true). very easy
+                //No need to order! just 1-2 rooms anyway. (just in case if same username as someone's id)
+                var QRIObj = userIdToQRICache[room.TrueOwnerID];
+                AddNewRoomToList(QRIObj.roomName, room.TrueOwnerID, room.NumPlayersInRoom, QRIObj.isPublic, true, true);
+            }
+        }
+        else
         {
-            bool isOnline = idsOnline.Contains(user.Key);
-            AddNewUserToList(user.Value, user.Key, isOnline);
+            Debug.LogError("Error in trying to grab invited rooms' secondary info");
+        }
+    }
+    //This method is the callback from dbc after grabbing user online status from a list of ids
+    public void DisplayUserStatusResults(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            List<string> idsOnline = result.Get<hirebeatprojectdb_ipadresstouniqueid>().Select(r => r.UniqueID).ToList();
+            //Delete everything
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+            foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+            {
+                Destroy(playerTabObj);
+            }
+            playerTabsOnDisplay.Clear();
+
+            foreach (var user in userIdToUserNameCacheForPlayerSearch)
+            {
+                bool isOnline = idsOnline.Contains(user.Key);
+                AddNewUserToList(user.Value, user.Key, isOnline);
+            }
+        }
+        else
+        {
+            Debug.LogError("Error in trying to grab user status search secondary info");
         }
     }
 
@@ -286,10 +367,116 @@ public class RoomSystemPanelScript : MonoBehaviour
     public void GrabAllPublicRoomInfo(hirebeatprojectdb_userdatastorage[] userInfo, int sortType)
     {
         userIdToUserNameCache = userInfo.ToDictionary(r=>r.UserId, r=>r.UserName); //all public rooms! no need to record.
-        string[] idsThatNeedRoomInfo = userIdToUserNameCache.Keys.ToArray();
+        string[] userIds = userIdToUserNameCache.Keys.ToArray();
 
-        dbc.GrabAllUsernamesFromGivenIds(idsThatNeedRoomInfo, sortType);
+        string query;
+        SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+        Action<SQL4Unity.SQLResult> callback;
+
+        switch (sortType)
+        {
+            case 0:
+                callback = OnPublicRoomsNormSecInfoCallback;
+                break;
+            case 1:
+                callback = OnPublicRoomsNumSecInfoCallback;
+                break;
+            case 2:
+                callback = OnPublicRoomsAlphaSecInfoCallback;
+                break;
+            case 3:
+                callback = OnPublicRoomsDestSecInfoCallback;
+                break;
+            default:
+                callback = null; //this will never happen unless weird af bug
+                break;
+        }
+
+        if (userIds.Length < 2) //1 or 0, rare case.
+        {
+            query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID = %userId%"; //only 1 element.
+            if (userIds.Length == 1) parameters.SetValue("userId", userIds[0]);
+            else parameters.SetValue("userId", ",,,"); //,,, is not possible, meaning the result will be empty.
+            DataBaseCommunicator.Execute(query, callback, parameters);
+        }
+        else
+        {
+            if (sortType == 1) //sort by num
+                query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID IN ({0}) ORDER BY NumPlayersInRoom"; //sort num here!
+            else
+                query = "SELECT TrueOwnerID, NumPlayersInRoom FROM UserRoomsAssociated WHERE TrueOwnerID IN ({0})";
+            /*string[] paramNames = userIds.Select(
+				(s, i) => "@id" + i.ToString() //string, index 
+			).ToArray(); //this assigns each tag an index based on userIds length
+
+			string inClause = string.Join(", ", paramNames); //@id0, @id1, @id2... format
+			query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+
+			for (int i = 0; i < paramNames.Length; i++)
+			{
+				parameters.SetValue(paramNames[i], userIds[i]); //@id0 = firstId, etc...
+			}*/
+
+            //Might be simpler? no need for parameters.
+            string inClause = string.Join(",", userIds.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+            query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+            DataBaseCommunicator.Execute(query, callback);
+        }
+        //dbc.GrabAllUsernamesFromGivenIds(idsThatNeedRoomInfo, sortType);
     }
+    void OnPublicRoomsNumSecInfoCallback(SQL4Unity.SQLResult result) //sorttype == 1
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userroomsassociated[] rows = result.Get<hirebeatprojectdb_userroomsassociated>();
+            Dictionary<string, int> userIdToNumPlayersInRm = rows.Reverse().ToDictionary(r => r.TrueOwnerID, r => r.NumPlayersInRoom);
+            UpdatePlayerRoomList(userIdToNumPlayersInRm, 1);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room secondary info num");
+        }
+    }
+    void OnPublicRoomsAlphaSecInfoCallback(SQL4Unity.SQLResult result) //sorttype == 1
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userroomsassociated[] rows = result.Get<hirebeatprojectdb_userroomsassociated>();
+            Dictionary<string, int> userIdToNumPlayersInRm = rows.ToDictionary(r => r.TrueOwnerID, r => r.NumPlayersInRoom);
+            UpdatePlayerRoomList(userIdToNumPlayersInRm, 2);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room secondary info alpha");
+        }
+    }
+    void OnPublicRoomsNormSecInfoCallback(SQL4Unity.SQLResult result) //sorttype == 1
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userroomsassociated[] rows = result.Get<hirebeatprojectdb_userroomsassociated>();
+            Dictionary<string, int> userIdToNumPlayersInRm = rows.ToDictionary(r => r.TrueOwnerID, r => r.NumPlayersInRoom);
+            UpdatePlayerRoomList(userIdToNumPlayersInRm, 0);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room secondary info norm");
+        }
+    }
+    void OnPublicRoomsDestSecInfoCallback(SQL4Unity.SQLResult result) //sorttype == 1
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userroomsassociated[] rows = result.Get<hirebeatprojectdb_userroomsassociated>();
+            Dictionary<string, int> userIdToNumPlayersInRm = rows.ToDictionary(r => r.TrueOwnerID, r => r.NumPlayersInRoom);
+            UpdatePlayerRoomList(userIdToNumPlayersInRm, 3);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room secondary info dest");
+        }
+    }
+
 
     //The below should hopefully be the callback from name grab above, from dbc.
     //Need to check playerRoomList room names against the data base ver.: if in room and not in data base then remove, if in data base and
@@ -304,6 +491,16 @@ public class RoomSystemPanelScript : MonoBehaviour
                 Destroy(playerTabObj);
             }
             playerTabsOnDisplay.Clear();
+        }
+        //Then check if there are invited rooms. If yes then bye bye too.
+        if(inInvitedRoomsView) 
+        {
+            foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+            {
+                Destroy(roomTabObj);
+            }
+            playerRoomList.Clear();
+            inInvitedRoomsView = false;
         }
 
         //Is doing the below more efficient than two nested forloops?
@@ -444,23 +641,32 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
     //This is the callback from DBC from the above.
-    public void SetCurrentRoomInfoTexts(hirebeatprojectdb_userdatastorage roomInfo) //gonna consort the database on this. Photon room privacy not helpful.
+    public void SetCurrentRoomInfoTexts(SQL4Unity.SQLResult result) //gonna consort the database on this. Photon room privacy not helpful.
     {
-        ownRoomSettingsPanel.SetActive(false); //this is a sneaky way to get user click n call refresh
-
-        roomNameTxt.text = roomInfo.UserName; //can add some modifications to the name here if wanted.
-        numPlayersInRoomTxt.text = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
-
-        if (roomInfo.IsRoomPublic)
+        if (result != null)
         {
-            roomAccessTxt.text = "Open to Public";
+            hirebeatprojectdb_userdatastorage roomInfo = result.Get<hirebeatprojectdb_userdatastorage>()[0];
+
+            ownRoomSettingsPanel.SetActive(false); //this is a sneaky way to get user click n call refresh
+
+            roomNameTxt.text = roomInfo.UserName; //can add some modifications to the name here if wanted.
+            numPlayersInRoomTxt.text = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
+
+            if (roomInfo.IsRoomPublic)
+            {
+                roomAccessTxt.text = "Open to Public";
+            }
+            else
+            {
+                roomAccessTxt.text = "Private Invites Only";
+            }
+
+            roomInfoPanel.SetActive(true);
         }
         else
         {
-            roomAccessTxt.text = "Private Invites Only";
+            Debug.LogError("Erroring retrieving current room info");
         }
-
-        roomInfoPanel.SetActive(true);
     }
 
     public void OnSearchRoomClicked()
@@ -481,17 +687,92 @@ public class RoomSystemPanelScript : MonoBehaviour
     // ,,,...;;; won't be found! still safe. No character limit tho to keep user able to enter long email.
     public void OnSearchRoomBarSubmit() //enter key
     {
-        dbc.GetUserIdFromInfo(searchRoomBar.text, "rsps");
+        //dbc.GetUserIdFromInfo(searchRoomBar.text, "rsps");
+        string query = "SELECT UserName, UserId, IsRoomPublic FROM UserDataStorage WHERE UserName = %input% OR UserId = %input% OR Email = %input%";
+        SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+        parameters.SetValue("input", searchRoomBar.text);
+        DataBaseCommunicator.Execute(query, OnSearchRoomBarSubmitCallback, parameters);
+    }
+    void OnSearchRoomBarSubmitCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            if (result.rowsAffected == 0)
+            {
+                StoreInputSearchResults(null, "doesntmatter", searchRoomBar.text); //0 rows affected if nothing exists relating to the input.
+            }
+            else
+            {
+                hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+                StoreInputSearchResults(rows, "rsps"); //got something, regardless of its length.
+            }
+        }
+        else
+        {
+            Debug.LogError("Error occured in search room bar submit");
+        }
     }
 
     public void OnInviteUserSearchSubmit()
     {
-        dbc.GetUserIdFromInfo(searchUserBar.text, "invplayer");
+        //dbc.GetUserIdFromInfo(searchUserBar.text, "invplayer");
+        string query = "SELECT UserName, UserId, IsRoomPublic FROM UserDataStorage WHERE UserName = %input% OR UserId = %input% OR Email = %input%";
+        SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+        parameters.SetValue("input", searchUserBar.text);
+        DataBaseCommunicator.Execute(query, OnInviteUserSearchSubmitCallback, parameters);
+    }
+    void OnInviteUserSearchSubmitCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            if (result.rowsAffected == 0)
+            {
+                StoreInputSearchResults(null, "doesntmatter", searchUserBar.text); //0 rows affected if nothing exists relating to the input.
+            }
+            else
+            {
+                hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+                StoreInputSearchResults(rows, "invplayer"); //got something, regardless of its length.
+            }
+        }
+        else
+        {
+            Debug.LogError("Error occured in invite user search submit");
+        }
     }
 
     public void OnCheckInviteTabPressed()
     {
-        dbc.GrabAllInvitedRoomNameFromGivenIds(listOfInvitedRoomIds);
+        //dbc.GrabAllInvitedRoomNameFromGivenIds(listOfInvitedRoomIds);
+        string query;
+        SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+
+        if (listOfInvitedRoomIds.Count < 2) //1 or 0
+        {
+            query = "SELECT UserName, UserId, IsRoomPublic FROM UserDataStorage WHERE UserId = %userId%"; //only 1 element.
+            if (listOfInvitedRoomIds.Count == 1) parameters.SetValue("userId", listOfInvitedRoomIds[0]);
+            else parameters.SetValue("userId", ";;;,,,"); //this is not possible, so let's see if it returns empty ;D
+            DataBaseCommunicator.Execute(query, OnCheckInviteTabPressedCallback, parameters);
+        }
+        else //2 or more invites
+        {
+            query = "SELECT UserName, UserId, IsRoomPublic FROM UserDataStorage WHERE UserId IN ({0})";
+            string inClause = string.Join(",", listOfInvitedRoomIds.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+            query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+            DataBaseCommunicator.Execute(query, OnCheckInviteTabPressedCallback);
+        }
+    }
+    void OnCheckInviteTabPressedCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+            StoreInputSearchResults(rows, "chkinvts");
+        }
+        else
+        {
+            Debug.LogError("Error occured in check invite button submit");
+        }
     }
 
     //Sneaky way: grab your own room setting here then, because you can't see unless you clicked this!
@@ -513,12 +794,20 @@ public class RoomSystemPanelScript : MonoBehaviour
 
     bool changedDueToDBCheck = false; //toggle is triggererd everytime it is opened, so just in case.
     //This is the callback function from dbc upon own room settings open.
-    public void UpdateSelfRoomPublicStatusFromDB(bool isPublic)
+    public void UpdateSelfRoomPublicStatusFromDB(SQL4Unity.SQLResult result)
     {
-        if (isPublic != selfRoomPublicStatus.isOn)
+        if (result != null)
         {
-            changedDueToDBCheck = true;
-            selfRoomPublicStatus.isOn = isPublic; //this is only triggered if isOn is different from database.
+            bool isPublic = result.Get<hirebeatprojectdb_userdatastorage>()[0].IsRoomPublic;
+            if (isPublic != selfRoomPublicStatus.isOn)
+            {
+                changedDueToDBCheck = true;
+                selfRoomPublicStatus.isOn = isPublic; //this is only triggered if isOn is different from database.
+            }
+        }
+        else
+        {
+            Debug.LogError("Error in retrieving self room public status");
         }
     }
 
@@ -541,17 +830,66 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
         if (sortByNumPlayers.isOn)
         {
-            dbc.GrabAllPublicRooms(1);
+            dbc.GrabAllPublicRooms(1, OnGrabAllPublicRoomsNumCallback);
         }
         else if (sortByAlphanumeric.isOn)
         {
-            dbc.GrabAllPublicRooms(2);
+            dbc.GrabAllPublicRooms(2, OnGrabAllPublicRoomsAlphaCallback);
         }
         else if (!sortByNumPlayers.isOn && !sortByAlphanumeric.isOn)
         {
-            dbc.GrabAllPublicRooms(0);
+            dbc.GrabAllPublicRooms(0, OnGrabAllPublicRoomsNormCallback);
         }
     }
+    void OnGrabAllPublicRoomsNumCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+            GrabAllPublicRoomInfo(rows, 1);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room info num");
+        }
+    }
+    void OnGrabAllPublicRoomsAlphaCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+            GrabAllPublicRoomInfo(rows, 2);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room info alpha");
+        }
+    }
+    void OnGrabAllPublicRoomsNormCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+            GrabAllPublicRoomInfo(rows, 0);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room info norm");
+        }
+    }
+    void OnGrabAllPublicRoomsDestCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            hirebeatprojectdb_userdatastorage[] rows = result.Get<hirebeatprojectdb_userdatastorage>();
+            GrabAllPublicRoomInfo(rows, 3);
+        }
+        else
+        {
+            Debug.LogError("Error occured in grab all public room info dest");
+        }
+    }
+
 
     public void OnInviteUserButtonPressed()
     {

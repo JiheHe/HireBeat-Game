@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Collections.Concurrent;
 
 public class DataBaseCommunicator : MonoBehaviour
 {
@@ -28,8 +29,41 @@ public class DataBaseCommunicator : MonoBehaviour
 	VideoChatRoomSearch vcs; //where info will be published for video chat
 	RoomSystemPanelScript rsps;
 
-	void Start()
+	//Starting here, gonna try to implement the datastructure.
+	public class QueueItem
 	{
+		public string query;
+		public Action<SQLResult> callback;
+		public SQLParameter parameters = null;
+		public SQLRow row = null;
+	}
+
+	public static DataBaseCommunicator instance = null;
+
+	public BlockingCollection<QueueItem> queue = new BlockingCollection<QueueItem>();
+
+	// Make it a Singleton
+	void Awake()
+	{
+		if (instance == null)
+		{
+			instance = this;
+			instance.initialise();
+		}
+		else Destroy(this);
+	}
+
+	SQLResult result;
+
+	bool busy = false;
+	bool done = false;
+
+	Action<SQLResult> callBack;
+
+    void initialise()
+	{
+		sql = new SQLExecute(this);
+
 		myID = UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //playfab user id as the username
 		myOwnIpAddress = GetPublicIpAddress(); //this is the ip address that the user connects to the server with.
 
@@ -43,36 +77,11 @@ public class DataBaseCommunicator : MonoBehaviour
 
 		Debug.Log("SQL database connection: Using Protocol " + Protocol + " to " + IpAddress + ":" + Port);
 		// Monobehaviour required for Websocket and TCP Async Connections. Secure Socket = True/False required for WebSocket Protocol
-		sql = new SQLExecute(this);
-		sql.Connect(Protocol, IpAddress, Port, UUID, secure, false, UserName, ConnectCallback);
 
 		vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
 		rsps = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
-	}
 
-	public string GetLocalIPv4() //this returns user's current ip address!
-	{
-		return Dns.GetHostEntry(Dns.GetHostName())
-			.AddressList.First(
-				f => f.AddressFamily == AddressFamily.InterNetwork)
-			.ToString();
-	}
-
-	public string GetPublicIpAddress()
-    {
-		//string url = "http://checkip.dyndns.org";
-		string url = "https://api.ipify.org?format=json";
-		WebRequest req = WebRequest.Create(url);
-		WebResponse resp = req.GetResponse();
-		System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-		string response = sr.ReadToEnd().Trim();
-		string[] ipAddressWithText = response.Split(':');
-		string mainIP = ipAddressWithText[1].Substring(1, ipAddressWithText[1].Length - 3); //remove " and "}
-		/*string ipAddressWithHTMLEnd = ipAddressWithText[1].Substring(1);
-		string[] ipAddress = ipAddressWithHTMLEnd.Split('<');
-		string mainIP = ipAddress[0];*/
-		Debug.Log("My public ip address is: " + mainIP);
-		return mainIP;
+		sql.Connect(Protocol, IpAddress, Port, UUID, secure, false, UserName, ConnectCallback);
 	}
 
 	// Called once a connection to the server has been made
@@ -102,15 +111,160 @@ public class DataBaseCommunicator : MonoBehaviour
 
 		AddIPAddressToUniqueID(myOwnIpAddress, myID);
 
-		//The comments below are for testing:
+		StartCoroutine(processQueue()); //start scanning in inputs
 	}
+
+	IEnumerator processQueue()
+	{
+		if (!busy)
+		{
+			QueueItem qi;
+			if (queue.TryTake(out qi))
+			{
+				DoQuery(qi.query, qi.callback, qi.parameters);
+			}
+		}
+		yield return null;
+		StartCoroutine(processQueue());
+	}
+
+	/*public static void Add(string query, SQLParameter parameters, Action<SQLResult> callback)
+	{
+		QueueItem qi = new QueueItem();
+		qi.query = query;
+		qi.parameters = parameters;
+		qi.callback = callback;
+		instance.queue.Add(qi);
+	}*/
+
+	// Call this to add a query to the queue for processing
+	public static void Execute(string query, Action<SQL4Unity.SQLResult> callback)
+	{
+		QueueItem qi = new QueueItem();
+		qi.query = query;
+		qi.callback = callback;
+		instance.queue.Add(qi);
+	}
+	public static void Execute(string query, Action<SQL4Unity.SQLResult> callback, SQL4Unity.SQLRow row)
+	{
+		QueueItem qi = new QueueItem();
+		qi.query = query;
+		qi.callback = callback;
+		qi.row = row;
+		instance.queue.Add(qi);
+	}
+	public static void Execute(string query, Action<SQL4Unity.SQLResult> callback, SQL4Unity.SQLParameter parameters)
+	{
+		QueueItem qi = new QueueItem();
+		qi.query = query;
+		qi.callback = callback;
+		qi.parameters = parameters;
+		instance.queue.Add(qi);
+	}
+
+	// This is what you call if you want to jump the queue
+	public void DoQuery(string query, Action<SQL4Unity.SQLResult> callback)
+	{
+		StartCoroutine(StartQuery(query, callback));
+	}
+	public void DoQuery(string query, Action<SQL4Unity.SQLResult> callback, SQL4Unity.SQLRow row)
+	{
+		StartCoroutine(StartQuery(query, callback, row));
+	}
+	public void DoQuery(string query, Action<SQL4Unity.SQLResult> callback, SQL4Unity.SQLParameter parameters)
+	{
+		StartCoroutine(StartQuery(query, callback, null, parameters));
+	}
+
+	IEnumerator StartQuery(string query, Action<SQL4Unity.SQLResult> callback, SQL4Unity.SQLRow row = null, SQL4Unity.SQLParameter parameters = null)
+	{
+		yield return new WaitUntil(() => !busy);
+		busy = true;
+		done = false;
+		callBack = callback;
+		StartCoroutine(ExecuteCallback());
+		if (row != null) sql.Command(query, null, row, SqlCallback);
+		else if (parameters != null) sql.Command(query, null, parameters, SqlCallback);
+		else sql.Command(query, null, SqlCallback);
+	}
+
+	IEnumerator ExecuteCallback()
+	{
+		yield return new WaitUntil(() => done);
+		callBack(result);
+		busy = false;
+	}
+
+	void SqlCallback(bool ok, SQL4Unity.SQLResult result)
+	{
+		if (ok)
+		{
+			this.result = result;
+		}
+		else
+		{
+			this.result = null;
+			Debug.Log("Error " + result.message);
+		}
+		done = true;
+	}
+	// STOPS HERE, start the conversion now.
+
+	/*void Start()
+	{
+		myID = UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //playfab user id as the username
+		myOwnIpAddress = GetPublicIpAddress(); //this is the ip address that the user connects to the server with.
+
+		// Must be WebSocket for WebGL
+		if (Application.platform == RuntimePlatform.WebGLPlayer) Protocol = SQL4Unity.Server.Protocol.WebSocket;
+		if (Protocol == SQL4Unity.Server.Protocol.WebSocket)
+		{
+			Port = 19391; // Default Client WebSocket Port. Replaced
+			IpAddress = "ec2-54-229-65-122.eu-west-1.compute.amazonaws.com"; //Note: For Websocket protocol IpAddress should be the server domain name.
+		}
+
+		Debug.Log("SQL database connection: Using Protocol " + Protocol + " to " + IpAddress + ":" + Port);
+		// Monobehaviour required for Websocket and TCP Async Connections. Secure Socket = True/False required for WebSocket Protocol
+		sql = new SQLExecute(this);
+		sql.Connect(Protocol, IpAddress, Port, UUID, secure, false, UserName, ConnectCallback);
+
+		vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
+		rsps = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
+	}*/
+
+	public string GetLocalIPv4() //this returns user's current ip address!
+	{
+		return Dns.GetHostEntry(Dns.GetHostName())
+			.AddressList.First(
+				f => f.AddressFamily == AddressFamily.InterNetwork)
+			.ToString();
+	}
+
+	public string GetPublicIpAddress()
+    {
+		//string url = "http://checkip.dyndns.org";
+		string url = "https://api.ipify.org?format=json";
+		WebRequest req = WebRequest.Create(url);
+		WebResponse resp = req.GetResponse();
+		System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+		string response = sr.ReadToEnd().Trim();
+		string[] ipAddressWithText = response.Split(':');
+		string mainIP = ipAddressWithText[1].Substring(1, ipAddressWithText[1].Length - 3); //remove " and "}
+		/*string ipAddressWithHTMLEnd = ipAddressWithText[1].Substring(1);
+		string[] ipAddress = ipAddressWithHTMLEnd.Split('<');
+		string mainIP = ipAddress[0];*/
+		Debug.Log("My public ip address is: " + mainIP);
+		return mainIP;
+	}
+
+	
 
 	//int i = 0;
     private void Update()
     {
 		if(Input.GetKeyDown(KeyCode.G))
 		{
-
+			//AddNewPlayer("YESSIR", "nope@cccs", true, 30);
 			//StartCoroutine(AddActualTestPlayers());
 			//gonna remove everything where id = a, for testing.
 			//StartCoroutine(testAdd());
@@ -120,6 +274,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		if(Input.GetKeyDown(KeyCode.K))
         {
 			//StartCoroutine(AddActualTestPlayers());
+			//AddNewPlayerWithFullDetail("BOBSTER", "NOPSIR", "nope@cccs", true, 1);
 		}
 	}
 	IEnumerator AddActualTestPlayers()
@@ -576,7 +731,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	#endregion
 	#endregion
 
-	SQLResult getUserIdResult;
+	/*SQLResult getUserIdResult;
 	bool getUserIdResultReady;
 	//we know that username / id / email are unique, but just in case username = someone's id... so will have user enter
 	//to search by id or by name or by email.
@@ -643,11 +798,11 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Retrieving user id with name/id/email encounters error");
 			callback(null);
         }
-	}
+	}*/
 
 	//This function is an extension of the utility function above, only needed for rsps
 	//Can overlap and use this for room invites probably
-	SQLResult grabAllRoomInfoFromGivenIdsResult;
+	/*SQLResult grabAllRoomInfoFromGivenIdsResult;
 	bool grabAllRoomInfoFromGivenIdsReady;
 	public void GrabAllRoomInfoFromGivenIds(string[] userIds, string cmd) //sort type doesn't matter, max 1-2 results. NOT ANYMORE
 	{
@@ -696,7 +851,6 @@ public class DataBaseCommunicator : MonoBehaviour
 			try
 			{
 				hirebeatprojectdb_userroomsassociated[] rows = grabAllRoomInfoFromGivenIdsResult.Get<hirebeatprojectdb_userroomsassociated>();
-				foreach (var row in rows) Debug.Log("This is from rows: " + row.TrueOwnerID);
 				callback(rows);
 			}
 			catch (Exception ex)
@@ -711,10 +865,10 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Retrieving player room info failed!");
 			callback(null);
 		}
-	}
+	}*/
 
 	//This function is for grabbing user status by checking if that id is present in the ip address table.
-	SQLResult grabAllUserStatusFromGivenIdsResult;
+	/*SQLResult grabAllUserStatusFromGivenIdsResult;
 	bool grabAllUserStatusFromGivenIdsReady;
 	public void GrabAllUserStatusFromGivenIds(string[] userIds) //sort type doesn't matter, max 1-2 results.
 	{
@@ -776,17 +930,17 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Retrieving user status info failed!");
 			callback(null);
 		}
-	}
+	}*/
 
 	//To avoid search spam, not gonna do the type & filter: just gonna do a collective search at the end.
 	// The collective search targets the room entered EXACTLY (name, id, or email). => does not exist vs. room is private.
 
 	//This part is for invites
-	SQLResult grabAllInvitedRoomNameResult;
+	/*SQLResult grabAllInvitedRoomNameResult;
 	bool grabAllInvitedRoomNameResultReady;
 	public void GrabAllInvitedRoomNameFromGivenIds(List<string> userIds) //sort type doesn't matter, max 1-2 results. NOT ANYMORE
 	{
-		grabAllRoomInfoFromGivenIdsReady = false;
+		grabAllInvitedRoomNameResultReady = false;
 
 		string query;
 		SQLParameter parameters = new SQLParameter();
@@ -846,12 +1000,11 @@ public class DataBaseCommunicator : MonoBehaviour
 			callback(null);
 		}
 	}
-
-
+	*/
 	//invites
 
 
-	SQLResult ChangeUserNameResult;
+	/*SQLResult ChangeUserNameResult;
 	bool changeUserNameResultReady;
 	//Since username is primary key, I assume it would be a good double-safe check.
 	//Also should call this after user registeratoin, in a name entering box.
@@ -902,15 +1055,15 @@ public class DataBaseCommunicator : MonoBehaviour
 				Debug.LogError(ex.Message);
 			}
 		}
-	}
+	}*/
 
 
-	bool addNewPlayerResultReady;
+	//bool addNewPlayerResultReady;
 	//This is called on player registeration, where a unique account name should already be ready, as well as userEmail for record keeping
 	//Not gonna add a UserName.. want the default to be empty for us to immediately set after ;D
 	public void AddNewPlayer(string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
 	{
-		addNewPlayerResultReady = false;
+		//addNewPlayerResultReady = false;
 
 		string infoQuery = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic) VALUES (%userName%, %userId%, %email%, %rmPub%)";
 		SQLParameter infoParameters = new SQLParameter();
@@ -919,17 +1072,27 @@ public class DataBaseCommunicator : MonoBehaviour
 		infoParameters.SetValue("email", userEmail);
 		infoParameters.SetValue("rmPub", roomPublic);
 
-		sql.Command(infoQuery, null, infoParameters, AddNewPlayerCallback);
+		Execute(infoQuery, AddNewPlayerCallback, infoParameters);
+		//sql.Command(infoQuery, null, infoParameters, AddNewPlayerCallback);
 
-		StartCoroutine(AddNewPlayerSecondPart(userId, numPlayersInRm));
+		//StartCoroutine(AddNewPlayerSecondPart(userId, numPlayersInRm));
+
+		string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,NumPlayersInRoom,CurrOwnerID) " +
+				"VALUES (%userId%, %numPInRm%, %currOwnerId%)";
+		SQLParameter roomParameters = new SQLParameter();
+		roomParameters.SetValue("userId", userId);
+		roomParameters.SetValue("numPInRm", numPlayersInRm);
+		roomParameters.SetValue("currOwnerId", userId);
+
+		Execute(roomQuery, AddNewPlayerCallback, roomParameters);
 	}
-	private void AddNewPlayerCallback(bool ok, SQLResult result)
+	private void AddNewPlayerCallback(SQLResult result)
     {
-		addNewPlayerResultReady = true;
+		//addNewPlayerResultReady = true;
 		Debug.Log("New player registration (info or room, twice)! Adding in data: " + result.message.ToString());
 		//Don't forget to trigger a "enter new name plz" for new players right after!
     }
-	IEnumerator AddNewPlayerSecondPart(string userId, int numPlayersInRm)
+	/*IEnumerator AddNewPlayerSecondPart(string userId, int numPlayersInRm)
 	{
 		yield return new WaitUntil(() => addNewPlayerResultReady);
 
@@ -949,13 +1112,11 @@ public class DataBaseCommunicator : MonoBehaviour
 			// May throw an Illegal Cast Exception if the local database is missing
 			Debug.LogError(ex.Message);
 		}
-	}
-
-
+	}*/
 	//This is a variation of the above, but for internal testing only
 	public void AddNewPlayerWithFullDetail(string userName, string userId, string userEmail, bool roomPublic = false, int numPlayersInRm = 1)
 	{
-		addNewPlayerResultReady = false;
+		//addNewPlayerResultReady = false;
 
 		string infoQuery = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic) VALUES (%userName%, %userId%, %email%, %rmPub%)";
 		SQLParameter infoParameters = new SQLParameter();
@@ -964,15 +1125,26 @@ public class DataBaseCommunicator : MonoBehaviour
 		infoParameters.SetValue("email", userEmail);
 		infoParameters.SetValue("rmPub", roomPublic);
 
-		sql.Command(infoQuery, null, infoParameters, AddNewPlayerCallback);
+		Execute(infoQuery, AddNewPlayerCallback, infoParameters);
 
-		StartCoroutine(AddNewPlayerSecondPart(userId, numPlayersInRm));
+		string roomQuery = "INSERT INTO UserRoomsAssociated (TrueOwnerID,NumPlayersInRoom,CurrOwnerID) " +
+				"VALUES (%userId%, %numPInRm%, %currOwnerId%)";
+		SQLParameter roomParameters = new SQLParameter();
+		roomParameters.SetValue("userId", userId);
+		roomParameters.SetValue("numPInRm", numPlayersInRm);
+		roomParameters.SetValue("currOwnerId", userId);
+
+		Execute(roomQuery, AddNewPlayerCallback, roomParameters);
+
+		//sql.Command(infoQuery, null, infoParameters, AddNewPlayerCallback);
+
+		//StartCoroutine(AddNewPlayerSecondPart(userId, numPlayersInRm));
 	}
 
 	/// <summary>
 	/// Not ready grab usernames anymore... grabbing room info actually. Flipped cuz I moved room public to userdatastorage.
 	/// </summary>
-	SQLResult grabAllUsernamesFromGivenIdsResult;
+	/*SQLResult grabAllUsernamesFromGivenIdsResult;
 	bool grabAllUsernamesFromGivenIdsReady;
 	public void GrabAllUsernamesFromGivenIds(string[] userIds, int sortType)
     {
@@ -1010,7 +1182,7 @@ public class DataBaseCommunicator : MonoBehaviour
 			}*/
 
 			//Might be simpler? no need for parameters.
-			string inClause = string.Join(",", userIds.Select(id=> string.Concat("'", id, "'"))); //'id1','id2'... directly!
+			/*string inClause = string.Join(",", userIds.Select(id=> string.Concat("'", id, "'"))); //'id1','id2'... directly!
 			query = string.Format(query, inClause); //replaces {0} with the list of paramNames
 
 			sql.Command(query, null, GrabAllUsernamesFromGivenIdsCallback);
@@ -1027,8 +1199,8 @@ public class DataBaseCommunicator : MonoBehaviour
 			rsps.UpdatePlayerRoomList(userIdToNumPlayersInRm, sortType);
 		}
 		));// StartCoroutine on Main Thread
-	}
-	private void GrabAllUsernamesFromGivenIdsCallback(bool ok, SQLResult result)
+	}*/
+	/*private void GrabAllUsernamesFromGivenIdsCallback(bool ok, SQLResult result)
     {
 		grabAllUsernamesFromGivenIdsResult = result;
 		grabAllUsernamesFromGivenIdsReady = true;
@@ -1058,14 +1230,14 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Retrieving player room info failed!");
 			callback(null);
 		}
-	}
+	}*/
 
 
-	SQLResult grabAllPublicRoomsResult;
-	bool grabAllPublicRoomsResultReady;
-	public void GrabAllPublicRooms(int sortType) //0 is normal, 1 is numCount, 2 is alphabet
+	//SQLResult grabAllPublicRoomsResult;
+	//bool grabAllPublicRoomsResultReady;
+	public void GrabAllPublicRooms(int sortType, Action<SQLResult> callback) //0 is normal, 1 is numCount, 2 is alphabet
     {
-		grabAllPublicRoomsResultReady = false;
+		//grabAllPublicRoomsResultReady = false;
 
 		string query = "";
 		if(sortType == 0 || sortType == 3 || sortType == 1) 
@@ -1073,16 +1245,18 @@ public class DataBaseCommunicator : MonoBehaviour
 		else if(sortType == 2) 
 			query = "SELECT UserName, UserId FROM UserDataStorage WHERE IsRoomPublic = true ORDER BY UserName";
 		
-		sql.Command(query, null, GrabAllPublicRoomsCallback);
+		//sql.Command(query, null, GrabAllPublicRoomsCallback);
+		Execute(query, callback);
 
-		StartCoroutine(ReturnAllPublicRoomsResult((rows) =>
+		/*StartCoroutine(ReturnAllPublicRoomsResult((rows) =>
 		{
 			//Do something with the rows.
 			rsps.GrabAllPublicRoomInfo(rows, sortType);
 		}
 		));// StartCoroutine on Main Thread
+		*/
 	}
-	private void GrabAllPublicRoomsCallback(bool ok, SQLResult result)
+	/*private void GrabAllPublicRoomsCallback(bool ok, SQLResult result)
     {
 		grabAllPublicRoomsResult = result;
 		grabAllPublicRoomsResultReady = true;
@@ -1114,7 +1288,7 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Retrieving ALL player info failed!");
 			callback(null);
 		}
-	}
+	}*/
 
 
 
@@ -1127,27 +1301,35 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameters.SetValue("isPublic", isPublic); 
 		parameters.SetValue("userId", userId);
 
-		sql.Command(query, null, parameters, ChangeRoomPublicStatusCallback);
+		Execute(query, ChangeRoomPublicStatusCallback, parameters);
+		//sql.Command(query, null, parameters, ChangeRoomPublicStatusCallback);
 	}
-	private void ChangeRoomPublicStatusCallback(bool ok, SQLResult result)
+	private void ChangeRoomPublicStatusCallback(SQLResult result)
     {
 		Debug.Log("Changed room status! Result: " + result.message.ToString());
 	}
 
 	//This grabs own room's public status and owner name, so on login/room switch etc user can get correct feedback on room status.
 	//Can also use this to grab the public status of the current room you are in, using the id.
-	SQLResult getCurrentRoomInfoResult;
-	bool getCurrentRoomInfoResultReady;
+	//SQLResult getCurrentRoomInfoResult;
+	//bool getCurrentRoomInfoResultReady;
 	public void GetCurrentRoomInfo(string trueOwnerID, string purpose)
     {
-		getCurrentRoomInfoResultReady = false;
-
+		//getCurrentRoomInfoResultReady = false;
 		string query = "SELECT UserName, IsRoomPublic FROM UserDataStorage WHERE UserId = %userId%";
 		SQLParameter parameters = new SQLParameter();
-
 		parameters.SetValue("userId", trueOwnerID);
 
-		sql.Command(query, null, parameters, GetGetCurrentRoomInfoCallback);
+		switch (purpose)
+		{
+			case "CurrentRoomInfo":
+				Execute(query, rsps.SetCurrentRoomInfoTexts, parameters);
+				break;
+			case "SettingsPublicCheck":
+				Execute(query, rsps.UpdateSelfRoomPublicStatusFromDB, parameters);
+				break;
+		}
+		/*sql.Command(query, null, parameters, GetGetCurrentRoomInfoCallback);
 
 		StartCoroutine(ReturnGetCurrentRoomInfoResult((roomInfo) =>
 		{
@@ -1162,9 +1344,9 @@ public class DataBaseCommunicator : MonoBehaviour
 			}
 
 		}
-		));// StartCoroutine on Main Thread
+		));// StartCoroutine on Main Thread*/
 	}
-	private void GetGetCurrentRoomInfoCallback(bool ok, SQLResult result)
+	/*private void GetGetCurrentRoomInfoCallback(bool ok, SQLResult result)
     {
 		getCurrentRoomInfoResult = result;
 		getCurrentRoomInfoResultReady = true;
@@ -1194,7 +1376,7 @@ public class DataBaseCommunicator : MonoBehaviour
 			Debug.LogError("Retrieving current room info failed!");
 			callback(null);
 		}
-	}
+	}*/
 
 	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc not anymore
 	//Can access id through the "currentRoomTrueOwnerID" in rsps! Which is stored when connect button is pressed.
@@ -1206,9 +1388,10 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameters.SetValue("numPlayers", numPlayers); 
 		parameters.SetValue("userId", roomOwnerId);
 
-		sql.Command(query, null, parameters, UpdateNumPlayersInRoomCallback);
+		Execute(query, UpdateNumPlayersInRoomCallback, parameters);
+		//sql.Command(query, null, parameters, UpdateNumPlayersInRoomCallback);
 	}
-	private void UpdateNumPlayersInRoomCallback(bool ok, SQLResult result)
+	private void UpdateNumPlayersInRoomCallback(SQLResult result)
     {
 		Debug.Log("Update Num players in current room! Result: " + result.message.ToString());
 	}

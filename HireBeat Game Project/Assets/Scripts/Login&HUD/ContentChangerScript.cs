@@ -68,7 +68,12 @@ public class ContentChangerScript : MonoBehaviour
             if (!canLeftEmpty)
             {
                 tempUserName = newInput.text;
-                dbc.ChangeUserName(PFC.myID, tempUserName, this); //starts the callback
+                //dbc.ChangeUserName(PFC.myID, tempUserName, this); //starts the callback
+                string query = "UPDATE UserDataStorage SET UserName = %newUserName% WHERE UserId = %userId%";
+                SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+                parameters.SetValue("newUserName", tempUserName);
+                parameters.SetValue("userId", PFC.myID);
+                DataBaseCommunicator.Execute(query, ChangeUserNameResultCallback, parameters);
                 //rn username cannot be left empty, and signature can. Use that to distinguish
             }
             else
@@ -82,7 +87,43 @@ public class ContentChangerScript : MonoBehaviour
         }
         
     }
-    public void ChangeUserNameResultCallback(bool wentThrough) //called from dbc, if this is for a username
+    public void ChangeUserNameResultCallback(SQL4Unity.SQLResult result) //called from dbc, if this is for a username
+    {
+        if(result != null)
+        {
+            if (result.rowsAffected != 0) //went thru
+            {
+                PFC.SetUserData("acctName", tempUserName, "Public");
+                PFC.UpdateUserDisplayName(tempUserName); //also update Display name -> acct name is linked
+                GameObject.Find("PersistentData").GetComponent<PersistentData>().acctName = tempUserName; //set PD, since VC net info regis. draws from there.
+                PhotonNetwork.LocalPlayer.NickName = tempUserName; //changing photon name, which can be conveniently used for comparison! (real time update)
+                GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().vcc.ChangeNetworkInfoName(tempUserName);
+                textSpot.text = newInput.text;
+                if (UITextTarget != null) UITextTarget.text = newInput.text;
+
+                originalDisplay.SetActive(true);
+                editorDisplay.SetActive(false);
+                if (errorMsgDisplay != null)
+                {
+                    StopCoroutine(errorMsgDisplay);
+                    errorMsg.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                Debug.Log("Username already exists!");
+                if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+                errorMsgDisplay = DisplayErrorMessage(2f, "Username already exists..."); //each time a coro is called, a new obj is formed.
+                StartCoroutine(errorMsgDisplay);
+            }
+        }
+        else
+        {
+            Debug.LogError("Error occured in changing name in database");
+        }
+    }
+
+    /*public void ChangeUserNameResultCallback(bool wentThrough) //called from dbc, if this is for a username
     {
         if(wentThrough)
         {
@@ -109,7 +150,7 @@ public class ContentChangerScript : MonoBehaviour
             errorMsgDisplay = DisplayErrorMessage(2f, "Username already exists..."); //each time a coro is called, a new obj is formed.
             StartCoroutine(errorMsgDisplay);
         }
-    }
+    }*/
 
     IEnumerator DisplayErrorMessage(float time, string message)
     {
