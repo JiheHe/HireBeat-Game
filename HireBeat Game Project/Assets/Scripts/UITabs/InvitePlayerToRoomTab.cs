@@ -10,6 +10,11 @@ public class InvitePlayerToRoomTab : MonoBehaviour
     public string userId;
     SocialSystemScript socialSystem;
 
+    public Button inviteButton; //all 4 starts off false.
+    public GameObject kickDivider;
+    public Button kickButton;
+    public GameObject viewDivider;
+
     //2 buttons, one for profile generate, one for invite
 
     // Start is called before the first frame update
@@ -19,12 +24,31 @@ public class InvitePlayerToRoomTab : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void SetUserInfo(string userName, string userId, bool isOnline)
+    public void SetUserInfo(string userName, string userId, bool isOnline, bool isInSearchView, bool isTrueOwner, bool isYou)
     {
         this.userName.text = userName;
         this.userId = userId;
         if (isOnline) userStatus.text = "Online";
         else userStatus.text = "Offline";
+
+        if(isYou)
+        {
+            viewDivider.SetActive(true);
+            this.userName.color = new Color32(230, 164, 87, 255);
+        }
+        else
+        {
+            if (isInSearchView) inviteButton.gameObject.SetActive(true);
+            else if (isTrueOwner) //only owner can kick.
+            {
+                kickDivider.SetActive(true);
+                kickButton.gameObject.SetActive(true);
+            }
+            else
+            {
+                viewDivider.SetActive(true);
+            }
+        }
     }
 
     //On View Profile clicked.
@@ -53,5 +77,10 @@ public class InvitePlayerToRoomTab : MonoBehaviour
         rsps.errorMsgDisplay = rsps.DisplayErrorMessage(3f, "Room Invite to user \"" +
             userName.text + "\" has been sent."); //each time a coro is called, a new obj is formed.
         StartCoroutine(rsps.errorMsgDisplay);
+    }
+
+    public void OnKickPlayerPressed()
+    {
+        Debug.Log("This guy is getting kicked!");
     }
 }

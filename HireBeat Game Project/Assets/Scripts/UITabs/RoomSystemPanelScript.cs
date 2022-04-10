@@ -312,7 +312,7 @@ public class RoomSystemPanelScript : MonoBehaviour
             foreach (var user in userIdToUserNameCacheForPlayerSearch)
             {
                 bool isOnline = idsOnline.Contains(user.Key);
-                AddNewUserToList(user.Value, user.Key, isOnline);
+                AddNewUserToList(user.Value, user.Key, isOnline, true);
             }
         }
         else
@@ -340,10 +340,11 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
-    private void AddNewUserToList(string userName, string userId, bool isOnline)
+    private void AddNewUserToList(string userName, string userId, bool isOnline, bool isInSearchView, bool isTrueOwner = false, bool isYou = false)
     {
+        if (userId == myID) isYou = true; //a quick check to ensure that you don't misperform operations on yourself.
         var newPlayerSearchDisplay = Instantiate(playerSearchDisplayPrefab, playerRoomDisplayPanel); //using same panel as parent
-        newPlayerSearchDisplay.GetComponent<InvitePlayerToRoomTab>().SetUserInfo(userName, userId, isOnline);
+        newPlayerSearchDisplay.GetComponent<InvitePlayerToRoomTab>().SetUserInfo(userName, userId, isOnline, isInSearchView, isTrueOwner, isYou);
         playerTabsOnDisplay.Add(newPlayerSearchDisplay.GetComponent<InvitePlayerToRoomTab>());
     }
 
@@ -911,6 +912,28 @@ public class RoomSystemPanelScript : MonoBehaviour
         else
         {
             searchUserBar.gameObject.SetActive(false);
+        }
+    }
+
+    public void OnGetListOfAllUsersInRoomButtonPressed()
+    {
+        //Delete everything
+        foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+        {
+            Destroy(roomTabObj);
+        }
+        playerRoomList.Clear();
+        foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+        {
+            Destroy(playerTabObj);
+        }
+        playerTabsOnDisplay.Clear();
+
+        var currentPlayers = PhotonNetwork.CurrentRoom.Players.Values;
+        bool isTrueOwner = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length) == myID; //Room name format is USERROOM_[userid], so...
+        foreach(var p in currentPlayers)
+        {
+            AddNewUserToList(p.NickName, p.UserId, true, false, isTrueOwner); //obviously online
         }
     }
 
