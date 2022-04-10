@@ -47,7 +47,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     public InputField searchUserBar;
 
     public Text errorMsg;
-    private IEnumerator errorMsgDisplay;
+    public IEnumerator errorMsgDisplay;
 
     [Serializable]
     public class PlayerRoomInfo //roomName is the key
@@ -99,7 +99,7 @@ public class RoomSystemPanelScript : MonoBehaviour
 
 
         //this is for testing
-        listOfInvitedRoomIds = new List<string> { "B", "f", "Z", "i", myID, "falkdfdjfsf;"};
+        listOfInvitedRoomIds = new List<string> { "B", "f", "Z", "i", "falkdfdjfsf;"};
     }
 
     public void OnEnable() //called everytime when panel gets active
@@ -321,12 +321,23 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
-    IEnumerator DisplayErrorMessage(float time, string message)
+    public IEnumerator DisplayErrorMessage(float time, string message)
     {
         errorMsg.gameObject.SetActive(true);
         errorMsg.text = message;
         yield return new WaitForSeconds(time);
         errorMsg.gameObject.SetActive(false);
+    }
+
+    public void OnNewRoomInviteReceived(string roomID)
+    {
+        if(!listOfInvitedRoomIds.Contains(roomID)) //if a user sends multiple invites to same room to same person.
+        {
+            listOfInvitedRoomIds.Add(roomID);
+
+            //announce to the user that a new invite has been received through notification etc.
+            //Could do a message notif here, or maybe changing display tab button color would be better?
+        }
     }
 
     private void AddNewUserToList(string userName, string userId, bool isOnline)

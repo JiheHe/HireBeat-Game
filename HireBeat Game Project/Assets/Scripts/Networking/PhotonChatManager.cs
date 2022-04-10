@@ -12,6 +12,7 @@ using System;
 public class PhotonChatManager : MonoBehaviour, IChatClientListener
 {
     public SocialSystemScript socialSystem = null; //this is assigned by scene listener on load, it won't be null!
+    public RoomSystemPanelScript roomSystem = null; //same
     public string publicRoomChatName;
 
     public void DebugReturn(DebugLevel level, string message)
@@ -111,6 +112,12 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     reMessage = reMessage.Substring("INVITE_TO_".Length); //this is the room name
                     Debug.Log("New Room Invite Receieved! Invited to " + reMessage);
                     socialSystem.videoChatPanel.GetComponent<VideoChatRoomSearch>().invitedRoomList.Add(reMessage); //you've been invited to this room!
+                }
+                else if(reMessage.StartsWith("RMINVT_TO_"))
+                {
+                    reMessage = reMessage.Substring("RMINVT_TO_".Length); //this is the roomID/name
+                    Debug.Log("New User Room Invite Receieved! Invited to " + reMessage);
+                    roomSystem.OnNewRoomInviteReceived(reMessage);
                 }
             }
             return;

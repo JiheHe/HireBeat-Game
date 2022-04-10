@@ -28,7 +28,7 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject playerInfoCard;
 
     PlayFabController PFC;
-    PhotonChatManager PCM;
+    public PhotonChatManager PCM; //going to assign this directly from SceneListener, so need no to start sss to send messages.
 
     public GameObject chatPanel; //this stores the prefab
     public GameObject msgViewPort; //this stores the local viewport
@@ -48,6 +48,7 @@ public class SocialSystemScript : MonoBehaviour
 
     public GameObject voiceChatPanel;
     public GameObject videoChatPanel;
+    public RoomSystemPanelScript rsps; //put it here for convenience, directly-assigned.
 
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
@@ -64,7 +65,7 @@ public class SocialSystemScript : MonoBehaviour
         //playerObj = GameObject.FindGameObjectWithTag("Player");
 
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
-        PCM = GameObject.Find("PlayFabController").GetComponent<PhotonChatManager>();
+        //PCM = GameObject.Find("PlayFabController").GetComponent<PhotonChatManager>();
 
         GameObject cameraController = GameObject.FindGameObjectWithTag("PlayerCamera");
         playerCamera = cameraController.GetComponent<cameraController>();
@@ -267,6 +268,11 @@ public class SocialSystemScript : MonoBehaviour
     public void SendVidCInvite(string userID, string roomName)
     {
         PCM.chatClient.SendPrivateMessage(userID, "INVITE_TO_" + roomName);
+    }
+
+    public void SendUserRoomInvite(string userID, string roomID)
+    {
+        PCM.chatClient.SendPrivateMessage(userID, "RMINVT_TO_" + roomID);
     }
 
     public void CreatePublicRoomPanel()
