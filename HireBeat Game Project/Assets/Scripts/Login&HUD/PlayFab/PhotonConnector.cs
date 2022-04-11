@@ -13,6 +13,7 @@ using UnityEngine.SceneManagement;
 public class PhotonConnector: MonoBehaviourPunCallbacks
 {
 
+    public static bool firstTimePCMConnectionDone = false;
     public override void OnJoinedRoom()
     {
         Debug.Log($"You have joined the Photon Room named {PhotonNetwork.CurrentRoom.Name}");
@@ -165,11 +166,30 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         //Do all the things you need before you actually leave
         //This is for when you leave current room, thus leaving current VC
         GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().UserLeavesRoomVC(GetComponent<PlayFabController>().myID);
+        GetComponent<PlayFabController>().GetPlayerData();
 
         //SHOULD WAIT AND MAKE SURE EVERYTHING ABOVE IS FINISHED!!!
         //Then you leave.
-        PhotonNetwork.LeaveRoom(false);
+        StartCoroutine(WaitUntilLeavePrepsAreReady());
+        //PhotonNetwork.LeaveRoom(false);
         //StartCoroutine(DisconnectAndLoad());
+    }
+
+    public static bool FinishedGrabbingNewestUserDataFromPFC = false; //this is set in PFC
+    IEnumerator WaitUntilLeavePrepsAreReady()
+    {
+        yield return new WaitForEndOfFrame();
+        if(FinishedGrabbingNewestUserDataFromPFC) //can add more && conditions
+        {
+            yield return null;
+            FinishedGrabbingNewestUserDataFromPFC = false; //reset the variables
+            PhotonNetwork.LeaveRoom();
+        }
+        else
+        {
+            yield return null;
+            StartCoroutine(WaitUntilLeavePrepsAreReady());
+        }
     }
 
     //This is to make sure that you leave completely if there's rejoin system, but by setting it to "false" you leave completely for sure.

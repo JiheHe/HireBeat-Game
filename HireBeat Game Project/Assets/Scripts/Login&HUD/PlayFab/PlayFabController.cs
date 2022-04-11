@@ -354,6 +354,7 @@ public class PlayFabController : MonoBehaviour
                     PD.GetType().GetField(varName).SetValue(PD, result.Data[varName].Value);
                 }
             }
+            PhotonConnector.FinishedGrabbingNewestUserDataFromPFC = true;
         }
     }
 

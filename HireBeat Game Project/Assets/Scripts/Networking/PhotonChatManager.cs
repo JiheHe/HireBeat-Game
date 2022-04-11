@@ -27,7 +27,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void OnConnected() //on connected, automatically connects to public room chat
     {
-        AddPhotonChatFriends();
+        AddPhotonChatFriends(); //hopefully this won't cause duplicates.
         publicRoomChatName = PhotonNetwork.CurrentRoom.Name + " public room";
         chatClient.Subscribe(new string[] { publicRoomChatName }); //this is for the public room chat, room name will be owner ID
         socialSystem.currentPublicRoomChatName = publicRoomChatName;

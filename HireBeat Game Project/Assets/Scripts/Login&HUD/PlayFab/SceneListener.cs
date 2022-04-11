@@ -33,6 +33,15 @@ public class SceneListener : MonoBehaviour
             playerHUD.transform.Find("SocialSystem").GetComponent<SocialSystemScript>().PCM = GetComponent<PhotonChatManager>();
             GetComponent<PhotonChatManager>().roomSystem = playerHUD.transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
             GetComponent<PhotonChatManager>().ConnectChat(); //make sure social system is ready, then connect
+
+            if (PhotonConnector.firstTimePCMConnectionDone)
+            {
+                GetComponent<PhotonChatManager>().OnConnected(); //Since photon chat doesn't disconnect, have to simulate new connection.
+            }
+            else
+            {
+                PhotonConnector.firstTimePCMConnectionDone = true;
+            }
         }
     }
 }
