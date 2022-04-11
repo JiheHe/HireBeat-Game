@@ -10,11 +10,28 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        PhotonNetwork.ConnectUsingSettings(); //need to authenticate first, then connect through loading scene.
+        //PhotonNetwork.ConnectUsingSettings(); //need to authenticate first, then connect through loading scene.
+        StartCoroutine(WaitForUserLeftRoomConfirmed());
 
         if(PhotonConnector.disconnectDueToKicked)
         {
             //Set the additional text to "disconnect cuz kicked"
+        }
+    }
+
+    IEnumerator WaitForUserLeftRoomConfirmed()
+    {
+        yield return new WaitForEndOfFrame();
+
+        if(PhotonConnector.userHasLeftPhotonRoom)
+        {
+            yield return null;
+            PhotonNetwork.ConnectUsingSettings();
+        }
+        else
+        {
+            yield return null;
+            StartCoroutine(WaitForUserLeftRoomConfirmed());
         }
     }
 

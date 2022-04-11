@@ -24,6 +24,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         if (PersistentData.TRUEOWNERID_OF_JOINING_ROOM != null) 
             PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = PersistentData.TRUEOWNERID_OF_JOINING_ROOM;
         disconnectDueToKicked = false; //you are in a new room, reset.
+        userHasLeftPhotonRoom = false;
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -59,10 +60,12 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         JoinOrCreateRoom(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM);
     }
 
+    public static bool userHasLeftPhotonRoom = true; //default to true, because when game first starts not in a room yet!
     public override void OnLeftRoom()
     {
         Debug.Log("you have left a Photon Room");
-        SceneManager.LoadScene("LoadingScene"); //go back to this scene so reconnection can be triggered.
+        userHasLeftPhotonRoom = true;
+        //SceneManager.LoadScene("LoadingScene"); //go back to this scene so reconnection can be triggered.
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -192,6 +195,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             yield return null;
             FinishedGrabbingNewestUserDataFromPFC = false; //reset the variables
             PhotonNetwork.LeaveRoom();
+            SceneManager.LoadScene("LoadingScene");
         }
         else
         {
