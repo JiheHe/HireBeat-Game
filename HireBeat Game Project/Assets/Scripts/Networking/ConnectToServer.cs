@@ -11,6 +11,11 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     void Start()
     {
         PhotonNetwork.ConnectUsingSettings(); //need to authenticate first, then connect through loading scene.
+
+        if(PhotonConnector.disconnectDueToKicked)
+        {
+            //Set the additional text to "disconnect cuz kicked"
+        }
     }
 
     //this function is not called yet, but it does allow you to (I think))...

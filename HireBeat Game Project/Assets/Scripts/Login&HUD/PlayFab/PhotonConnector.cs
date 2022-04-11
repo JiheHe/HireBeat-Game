@@ -23,6 +23,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
 
         if (PersistentData.TRUEOWNERID_OF_JOINING_ROOM != null) 
             PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = PersistentData.TRUEOWNERID_OF_JOINING_ROOM;
+        disconnectDueToKicked = false; //you are in a new room, reset.
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -161,8 +162,15 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         PhotonNetwork.JoinOrCreateRoom("USERROOM_" + roomID, roomOptions, TypedLobby.Default);
     }
 
+    public static bool disconnectDueToKicked = false;
     public void DisconnectPlayer()
     {
+        if (disconnectDueToKicked)
+        {
+            PersistentData.TRUEOWNERID_OF_JOINING_ROOM = GetComponent<PlayFabController>().myID; //sent back to your world.
+            Debug.Log("You've been kicked out by the room owner, returning to your own world!");
+        }
+
         //Do all the things you need before you actually leave
         //This is for when you leave current room, thus leaving current VC
         GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().UserLeavesRoomVC(GetComponent<PlayFabController>().myID);

@@ -81,6 +81,9 @@ public class InvitePlayerToRoomTab : MonoBehaviour
 
     public void OnKickPlayerPressed()
     {
-        Debug.Log("This guy is getting kicked!");
+        Debug.Log("User " + userId + " is getting kicked! (not banned, can still rejoin)");
+
+        //Since kick button is only available when you are in the same room, RPC should go through!
+        GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().SendKickPlayer(userId); 
     }
 }
