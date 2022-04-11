@@ -10,19 +10,8 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.ConnectUsingSettings(); //need to authenticate first, then connect through loading scene.
     }
-
-    // Update is called once per frame
-    public override void OnConnectedToMaster()
-    {
-        Debug.Log("Connected to Photon");
-        SceneManager.LoadScene("MainMenu");
-        if (!PhotonNetwork.InLobby) {
-            PhotonNetwork.JoinLobby();
-        }
-    }
-
 
     //this function is not called yet, but it does allow you to (I think))...
     //just some useful functions below ig

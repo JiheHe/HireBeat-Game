@@ -270,8 +270,10 @@ public class SocialSystemScript : MonoBehaviour
         PCM.chatClient.SendPrivateMessage(userID, "INVITE_TO_" + roomName);
     }
 
-    public void SendUserRoomInvite(string userID, string roomID)
+    public void SendUserRoomInvite(string userID)
     {
+        //This is the safest way, grab directly from curr room you are in!
+        string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length); //Room name format is USERROOM_[userid], so...
         PCM.chatClient.SendPrivateMessage(userID, "RMINVT_TO_" + roomID);
     }
 

@@ -41,27 +41,7 @@ public class MainMenu : MonoBehaviourPunCallbacks //this is inheritance! for ove
 
     public void JoinRoom()
     {
-        PhotonNetwork.JoinRoom(joinInput.text); ;
-    }
-
-    public override void OnJoinedRoom()
-    {
-        Debug.Log($"You have joined the Photon Room named {PhotonNetwork.CurrentRoom.Name}");
-        Debug.Log("Your userID is: " + PhotonNetwork.AuthValues.UserId); //this is now Playfab's, as set in the controller!
-        //PhotonConnector.GetPhotonFriends?.Invoke(); //THIS ONE HMMm
-        PhotonNetwork.LoadLevel("MainScene"); //instead of loadscene
-
-        if(PersistentData.TRUEOWNERID_OF_JOINING_ROOM != null) //only null when first join, which is your own room.
-            PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = PersistentData.TRUEOWNERID_OF_JOINING_ROOM;
-    }
-
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        Debug.Log($"You failed to join a Photon room: {message}");
-
-        //Then you should be sent back to your current room (join or create), which hasn't been changed to joining room yet
-        //Can do this because id is also the internal photon room name!
-        //keep things as it is after.
+        PhotonNetwork.JoinRoom(joinInput.text);
     }
 
     //This function below is also not called yet. But I can see it being useful in future
@@ -70,39 +50,5 @@ public class MainMenu : MonoBehaviourPunCallbacks //this is inheritance! for ove
         RoomOptions roomOptions = new RoomOptions();
         //set your options
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
-    }
-
-    public override void OnCreatedRoom()
-    {
-        Debug.Log($"You have created a Photon Room named {PhotonNetwork.CurrentRoom.Name}");
-    }
-
-    public override void OnJoinedLobby()
-    {
-        Debug.Log("Joined lobby");
-
-        //This only works in lobby...
-        /*PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
-        {
-            IncludeSteamFriends = false,
-            IncludeFacebookFriends = false,
-            XboxToken = null
-        }, result => {
-            var users = result.Friends;
-            List<string> friendIDs = new List<string>();
-            foreach (PlayFab.ClientModels.FriendInfo user in users)
-            {
-                if(user.Tags[0] == "confirmed")
-                {
-                    friendIDs.Add(user.FriendPlayFabId);
-                }
-            }
-            PhotonNetwork.FindFriends(friendIDs.ToArray());
-        }, DisplayPlayFabError);*/
-    }
-
-    void DisplayPlayFabError(PlayFabError error)
-    {
-        Debug.Log(error.GenerateErrorReport());
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class PlayerRoomDisplayTab : MonoBehaviour
 {
@@ -48,9 +49,10 @@ public class PlayerRoomDisplayTab : MonoBehaviour
         //GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>().OnConnectPressed(roomName.text);
 
         //PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = roomOwnerId;
-        Debug.Log("Connecting...");    
+        Debug.Log("Connecting...");
 
         //Only connect forreal after everything is ready with callbacks n stuff
+        GameObject.Find("PlayFabController").GetComponent<PhotonConnector>().DisconnectPlayer();
     }
 
     public void OnRejectPressed()

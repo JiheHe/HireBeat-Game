@@ -77,7 +77,7 @@ public class PlayFabController : MonoBehaviour
         GetStats();
 
         myID = result.PlayFabId; //this is the unique ID!!!
-        PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = myID; //always default to your own room upon login.
+        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID; //always default to your own room upon login.
         SetUserData("acctID", myID, "Public");
         PD.RetrieveUserData();
     }
@@ -93,7 +93,7 @@ public class PlayFabController : MonoBehaviour
         //maybe set up a default stats value later
 
         myID = result.PlayFabId;
-        PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = myID;
+        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID;
         UpdateUserDisplayName(username);
         SetUserData("acctName", username, "Public"); //acctName is the data version of display name
         SetUserData("acctID", myID, "Public");

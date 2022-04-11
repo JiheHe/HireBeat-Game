@@ -69,7 +69,7 @@ public class InvitePlayerToRoomTab : MonoBehaviour
     public void OnInvitePressed()
     {
         //Send a Photon message to the userId.
-        socialSystem.SendUserRoomInvite(userId, PersistentData.TRUEOWNERID_OF_CURRENT_ROOM); //each room's name will be the owner's unique id!
+        socialSystem.SendUserRoomInvite(userId); //each room's name will be the owner's unique id!
 
         //Tell the sender that the invite has been sent.
         var rsps = socialSystem.rsps;

@@ -36,9 +36,9 @@ public class PersistentData : MonoBehaviour
         "botWearStyle", "botWearColor", "hasShoes", "shoesColor", "pfpImage", "acctName", "acctSignature", "acctID" }; //var names
 
 
-    //This value defaults to yours upon logging in (set up by pfc), but upon switching rooms validated it changes.
+    //This value defaults to null, but upon switching rooms validated it changes.
     public static string TRUEOWNERID_OF_CURRENT_ROOM = null;
-    //This value is set by PlayerRoomDisplayTab's join button, a placeholder for future connection.
+    //This value is set by PlayerRoomDisplayTab's join button, a placeholder for future connection. Or by PFC at start
     public static string TRUEOWNERID_OF_JOINING_ROOM = null;
 
     private void OnEnable() //making sure only 1 playfab controller
