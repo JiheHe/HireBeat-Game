@@ -34,12 +34,20 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         JoinOrCreateRoom(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM);
     }
 
+    public static bool isRoomCreator = false;
     public override void OnCreatedRoom()
     {
         Debug.Log($"You have created a Photon Room named {PhotonNetwork.CurrentRoom.Name}");
 
         //if you created the room, then you are the master! So you can directly queue a data table update user num call
         //after all set up is ready.
+        if(PhotonNetwork.IsMasterClient) //Surely
+        {
+            isRoomCreator = true;
+            //Notice: if you are a new user, then you don't need to do this call! Registration will handle it default case.
+            //I mean like you probably can. If the room then doesn't exist then no effect (then regis. creates it). If it does then won't hurt. 
+            //Going to call such step in dbc, because need to wait till dbc is connected anyway.
+        }
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -60,6 +68,12 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         Debug.Log($"Another player has joined the room {newPlayer.UserId}");
 
         //Check if you are the master! If you are then you should queue a data table update to user num in room.
+        if(PhotonNetwork.IsMasterClient)
+        {
+            string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
+            int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+            DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+        }
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -68,6 +82,12 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(otherPlayer.UserId);
 
         //Check if you are the master! If you are then you should queue a data table update to user num in room.
+        if(PhotonNetwork.IsMasterClient) //If a master client leaves, then the next one shuld still exist hopefully.
+        {
+            string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
+            int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+            DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+        }
 
         Debug.Log($"Player has left the room {otherPlayer.UserId}");
     }
@@ -78,6 +98,13 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         Debug.Log($"New Master Client is {newMasterClient.UserId}");
 
         //Check if you are the new master! If you are then you should queue a data table update to currOwner in room.
+        //if(PhotonNetwork.LocalPlayer == newMasterClient) 
+        if(PhotonNetwork.IsMasterClient) //this should be more convenient, use the one above if this doesn't work.
+        {
+            string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
+            string myID = GetComponent<PlayFabController>().myID;
+            DataBaseCommunicator.UpdateCurrOwnerOfRoom(roomID, myID);
+        }
     }
 
     public override void OnDisconnected(DisconnectCause cause) //when you disconnect from game, self announce RPC that you disconnect from VC

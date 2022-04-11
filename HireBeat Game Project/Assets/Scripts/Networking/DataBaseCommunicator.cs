@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
+using Photon.Pun;
 
 public class DataBaseCommunicator : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	internal string UUID = "6657add8-97b8-41ce-a8cd-b8b48b83d489"; // Default UUID. Replace with yours. I did
 	SQLExecute sql = null;
 
-	bool isOpen = false;
+	public static bool isOpen = false;
 
 	VideoChatRoomSearch vcs; //where info will be published for video chat
 	RoomSystemPanelScript rsps;
@@ -110,6 +111,15 @@ public class DataBaseCommunicator : MonoBehaviour
 		isOpen = true;
 
 		AddIPAddressToUniqueID(myOwnIpAddress, myID);
+
+		if(PhotonConnector.isRoomCreator)
+        {
+			string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
+			int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+			UpdateCurrOwnerOfRoom(roomID, myID);
+			UpdateNumPlayersInRoom(roomID, numPlayers);
+			PhotonConnector.isRoomCreator = false; //avoids retrigger next room because PC is persistent.
+		}
 
 		StartCoroutine(processQueue()); //start scanning in inputs
 	}
@@ -1410,7 +1420,7 @@ public class DataBaseCommunicator : MonoBehaviour
 
 	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc not anymore
 	//Can access id through the "currentRoomTrueOwnerID" in rsps! Which is stored when connect button is pressed.
-	public void UpdateNumPlayersInRoom(string roomOwnerId, int numPlayers) //hopefully our effort has ensured name's uniqueness.
+	public static void UpdateNumPlayersInRoom(string roomOwnerId, int numPlayers) //hopefully our effort has ensured name's uniqueness.
     {
 		string query = "UPDATE UserRoomsAssociated SET NumPlayersInRoom = %numPlayers% WHERE TrueOwnerID = %userId%";
 		SQLParameter parameters = new SQLParameter();
@@ -1421,14 +1431,28 @@ public class DataBaseCommunicator : MonoBehaviour
 		Execute(query, UpdateNumPlayersInRoomCallback, parameters);
 		//sql.Command(query, null, parameters, UpdateNumPlayersInRoomCallback);
 	}
-	private void UpdateNumPlayersInRoomCallback(SQLResult result)
+	private static void UpdateNumPlayersInRoomCallback(SQLResult result)
     {
 		Debug.Log("Update Num players in current room! Result: " + result.message.ToString());
 	}
 
-    #endregion
+	public static void UpdateCurrOwnerOfRoom(string trueOwnerId, string newCurrOwnerId)
+    {
+		string query = "UPDATE UserRoomsAssociated SET CurrOwnerID = %newCurrOwnerID% WHERE TrueOwnerID = %userId%";
+		SQLParameter parameters = new SQLParameter();
+		parameters.SetValue("newCurrOwnerID", newCurrOwnerId);
+		parameters.SetValue("userId", trueOwnerId);
 
-    private void OnDestroy()
+		Execute(query, UpdateCurrOwnerOfRoomCallback, parameters);
+    }
+	private static void UpdateCurrOwnerOfRoomCallback(SQLResult result)
+	{
+		Debug.Log("Update new curr owner of curr room! Result: " + result.message.ToString());
+	}
+
+	#endregion
+
+	private void OnDestroy()
     {
 		sql.Close();
 	}
