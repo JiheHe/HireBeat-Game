@@ -37,6 +37,9 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         Debug.Log($"You have created a Photon Room named {PhotonNetwork.CurrentRoom.Name}");
+
+        //if you created the room, then you are the master! So you can directly queue a data table update user num call
+        //after all set up is ready.
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -55,12 +58,16 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.Log($"Another player has joined the room {newPlayer.UserId}");
+
+        //Check if you are the master! If you are then you should queue a data table update to user num in room.
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         //gotta call it here... OnLeftRoom basically doesn't work if you leave directly..... I think OnDisconnected is called.
         GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(otherPlayer.UserId);
+
+        //Check if you are the master! If you are then you should queue a data table update to user num in room.
 
         Debug.Log($"Player has left the room {otherPlayer.UserId}");
     }
@@ -69,6 +76,8 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         Debug.Log($"New Master Client is {newMasterClient.UserId}");
+
+        //Check if you are the new master! If you are then you should queue a data table update to currOwner in room.
     }
 
     public override void OnDisconnected(DisconnectCause cause) //when you disconnect from game, self announce RPC that you disconnect from VC
@@ -130,6 +139,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         //This is for when you leave current room, thus leaving current VC
         GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().UserLeavesRoomVC(GetComponent<PlayFabController>().myID);
 
+        //SHOULD WAIT AND MAKE SURE EVERYTHING ABOVE IS FINISHED!!!
         //Then you leave.
         PhotonNetwork.LeaveRoom(false);
         //StartCoroutine(DisconnectAndLoad());

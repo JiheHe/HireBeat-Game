@@ -937,6 +937,16 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
+    public void OnReturnToHomeButtonPressed()
+    {
+        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID;
+
+        Debug.Log("Connecting...");
+
+        //This is like just another form of joining a room! Except that HOPEFULLY you'll be able to join cuz it's your own room....
+        GameObject.Find("PlayFabController").GetComponent<PhotonConnector>().DisconnectPlayer();
+    }
+
     public void OnTabOpen()
     {
         if (!playerZoneTab.hasOneOn) //prevents zone + UI
