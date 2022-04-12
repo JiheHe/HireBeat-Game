@@ -33,7 +33,7 @@ public class RoomSystemPanelScript : MonoBehaviour
         playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
     }
 
-    string myID;
+    public string myID;
 
     public GameObject roomInfoPanel;
     public Text roomNameTxt;
@@ -84,7 +84,8 @@ public class RoomSystemPanelScript : MonoBehaviour
     public GameObject playerRoomDisplayPrefab; //this is the prefab for each player room display in list
     public RectTransform playerRoomDisplayPanel; //this is the content where room will be child of.
     bool inInvitedRoomsView = false;
-    public List<string> listOfInvitedRoomIds = new List<string>(); //can be invited by public or private! private can only join through invite tho
+    //can be invited by public or private! private can only join through invite tho
+    public List<string> listOfInvitedRoomIds; //now this is a REFERENCE to PD's! hopefully this works.
     public GameObject playerSearchDisplayPrefab; //this is the prefab for each user display in search results
     public List<InvitePlayerToRoomTab> playerTabsOnDisplay = new List<InvitePlayerToRoomTab>();
 
@@ -97,9 +98,7 @@ public class RoomSystemPanelScript : MonoBehaviour
 
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
 
-
-        //this is for testing
-        listOfInvitedRoomIds = new List<string> { "B", "f", "Z", "i", "falkdfdjfsf;"};
+        listOfInvitedRoomIds = PersistentData.listOfInvitedRoomIds;
     }
 
     public void OnEnable() //called everytime when panel gets active
@@ -108,9 +107,15 @@ public class RoomSystemPanelScript : MonoBehaviour
         if (dbc != null) dbc.GrabAllPublicRooms(0, OnGrabAllPublicRoomsNormCallback); //need this because at obj first init, dbc not assigned yet, so null error. But in future can.
     }
 
-    // Update is called once per frame
-    void Update()
+    //This method is only called to create the fake visual effect when owner kicks ppl out
+    public void DestroyGivenUserTab(string targetId)
     {
+        var target = playerTabsOnDisplay.Where(p => p.userId == targetId).ToList();
+        foreach (var item in target) //should only be 1
+        {
+            playerTabsOnDisplay.Remove(item);
+            Destroy(item.gameObject);
+        }
     }
 
     int previousOn = 0; //1 is num, 2 is alpha, 0 is none.

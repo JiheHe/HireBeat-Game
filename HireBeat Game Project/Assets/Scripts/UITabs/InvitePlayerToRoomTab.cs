@@ -76,7 +76,7 @@ public class InvitePlayerToRoomTab : MonoBehaviour
         if (rsps.errorMsgDisplay != null) StopCoroutine(rsps.errorMsgDisplay); //"restart" coroutine
         rsps.errorMsgDisplay = rsps.DisplayErrorMessage(3f, "Room Invite to user \"" +
             userName.text + "\" has been sent."); //each time a coro is called, a new obj is formed.
-        StartCoroutine(rsps.errorMsgDisplay);
+        rsps.StartCoroutine(rsps.errorMsgDisplay);
     }
 
     public void OnKickPlayerPressed()
@@ -84,6 +84,12 @@ public class InvitePlayerToRoomTab : MonoBehaviour
         Debug.Log("User " + userId + " is getting kicked! (not banned, can still rejoin)");
 
         //Since kick button is only available when you are in the same room, RPC should go through!
-        GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().SendKickPlayer(userId); 
+        GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().SendKickPlayer(userId);
+
+        //Now perform a tricky instant feedback upon kicking player
+        //from the owner's perspective only, rpc call to all not needed I think
+        int numPlayersOG = int.Parse(socialSystem.rsps.numPlayersInRoomTxt.text);
+        socialSystem.rsps.numPlayersInRoomTxt.text = (numPlayersOG - 1).ToString();
+        socialSystem.rsps.DestroyGivenUserTab(userId);
     }
 }

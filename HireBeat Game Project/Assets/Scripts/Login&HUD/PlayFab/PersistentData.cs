@@ -46,6 +46,8 @@ public class PersistentData : MonoBehaviour
     //This value is set by PlayerRoomDisplayTab's join button, a placeholder for future connection. Or by PFC at start
     public static string TRUEOWNERID_OF_JOINING_ROOM = null;
 
+    public static List<string> listOfInvitedRoomIds = new List<string>(); //this is for room system, need to keep invites between rooms
+
     private void OnEnable() //making sure only 1 playfab controller
     {
         /*if (PersistentData.PD == null)
@@ -65,6 +67,9 @@ public class PersistentData : MonoBehaviour
     void Start()
     {
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
+
+        //Testing
+        listOfInvitedRoomIds = new List<string> { "B", "f", "Z", "i", "falkdfdjfsf;" };
     }
 
     public static bool strToBool(string str)

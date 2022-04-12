@@ -45,12 +45,57 @@ public class PlayerRoomDisplayTab : MonoBehaviour
 
     public void OnConnectPressed() //the objects below should be active by the time connect is pressed.
     {
-        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = roomOwnerId;
+        //Normally, in other cases, you are good to join. But this one careful: before join, 
+        //check if room is private and you are not invited (else you can't join)
+        //No need for a parameter, just make a ez string call LOL
+        string query = "SELECT IsRoomPublic FROM UserDataStorage WHERE UserId = \'" + roomOwnerId + "\'";
+        DataBaseCommunicator.Execute(query, OnConnectedPressedCallback);
+        //Also invites won't last like this if the list of invites is kept in rsps as it resets
+        //upon entering a new room, so better to keep it in somewhere permanent... (not database-level perm,
+        //but like per session at least... PersistentData!). //Yep I did. The one in rsps is a ref to pd's.
 
-        Debug.Log("Connecting...");
+        //Make sure this logic also applies to video chats!
+    }
+    public void OnConnectedPressedCallback(SQL4Unity.SQLResult result)
+    {
+        Debug.Log("Connected press callback received!");
+        if(result != null)
+        {
+            bool isRoomPublic = result.Get<hirebeatprojectdb_userdatastorage>()[0].IsRoomPublic;
+            var rsps = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
+            if (!isRoomPublic && !PersistentData.listOfInvitedRoomIds.Contains(roomOwnerId) && roomOwnerId != rsps.myID) 
+            {
+                //if the room is private and you are not invted, then...
+                if (rsps.errorMsgDisplay != null) StopCoroutine(rsps.errorMsgDisplay); //"restart" coroutine
+                rsps.errorMsgDisplay = rsps.DisplayErrorMessage(3f, "Unfortunately, the room has been set to private " +
+                    "and you are not invited."); //each time a coro is called, a new obj is formed.
+                rsps.StartCoroutine(rsps.errorMsgDisplay); 
+                //Coroutines stop automatically if the object they are attached to is destroyed, hence why we can't start it here.
 
-        //Only connect forreal after everything is ready with callbacks n stuff
-        GameObject.Find("PlayFabController").GetComponent<PhotonConnector>().DisconnectPlayer();
+                rsps.OnRefreshButtonPressed(); //display an error message, then force a refresh!
+                return;
+            }
+            else //either room is Public, or you are invited, or your room!!
+            {
+                //If you are invited... then by pressing connected you should remove that invite?
+                //Else it'll be like a perm. key lol
+                if (PersistentData.listOfInvitedRoomIds.Contains(roomOwnerId)) {
+                    PersistentData.listOfInvitedRoomIds.Remove(roomOwnerId); //can directly operate on PD too! same list I believe.
+                } //gonna consume the invitation here instead of on room joined, hopefully worth it...
+
+                //The actual connection step:
+                PersistentData.TRUEOWNERID_OF_JOINING_ROOM = roomOwnerId;
+
+                Debug.Log("Connecting...");
+
+                //Only connect forreal after everything is ready with callbacks n stuff
+                GameObject.Find("PlayFabController").GetComponent<PhotonConnector>().DisconnectPlayer();
+            }
+        }
+        else
+        {
+            Debug.LogError("Error retrieving room publicity!");
+        }
     }
 
     public void OnRejectPressed()
