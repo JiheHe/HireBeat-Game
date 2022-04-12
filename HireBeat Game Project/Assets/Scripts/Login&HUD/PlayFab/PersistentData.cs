@@ -47,6 +47,7 @@ public class PersistentData : MonoBehaviour
     public static string TRUEOWNERID_OF_JOINING_ROOM = null;
 
     public static List<string> listOfInvitedRoomIds = new List<string>(); //this is for room system, need to keep invites between rooms
+    public static List<string> invitedRoomList = new List<string>(); //this is for video chat room system
 
     private void OnEnable() //making sure only 1 playfab controller
     {

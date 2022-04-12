@@ -81,7 +81,7 @@ public class VideoChatRoomSearch : MonoBehaviour
     public GameObject videoChatRoomDisplayPrefab; //this is the prefab for each room display in list
     public RectTransform vcRoomDisplayPanel; //this is the content where room will be child of.
 
-    public List<string> invitedRoomList = new List<string>(); //can be invited by public or private! private can only join through invite tho
+    public List<string> invitedRoomList; //can be invited by public or private! private can only join through invite tho
 
     DataBaseCommunicator dbc = null; //the real time database!
     string prevRoomName; //this gets updated at room joining, but you get to keep the previous name until overwritten.
@@ -120,6 +120,7 @@ public class VideoChatRoomSearch : MonoBehaviour
         dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
         vcRoomList = new Dictionary<string, VidCRoomInfo>(); //key will be roomName, it stays fixed.
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
+        invitedRoomList = PersistentData.invitedRoomList;
 
         dbc.GrabAllVCRoomInfo("VCRoomListTotalUpdate"); //called once at init.
     }

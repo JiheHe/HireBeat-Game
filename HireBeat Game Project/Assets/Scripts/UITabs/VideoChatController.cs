@@ -83,7 +83,10 @@ public class VideoChatController : MonoBehaviour
     MediaConfig mediaConf; //this mediaConf is set to be the same as VCRS's, assigned at this prefab's creation
     NetworkConfig netConf; //same here, like the mediaConf above.
 
-    VideoChatRoomSearch vcs;
+    public VideoChatRoomSearch vcs;
+
+    public Text errorMsg;
+    IEnumerator errorMsgDisplay;
 
     // Start is called before the first frame update
     void Awake()
@@ -777,18 +780,123 @@ public class VideoChatController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void OnInviteUserButtonPressed()
+    public GameObject inviteUserSearchDisplayPrefab; //prefab
+    public RectTransform displayUserSearchResultsPanel; //parent.
+    string input;
+    public void OnSearchUserToInviteSubmit() //enter key
     {
-        string userInvited = inviteInput.text; //input will only be alphanumeric (username or playfabid, alphabet + num), so no space!
+        input = inviteInput.text;
+        string query = "SELECT UserName, UserId FROM UserDataStorage WHERE UserName = %input% OR UserId = %input% OR Email = %input%";
+        SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+        parameters.SetValue("input", input);
+        DataBaseCommunicator.Execute(query, OnSearchUserToInviteSubmitCallback, parameters);
+    }
+    Dictionary<string, string> userIdToUserNameCacheForPlayerSearch;
+    void OnSearchUserToInviteSubmitCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            if (result.rowsAffected == 0)
+            {
+                //0 rows affected if nothing exists relating to the input.
+                Debug.Log("The input you inputted does not exist!"); //show error msg to user.
+
+                if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+                errorMsgDisplay = DisplayErrorMessage(3f, "Cannot find an username, id, or email associated with \"" +
+                    input + "\""); //each time a coro is called, a new obj is formed.
+                StartCoroutine(errorMsgDisplay);
+            }
+            else
+            {                //got something, regardless of its length.
+                hirebeatprojectdb_userdatastorage[] userData = result.Get<hirebeatprojectdb_userdatastorage>();
+                userIdToUserNameCacheForPlayerSearch = userData.ToDictionary(r => r.UserId, r => r.UserName);
+                //dbc.GrabAllUserStatusFromGivenIds(userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray());
+                string[] userIdx = userIdToUserNameCacheForPlayerSearch.Keys.Distinct().ToArray();
+                string query;
+                SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+                if (userIdx.Length < 2) //1 
+                {
+                    query = "SELECT UniqueID FROM IPAdressToUniqueID WHERE UniqueID = %userId%"; //only 1 element.
+                    parameters.SetValue("userId", userIdx[0]);
+                    DataBaseCommunicator.Execute(query, DisplayUserStatusResults, parameters);
+                }
+                else //2 
+                {
+                    query = "SELECT UniqueID FROM IPAdressToUniqueID WHERE UniqueID IN ({0})";
+                    string inClause = string.Join(",", userIdx.Select(id => string.Concat("'", id, "'"))); //'id1','id2'... directly!
+                    query = string.Format(query, inClause); //replaces {0} with the list of paramNames
+                    DataBaseCommunicator.Execute(query, DisplayUserStatusResults);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("Error occured in search user to invite vidC submit");
+        }
+    }
+    void DisplayUserStatusResults(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            List<string> idsOnline = result.Get<hirebeatprojectdb_ipadresstouniqueid>().Select(r => r.UniqueID).ToList();
+
+            RemoveAllUserSearchResults(); //remove all previous results! 1-2 at max.
+
+            foreach (var user in userIdToUserNameCacheForPlayerSearch)
+            {
+                bool isOnline = idsOnline.Contains(user.Key);
+                string userName = user.Value;
+                string userId = user.Key;
+                bool isYou = userId == myID;
+                bool isAlreadyInRoom = userInRoomIds.Contains(userId);
+                var newPlayerSearchDisplay = Instantiate(inviteUserSearchDisplayPrefab, displayUserSearchResultsPanel); //using same panel as parent
+                newPlayerSearchDisplay.GetComponent<IPTR_Simple>().SetUserInfo(userName, userId, isOnline, this, isAlreadyInRoom, isYou);
+            }
+        }
+        else
+        {
+            Debug.LogError("Error in trying to grab user status search secondary info in vidC!");
+        }
+    }
+    public void RemoveAllUserSearchResults() //can be used for the clear button as well
+    {
+        foreach (Transform child in displayUserSearchResultsPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    public void OnClearSearchButtonPressed()
+    {
+        inviteInput.text = "";
+        RemoveAllUserSearchResults();
+    }
+
+    public void OnInviteUserButtonPressed(string userId)
+    {
+       // string userInvited = inviteInput.text; //input will only be alphanumeric (username or playfabid, alphabet + num), so no space!
 
         //currently, only id. A future database that links id with name will be used
         //also can use a database to check if the person is online.
-        vcs.socialSystem.SendVidCInvite(userInvited, roomName);
-        Debug.Log("Room invite sent to user " + userInvited);
+        vcs.socialSystem.SendVidCInvite(userId, roomName);
+        Debug.Log("Room invite sent to user " + userId);
+
+        if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+        errorMsgDisplay = DisplayErrorMessage(3f, "Room invite has been sent to user " + userId); //each time a coro is called, a new obj is formed.
+        StartCoroutine(errorMsgDisplay);
 
         inviteInput.text = "";
+        RemoveAllUserSearchResults();
     }
     #endregion
+
+    public IEnumerator DisplayErrorMessage(float time, string message)
+    {
+        errorMsg.gameObject.SetActive(true);
+        errorMsg.text = message;
+        yield return new WaitForSeconds(time);
+        errorMsg.gameObject.SetActive(false);
+    }
 
     //This is only called when a new user is connecting
     public string GetUserInVidCRoomIDsInString(string senderID)
