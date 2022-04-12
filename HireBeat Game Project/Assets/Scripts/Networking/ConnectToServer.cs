@@ -7,16 +7,46 @@ using System;
 
 public class ConnectToServer : MonoBehaviourPunCallbacks
 {
+    Vector2 trainStartPosition;
+    public float trainSpeed;
+    public GameObject train;
+    public Camera cam;
+
+    public GameObject[] backgrounds;
+
+    public GameObject kickMessage;
+
+    private void Awake()
+    {
+        backgrounds[UnityEngine.Random.Range(0, backgrounds.Length)].SetActive(true);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        trainStartPosition = cam.WorldToViewportPoint(train.transform.localPosition);
+        trainSpeed = 800;
+
         //PhotonNetwork.ConnectUsingSettings(); //need to authenticate first, then connect through loading scene.
         StartCoroutine(WaitForUserLeftRoomConfirmed());
 
-        if(PhotonConnector.disconnectDueToKicked)
+        if (PhotonConnector.disconnectDueToKicked)
         {
             //Set the additional text to "disconnect cuz kicked"
+            kickMessage.SetActive(true);
         }
+    }
+
+    private void Update()
+    {
+        Vector3 viewPos = cam.WorldToViewportPoint(train.transform.position);
+        if (viewPos.x < 0) //viewPos.x > 1 for left to right
+        {
+            // Your object is in the range of the camera, you can apply your behaviour
+            train.transform.localPosition = cam.ViewportToWorldPoint(trainStartPosition);
+        }
+        else
+            train.transform.Translate(new Vector2(-1, 0) * trainSpeed * Time.deltaTime);
     }
 
     IEnumerator WaitForUserLeftRoomConfirmed()
