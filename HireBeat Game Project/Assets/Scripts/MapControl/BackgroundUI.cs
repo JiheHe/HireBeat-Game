@@ -11,6 +11,8 @@ public class BackgroundUI : MonoBehaviour
     public GameObject playerObj;
     public cameraController playerCamera;
     public InGameUIController UIController;
+
+    PlayFabController PFC;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +25,8 @@ public class BackgroundUI : MonoBehaviour
                 break;
             }
         }
+
+        PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
 
         background = GameObject.FindGameObjectWithTag("Background"); //no need to worry, since background is local, only 1
         //playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -44,6 +48,8 @@ public class BackgroundUI : MonoBehaviour
         BackgroundSetter bg = background.GetComponent<BackgroundSetter>();
         bg.skyIndex = skyIndex;
         bg.SetBackground();
+
+        PFC.SetUserData("skyIndex", PersistentData.intToStr(skyIndex), "Private");
     }
 
     public void CloseTab()

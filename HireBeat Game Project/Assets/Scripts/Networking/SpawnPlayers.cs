@@ -63,15 +63,23 @@ public class SpawnPlayers : MonoBehaviour
         hudCentralControl.accountNameInEditor.text = p.acctName;
         hudCentralControl.accountSignatureInEditor.text = p.acctSignature;
         hudCentralControl.uniqueIDinEditor.text = "Unique ID: " + p.acctID;
+
+        var bs = GameObject.FindGameObjectWithTag("Background").GetComponent<BackgroundSetter>();
+        bs.skyIndex = PersistentData.strToInt(p.skyIndex);
+        bs.SetBackground();
 }
 
     object[] InitializePlayerInformation()
     {
         var p = GameObject.Find("PersistentData").GetComponent<PersistentData>();
 
-        object[] instanceData = new object[17];
+        object[] instanceData = new object[18];
         //0 - 12 are for char appearence
         //13 - 16 are for profile
+        //17 is for background skyindex
+
+        //To be honest I realized that some of them are useless to send, like they are local and no need to sync thru photon.
+        //will remove the local useless ones in the future.
 
         instanceData[0] = p.charName;
         instanceData[1] = p.hasHair;
@@ -91,6 +99,7 @@ public class SpawnPlayers : MonoBehaviour
         instanceData[14] = p.acctName;
         instanceData[15] = p.acctSignature;
         instanceData[16] = p.acctID;
+        instanceData[17] = p.skyIndex;
 
         return instanceData;
     }

@@ -32,9 +32,14 @@ public class PersistentData : MonoBehaviour
     public string acctSignature;
     public string acctID;
 
-    public string[] charProperties = {"charName", "skinColor", "hasHair", "hairStyle", "hairColor", "hasTopWear", "topWearStyle", "topWearColor", "hasBotWear",
-        "botWearStyle", "botWearColor", "hasShoes", "shoesColor", "pfpImage", "acctName", "acctSignature", "acctID" }; //var names
+    //this is set in Background Pref
+    public string skyIndex;
 
+    //DON'T FORGET TO CHANGE THE ARRAY LENGTH + NEW ELEM IN THE EDITOR AS WELL! ELSE THE FUKCING BUG IS STUPID AF
+    public string[] charProperties = new string[] {
+        "charName", "skinColor", "hasHair", "hairStyle", "hairColor", "hasTopWear", 
+        "topWearStyle", "topWearColor", "hasBotWear", "botWearStyle", "botWearColor",
+        "hasShoes", "shoesColor", "pfpImage", "acctName", "acctSignature", "acctID", "skyIndex"}; //var names 
 
     //This value defaults to null, but upon switching rooms validated it changes.
     public static string TRUEOWNERID_OF_CURRENT_ROOM = null;
@@ -59,16 +64,7 @@ public class PersistentData : MonoBehaviour
 
     void Start()
     {
-
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
-
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public static bool strToBool(string str)
@@ -81,6 +77,21 @@ public class PersistentData : MonoBehaviour
     {
         if (val) return "1";
         else return "0";
+    }
+
+    public static int strToInt(string str)
+    {
+        if(int.TryParse(str, out int numVal))
+        {
+            return numVal;
+        }
+        Debug.LogError("Error in converting from string to int");
+        return -999;
+    }
+
+    public static string intToStr(int num)
+    {
+        return num.ToString();
     }
 
     public void RetrieveUserData()

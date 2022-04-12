@@ -6,18 +6,6 @@ using System;
 
 public class PlayerDataUpdater : MonoBehaviour, IPunInstantiateMagicCallback
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
     {
         object[] instanceData = info.photonView.InstantiationData;
