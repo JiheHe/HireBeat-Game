@@ -50,6 +50,9 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject videoChatPanel;
     public RoomSystemPanelScript rsps; //put it here for convenience, directly-assigned.
 
+    public Text errorMsg;
+    IEnumerator errorMsgDisplay;
+
     // Start is called before the first frame update
     void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
@@ -97,7 +100,8 @@ public class SocialSystemScript : MonoBehaviour
 
         //turn off all open stuff
         addFriendSearchBar.SetActive(false);
-        friendsSearchBarInput.text = ""; //only clear at closing
+        ClearFriendSearch(); //only clear at closing
+        errorMsg.gameObject.SetActive(false);
         requestsList.SetActive(false);
         if (currentInfoCardOpened != null) Destroy(currentInfoCardOpened);
         PFC.GetFriends();
@@ -152,6 +156,10 @@ public class SocialSystemScript : MonoBehaviour
     //So when clicked once, !not = true, so active! click again then false.
     public void OnAddFriendPressed()
     {
+        if(addFriendSearchBar.activeSelf) //If it's active then you pressed it, then you are closing it basically
+        {
+            ClearFriendSearch();
+        }
         addFriendSearchBar.SetActive(!addFriendSearchBar.activeSelf);
         PFC.GetFriends();
     }
@@ -163,10 +171,81 @@ public class SocialSystemScript : MonoBehaviour
     }
 
 
-    public void OnSearchFriendPressed()
+    public GameObject friendUserSearchDisplayPrefab; //prefab
+    public RectTransform displayUserSearchResultsPanel; //parent.
+    string input;
+    public void OnSearchFriendPressed() //enter key
+    {
+        input = friendsSearchBarInput.text;
+        string query = "SELECT UserName, UserId FROM UserDataStorage WHERE UserName = %input% OR UserId = %input% OR Email = %input%";
+        SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+        parameters.SetValue("input", input);
+        DataBaseCommunicator.Execute(query, OnSearchUserToFriendSubmitCallback, parameters);
+    }
+    void OnSearchUserToFriendSubmitCallback(SQL4Unity.SQLResult result)
+    {
+        if (result != null)
+        {
+            if (result.rowsAffected == 0)
+            {
+                //0 rows affected if nothing exists relating to the input.
+                Debug.Log("The input you inputted does not exist!"); //show error msg to user.
+
+                if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+                errorMsgDisplay = DisplayErrorMessage(3f, "Cannot find an username, id, or email associated with \"" +
+                    input + "\""); //each time a coro is called, a new obj is formed.
+                StartCoroutine(errorMsgDisplay);
+            }
+            else
+            {                //got something, regardless of its length.
+                hirebeatprojectdb_userdatastorage[] userData = result.Get<hirebeatprojectdb_userdatastorage>();
+                RemoveAllUserSearchResults(); //remove all previous results! 1-2 at max.
+
+                foreach (var user in userData)
+                {
+                    string userName = user.UserName;
+                    string userId = user.UserId;
+                    var newPlayerSearchDisplay = Instantiate(friendUserSearchDisplayPrefab, displayUserSearchResultsPanel); //using same panel as parent
+                    newPlayerSearchDisplay.GetComponent<IPTR_Simple>().SetUserInfo(userName, userId, false, this); //isOnline doesn't matter here.
+                    newPlayerSearchDisplay.GetComponent<IPTR_Simple>().infoCardXShift = -243;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("Error occured in search user to friend in social system");
+        }
+    }
+    public void RemoveAllUserSearchResults() //can be used for the clear button as well
+    {
+        foreach (Transform child in displayUserSearchResultsPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    public void ClearFriendSearch()
+    {
+        friendsSearchBarInput.text = "";
+        RemoveAllUserSearchResults();
+    }
+
+    public IEnumerator DisplayErrorMessage(float time, string message)
+    {
+        errorMsg.gameObject.SetActive(true);
+        errorMsg.text = message;
+        yield return new WaitForSeconds(time);
+        errorMsg.gameObject.SetActive(false);
+    }
+
+
+    /*public void OnSearchFriendPressed()
     {
         PFC.GetFriends(); //lol gonna run it once here too
         Debug.Log("Searching for: " + friendsSearchBarInput.text);
+
+
+
         if (currentInfoCardOpened == null) //object self destructs into null on tab close
         {
             GameObject info = Instantiate(playerInfoCard, new Vector2(0, 0), Quaternion.identity); //can always use this to tune generation position/size
@@ -175,7 +254,7 @@ public class SocialSystemScript : MonoBehaviour
             currentInfoCardOpened = info;
         }
         else currentInfoCardOpened.GetComponent<PlayerInfoCardUpdater>().InitializeInfoCard(friendsSearchBarInput.text, 0); //search list
-    }
+    }*/
 
     public void GetMessage(string input)
     {

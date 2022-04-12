@@ -778,6 +778,7 @@ public class VideoChatController : MonoBehaviour
     public void CloseVideoChatPanel()
     {
         gameObject.SetActive(false);
+        errorMsg.gameObject.SetActive(false);
     }
 
     public GameObject inviteUserSearchDisplayPrefab; //prefab
@@ -850,7 +851,7 @@ public class VideoChatController : MonoBehaviour
                 bool isYou = userId == myID;
                 bool isAlreadyInRoom = userInRoomIds.Contains(userId);
                 var newPlayerSearchDisplay = Instantiate(inviteUserSearchDisplayPrefab, displayUserSearchResultsPanel); //using same panel as parent
-                newPlayerSearchDisplay.GetComponent<IPTR_Simple>().SetUserInfo(userName, userId, isOnline, this, isAlreadyInRoom, isYou);
+                newPlayerSearchDisplay.GetComponent<IPTR_Simple>().SetUserInfo(userName, userId, isOnline, null, this, isAlreadyInRoom, isYou);
             }
         }
         else
