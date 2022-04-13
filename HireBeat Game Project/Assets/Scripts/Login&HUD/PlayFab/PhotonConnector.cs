@@ -171,6 +171,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         if (disconnectDueToKicked)
         {
             PersistentData.TRUEOWNERID_OF_JOINING_ROOM = GetComponent<PlayFabController>().myID; //sent back to your world.
+            PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
             Debug.Log("You've been kicked out by the room owner, returning to your own world!");
         }
 

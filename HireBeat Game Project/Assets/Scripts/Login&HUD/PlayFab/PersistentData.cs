@@ -45,6 +45,7 @@ public class PersistentData : MonoBehaviour
     public static string TRUEOWNERID_OF_CURRENT_ROOM = null;
     //This value is set by PlayerRoomDisplayTab's join button, a placeholder for future connection. Or by PFC at start
     public static string TRUEOWNERID_OF_JOINING_ROOM = null;
+    public static string NAME_OF_JOINING_ROOM = null;
 
     public static List<string> listOfInvitedRoomIds = new List<string>(); //this is for room system, need to keep invites between rooms
     public static List<string> invitedRoomList = new List<string>(); //this is for video chat room system

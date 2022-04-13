@@ -10,6 +10,10 @@ public class SpawnPlayers : MonoBehaviour
 
     public GameObject player;
     public float minX, minY, maxX, maxY;
+    public Transform guestTopLeftCoord;
+    public Transform guestBotRightCoord;
+    public Transform ownerTopLeftCoord;
+    public Transform ownerBotRightCoord;
 
     public GameObject manager;
     public GameObject background; //also unique to individual
@@ -27,7 +31,17 @@ public class SpawnPlayers : MonoBehaviour
     {
         object[] instanceData = InitializePlayerInformation();
 
-        Vector2 randomPosition = new Vector2(UnityEngine.Random.Range(minX, maxX), UnityEngine.Random.Range(minY, maxY));
+        Vector2 randomPosition; // = new Vector2(UnityEngine.Random.Range(minX, maxX), UnityEngine.Random.Range(minY, maxY));
+        if(PersistentData.NAME_OF_JOINING_ROOM == "Your Room") //can do this instead of myID
+        {
+            randomPosition = new Vector2(UnityEngine.Random.Range(ownerTopLeftCoord.transform.position.x, ownerBotRightCoord.transform.position.x),
+                UnityEngine.Random.Range(ownerBotRightCoord.transform.position.y, ownerTopLeftCoord.transform.position.y));
+        }
+        else
+        {
+            randomPosition = new Vector2(UnityEngine.Random.Range(guestTopLeftCoord.transform.position.x, guestBotRightCoord.transform.position.x),
+                UnityEngine.Random.Range(guestBotRightCoord.transform.position.y, guestTopLeftCoord.transform.position.y));
+        }
         newPlayer = PhotonNetwork.Instantiate(player.name, randomPosition, Quaternion.identity, 0, instanceData);
         Debug.Log("A new player has joined!");
 

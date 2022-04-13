@@ -85,6 +85,7 @@ public class PlayerRoomDisplayTab : MonoBehaviour
 
                 //The actual connection step:
                 PersistentData.TRUEOWNERID_OF_JOINING_ROOM = roomOwnerId;
+                PersistentData.NAME_OF_JOINING_ROOM = roomOwnerName.text + "\'s Room";
 
                 Debug.Log("Connecting...");
 

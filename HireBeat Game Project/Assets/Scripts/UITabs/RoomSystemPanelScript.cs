@@ -945,6 +945,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     public void OnReturnToHomeButtonPressed()
     {
         PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID;
+        PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
 
         Debug.Log("Connecting...");
 
