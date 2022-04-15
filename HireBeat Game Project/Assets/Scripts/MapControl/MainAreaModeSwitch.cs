@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class MainAreaModeSwitch : MonoBehaviour
 {
@@ -11,20 +12,23 @@ public class MainAreaModeSwitch : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (gameObject.tag == "Entrance")
+        if(collision.gameObject.transform.parent.GetComponent<PhotonView>().IsMine) //only reacts to you.
         {
-            mainOnColliders.SetActive(true);
-            mainOffColliders.SetActive(false);
-            mainOnVisuals.SetActive(true);
-            mainOffVisuals.SetActive(false);
-            
-        }
-        else if (gameObject.tag == "Exit")
-        {
-            mainOnColliders.SetActive(false);
-            mainOffColliders.SetActive(true);
-            mainOnVisuals.SetActive(false);
-            mainOffVisuals.SetActive(true);
+            if (gameObject.tag == "Entrance")
+            {
+                mainOnColliders.SetActive(true);
+                mainOffColliders.SetActive(false);
+                mainOnVisuals.SetActive(true);
+                mainOffVisuals.SetActive(false);
+
+            }
+            else if (gameObject.tag == "Exit")
+            {
+                mainOnColliders.SetActive(false);
+                mainOffColliders.SetActive(true);
+                mainOnVisuals.SetActive(false);
+                mainOffVisuals.SetActive(true);
+            }
         }
     }
 }
