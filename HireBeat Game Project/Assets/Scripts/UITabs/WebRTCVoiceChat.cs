@@ -21,6 +21,8 @@ public class WebRTCVoiceChat : MonoBehaviour
 
     public GameObject webRTCVCCallObjPrefab;
     public WebRTCVCCallObj currentLocalWebRTCVCCallObj;
+    //Use this bool to check whether to unleash player control access and before initializing video chat connection. A local variable
+    public bool isInVCCall = false; //can also use currentLocaletc != null, but bool should be faster
 
     public int identifyingId; //set this with PhotonNetwork.Instantiate upon creation, diff for each set.
 
@@ -67,6 +69,7 @@ public class WebRTCVoiceChat : MonoBehaviour
     //This is called by a chair upon user entering
     public void InitializeWebRTCCall()
     {
+        isInVCCall = true;
         currentLocalWebRTCVCCallObj = Instantiate(webRTCVCCallObjPrefab, this.gameObject.GetComponent<Transform>()).GetComponent<WebRTCVCCallObj>();
         currentLocalWebRTCVCCallObj.wrtcvc = this;
         currentLocalWebRTCVCCallObj.StartMyOwnQuickRTCVoiceConnection(myID);

@@ -217,6 +217,7 @@ public class WebRTCVCCallObj : MonoBehaviour
     private void OnDestroy()
     {
         Debug.Log("Current communicator is destroyed");
+        wrtcvc.isInVCCall = false;
         if (communicator != null)
         {
             communicator.Dispose();

@@ -100,5 +100,13 @@ public class playerController : MonoBehaviour
         return true;
     }
 
+    public void ForceTurnTowards(float x, float y)
+    {
+        foreach (Animator animator in animators)
+        {
+            animator.SetFloat("moveX", x);
+            animator.SetFloat("moveY", y);
+        }
+    }
 
 }
