@@ -861,7 +861,7 @@ TextureImporter:
         width: 17
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -869,6 +869,111 @@ TextureImporter:
       bones: []
       spriteID: 3157842a5cd44d04d83e171d479904d4
       internalID: 880611375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VCFloorMatLeft
+      rect:
+        serializedVersion: 2
+        x: 1191
+        y: 519
+        width: 20
+        height: 17
+      alignment: 9
+      pivot: {x: 0.5, y: 0.75}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73acd55dbcaa23f4ca2d3aac6596efef
+      internalID: 1964541034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VCFloorMatRight
+      rect:
+        serializedVersion: 2
+        x: 1253
+        y: 519
+        width: 20
+        height: 17
+      alignment: 9
+      pivot: {x: 0.5, y: 0.75}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fe634de85e3dac4083869fee903a8e8
+      internalID: -1371506289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VCFloorMatBot
+      rect:
+        serializedVersion: 2
+        x: 1223
+        y: 492
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.75}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e303a1b280b1f3d489e22650a14b2e39
+      internalID: 1977262956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VCFloorMatTop
+      rect:
+        serializedVersion: 2
+        x: 1223
+        y: 544
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.75}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8b953963bd295647ac328c0c82a39fb
+      internalID: -1350649480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TableWarmBedSingle
+      rect:
+        serializedVersion: 2
+        x: 1145
+        y: 576
+        width: 46
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.9}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a872090f0099cc24ba19cd5079b3fbca
+      internalID: 810270698
       vertices: []
       indices: 
       edges: []
@@ -884,29 +989,33 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BathroomSink: -1705331089
       LivingRoomComputerScreen: 880611375
       LRtoOfficeLeftMostWallTop: -160931247
       MeetRoomGreenPot: -1465034940
-      MeetRoomTableR: 998608722
+      LRtoOfficeMiddleBlue: -85107746
       MeetRoomStatue: 1590044047
       LivingRoomLamp: 2127980643
       BathroomShower: 1155819087
       MeetRoomTableL: 1445851821
       OfficeBookshelves: -1158026316
       MeetRoomFridge: -238342455
+      VCFloorMatTop: -1350649480
+      MeetRoomWasher: -155132372
       MeetRoomSwordTable: -1789592419
       LRtoOfficeRightMostWallTop: 1392809932
       LRtoOfficeRightDoorFrame: -272891078
       MeetRoomSideSofa: -513418783
       LivingRoomGoldStatue: -427496566
       MeetRoomTeaPot: -1181237126
+      VCFloorMatBot: 1977262956
       BathroomMirror: 370053032
       BathroomToilet: 2118345727
       LRtoOfficeLeftDoorFrame: 1696201082
       MeetRoomDryer: 58312540
       MeetRoomPaint: 2251244
       BathroomTub: 723208139
+      VCFloorMatLeft: 1964541034
+      VCFloorMatRight: -1371506289
       TopLeftCornerWall: -2122701078
       MeetRoomSofaBig: -1634019243
       MeetRoomStoves: -2091069111
@@ -918,8 +1027,9 @@ TextureImporter:
       MeetRoomFlowerPot: -152110959
       MeetRoomTableMid: -1704652796
       LRtoOfficeMiddleWallTop: 1144685314
-      LRtoOfficeMiddleBlue: -85107746
-      MeetRoomWasher: -155132372
+      TableWarmBedSingle: 810270698
+      BathroomSink: -1705331089
+      MeetRoomTableR: 998608722
   spritePackingTag: 
   pSDRemoveMatte: 0
   userData: 
