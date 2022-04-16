@@ -88,8 +88,10 @@ namespace FrostweepGames.VoicePro.Examples
         {
             stateText.text = "Client state: " + NetworkRouter.Instance.GetNetworkState();
             serverText.text = "Server: " + NetworkRouter.Instance.GetConnectionToServer();
-            roomNameText.text = "Room: " + NetworkRouter.Instance.GetCurrentRoomName();
-
+            roomNameText.text = "Room Serial Id: " + NetworkRouter.Instance.GetCurrentRoomName();
+            //roomNameText.text = "Room: " + PersistentData.NAME_OF_JOINING_ROOM; //This stays fixed, doesn't work..
+            //Instead of checking for Room name and query every time, better for it to stay fixed....
+            
             foreach (var item in _remoteSpeakerItems)
             {
                 item.Update();
