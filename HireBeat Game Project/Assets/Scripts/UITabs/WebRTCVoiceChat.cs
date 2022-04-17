@@ -133,7 +133,7 @@ public class WebRTCVoiceChat : MonoBehaviour
             if (kvp.Value == targetId) return kvp.Key;
         }
 
-        Debug.LogError("Error in finding correct chair from user id");
+        //Debug.LogError("Error in finding correct chair from user id");
         return -1;
     }
 

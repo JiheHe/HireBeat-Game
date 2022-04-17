@@ -113,8 +113,8 @@ public class WebRTCVCCallObj : MonoBehaviour
                 //closed the browser. So we'll do it for him. 
                 string userLeftId = connectionIdWithPlayFabId[evt.ConnectionId];
                 connectionIdWithPlayFabId.Remove(evt.ConnectionId);
-                int chairId = wrtcvc.FindChairIdFromUserId(userLeftId);
-                if (wrtcvc.chairsCurrentSitter[chairId] == userLeftId && wrtcvc.chairsOccupationList[chairId])
+                int chairId = wrtcvc.FindChairIdFromUserId(userLeftId); //returns -1 if the initial call went through
+                if (chairId != -1 && wrtcvc.chairsCurrentSitter[chairId] == userLeftId && wrtcvc.chairsOccupationList[chairId])
                 {
                     wrtcvc.AnnounceChairOccupation(chairId, false, null);
                 }
