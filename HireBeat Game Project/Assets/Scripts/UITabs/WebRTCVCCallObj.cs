@@ -116,7 +116,7 @@ public class WebRTCVCCallObj : MonoBehaviour
                 int chairId = wrtcvc.FindChairIdFromUserId(userLeftId); //returns -1 if the initial call went through
                 if (chairId != -1 && wrtcvc.chairsCurrentSitter[chairId] == userLeftId && wrtcvc.chairsOccupationList[chairId])
                 {
-                    wrtcvc.AnnounceChairOccupation(chairId, false, null);
+                    wrtcvc.AnnounceChairOccupation(chairId, false, userLeftId);
                 }
 
                 break;

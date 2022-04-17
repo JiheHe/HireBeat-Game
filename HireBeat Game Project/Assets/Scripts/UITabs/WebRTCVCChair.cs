@@ -87,7 +87,7 @@ public class WebRTCVCChair : MonoBehaviour
     //On leave button pressed.
     public void LeaveThisChair()
     {
-        terminal.AnnounceChairOccupation(chairId, false, null);
+        terminal.AnnounceChairOccupation(chairId, false, terminal.myID);
         Destroy(terminal.currentLocalWebRTCVCCallObj.gameObject);
         terminal.currentLocalWebRTCVCCallObj = null;
         //Play animation

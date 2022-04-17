@@ -109,17 +109,18 @@ public class WebRTCVoiceChat : MonoBehaviour
         {
             Debug.LogError("At table id" + identifyingId + ", user " + userId + " at chair " + chairId + " has joined: " + state);
             chairsOccupationList[chairId] = state;
-            chairsCurrentSitter[chairId] = userId;
 
             if(userId != myID)
             {
                 if(state) //true = someone's joining, false = someone's leaving.
                 {
                     idsOfConnectedUsers.Add(userId);
+                    chairsCurrentSitter[chairId] = userId;
                 }
                 else
                 {
                     idsOfConnectedUsers.Remove(userId);
+                    chairsCurrentSitter[chairId] = null;
                 }
             }
 
