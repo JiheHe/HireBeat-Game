@@ -107,6 +107,7 @@ public class WebRTCVoiceChat : MonoBehaviour
     {
         if (this.identifyingId == identifyingId)
         {
+            Debug.LogError("At table id" + identifyingId + ", user " + userId + " at chair " + chairId + " has joined: " + state);
             chairsOccupationList[chairId] = state;
             chairsCurrentSitter[chairId] = userId;
 
