@@ -107,17 +107,18 @@ public class WebRTCVCCallObj : MonoBehaviour
                 break;
             case NetEventType.Disconnected:
                 Debug.Log("Someone disconnected");
-                connectionIdWithPlayFabId.Remove(evt.ConnectionId);
-
+                
                 //If by the time this event is called, the occupation of that chair has not been set to false and that chair 
                 //is still occupied by the same user who left, then something must've went wrong! i.e. that user straight up
                 //closed the browser. So we'll do it for him. 
                 string userLeftId = connectionIdWithPlayFabId[evt.ConnectionId];
+                connectionIdWithPlayFabId.Remove(evt.ConnectionId);
                 int chairId = wrtcvc.FindChairIdFromUserId(userLeftId);
                 if (wrtcvc.chairsCurrentSitter[chairId] == userLeftId && wrtcvc.chairsOccupationList[chairId])
                 {
                     wrtcvc.AnnounceChairOccupation(chairId, false, null);
                 }
+
                 break;
             case NetEventType.ServerInitialized:
                 //incoming calls possible
@@ -161,7 +162,7 @@ public class WebRTCVCCallObj : MonoBehaviour
 
         if (username.Contains('-')) //this is not possible for normal msg, so this indicates playfab id... might not even need photon chat for this LOL
         {
-            Debug.LogError("Adding user " + content + " into connectionId to userId dictionary with connectionId " + evt.ConnectionId.ToString());
+            //Debug.LogError("Adding user " + content + " into connectionId to userId dictionary with connectionId " + evt.ConnectionId.ToString());
             string playfabID = content;
             connectionIdWithPlayFabId.Add(evt.ConnectionId, playfabID);
             wrtcvc.chairs[wrtcvc.FindChairIdFromUserId(playfabID)].SetCurrentChairOwner(evt.ConnectionId);
