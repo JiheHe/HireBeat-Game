@@ -161,6 +161,7 @@ public class WebRTCVCCallObj : MonoBehaviour
 
         if (username.Contains('-')) //this is not possible for normal msg, so this indicates playfab id... might not even need photon chat for this LOL
         {
+            Debug.LogError("Adding user " + content + " into connectionId to userId dictionary with connectionId " + evt.ConnectionId.ToString());
             string playfabID = content;
             connectionIdWithPlayFabId.Add(evt.ConnectionId, playfabID);
             wrtcvc.chairs[wrtcvc.FindChairIdFromUserId(playfabID)].SetCurrentChairOwner(evt.ConnectionId);
