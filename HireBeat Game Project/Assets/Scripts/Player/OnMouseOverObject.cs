@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class OnMouseOverObject : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class OnMouseOverObject : MonoBehaviour
     public GameObject playerInfoCard;
 
     public GameObject localSocialSystem;
+
+    private EventSystem _eventSystem;
 
     void Start()
     {
@@ -45,11 +48,18 @@ public class OnMouseOverObject : MonoBehaviour
         playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
 
         localSocialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").gameObject;
+        _eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
     }
 
     // Start is called before the first frame update
     void OnMouseOver()
     {
+        if (_eventSystem.IsPointerOverGameObject())
+        {
+            // we're over a UI element... peace out
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0) && !view.IsMine && !localSocialSystem.activeInHierarchy) //doing so disable user interacting on himself
         {
             //UIController.instantiateProfileViewer(playerInfoCardDisplay); //this is like the one window thing //info card shouldn't be controlled by it...
