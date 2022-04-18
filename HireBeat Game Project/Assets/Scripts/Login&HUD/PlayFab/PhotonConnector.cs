@@ -80,12 +80,12 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
 
             //this part is for updating new joiners with current room private vc distribution info.
-            ExitGames.Client.Photon.Hashtable tableCustomProperties = new ExitGames.Client.Photon.Hashtable();
+            /*ExitGames.Client.Photon.Hashtable tableCustomProperties = new ExitGames.Client.Photon.Hashtable();
             foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
             {
                 table.GetComponent<WebRTCVoiceChat>().UploadCurrentTableCustomProperties(tableCustomProperties);
             }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);
+            PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);*/
         }
     }
 
@@ -102,7 +102,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
 
             //this part is for private room vcs. If master client left, then will the new master client get this and execute this?
-            Debug.LogError("Executing private vc rooms check, third safety");
+            /*Debug.LogError("Executing private vc rooms check, third safety");
             foreach(var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
             {
                 int targetChairId = table.GetComponent<WebRTCVoiceChat>().FindChairIdFromUserId(otherPlayer.UserId);
@@ -111,7 +111,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
                     //Announce that he left for him.
                     table.GetComponent<WebRTCVoiceChat>().AnnounceChairOccupation(targetChairId, false, otherPlayer.UserId);
                 }
-            }
+            }*/
         }
 
         Debug.Log($"Player has left the room {otherPlayer.UserId}");
