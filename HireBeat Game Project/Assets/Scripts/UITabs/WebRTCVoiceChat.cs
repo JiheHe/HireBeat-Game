@@ -6,6 +6,7 @@ using Photon.Realtime;
 using Byn.Awrtc;
 using Byn.Awrtc.Unity;
 using Byn.Unity.Examples;
+using System.Linq;
 
 
 //Use PhotonNetwork.Instantiate to sync this game object!
@@ -45,7 +46,7 @@ public class WebRTCVoiceChat : MonoBehaviour
         foreach(var chair in chairs)
         {
             chair.SetTerminal(this);
-            chairsOccupationList.Add(chair.chairId, false); //then RPC call overwrites occupation boolean hopefully.
+            chairsOccupationList.Add(chair.chairId, false); //then room properties overwrites occupation boolean hopefully.
             chairsCurrentSitter.Add(chair.chairId, null); 
         }
     }
@@ -58,6 +59,8 @@ public class WebRTCVoiceChat : MonoBehaviour
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
 
         canvas.GetComponent<Canvas>().worldCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>().zoomCamera;
+
+        UpdateCurrentTableCustomProperties();
     }
 
     // Update is called once per frame
@@ -157,5 +160,27 @@ public class WebRTCVoiceChat : MonoBehaviour
         {
             chair.HideInterface();
         }
+    }
+
+    //If you are master client then call this.
+    //On new player join, the master client should update all room properties, and the newplayer will update their 
+    //lists accordingly on the callback.
+    public void UploadCurrentTableCustomProperties(ExitGames.Client.Photon.Hashtable tableCustomProperties)
+    {
+        tableCustomProperties["PVCT" + identifyingId + "COL"] = chairsOccupationList;
+        tableCustomProperties["PVCT" + identifyingId + "CCS"] = chairsCurrentSitter;
+    }
+
+    //This is only called once at object instantiation at beginning. Rest of the time it's dealt with through rpc all
+    private void UpdateCurrentTableCustomProperties()
+    {
+        var currProp = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (!currProp.ContainsKey("PVCT" + identifyingId + "COL") || //if you created the room then duhhh
+            !currProp.ContainsKey("PVCT" + identifyingId + "CCS")) return;
+
+        chairsOccupationList = (Dictionary<int, bool>) PhotonNetwork.CurrentRoom.CustomProperties["PVCT" + identifyingId + "COL"];
+        chairsCurrentSitter = (Dictionary<int, string>) PhotonNetwork.CurrentRoom.CustomProperties["PVCT" + identifyingId + "CCS"];
+        idsOfConnectedUsers = chairsCurrentSitter.Values.ToList();
+        idsOfConnectedUsers.RemoveAll(item => item == null);
     }
 }

@@ -99377,7 +99377,7 @@ GameObject:
   - component: {fileID: 1790012799}
   m_Layer: 0
   m_Name: PrivateVoiceChatPrefab
-  m_TagString: Untagged
+  m_TagString: PrivateVCTable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99419,6 +99419,7 @@ MonoBehaviour:
   idsOfConnectedUsers: []
   webRTCVCCallObjPrefab: {fileID: 3868162467148086146, guid: e810f0be902412b408e3177c22c8108f, type: 3}
   currentLocalWebRTCVCCallObj: {fileID: 0}
+  isInVCCall: 0
   identifyingId: 0
   chairs:
   - {fileID: 1205931833}

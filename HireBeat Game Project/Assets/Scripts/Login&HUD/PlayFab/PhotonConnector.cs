@@ -78,6 +78,14 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
             int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
             DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+
+            //this part is for updating new joiners with current room private vc distribution info.
+            ExitGames.Client.Photon.Hashtable tableCustomProperties = new ExitGames.Client.Photon.Hashtable();
+            foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
+            {
+                table.GetComponent<WebRTCVoiceChat>().UploadCurrentTableCustomProperties(tableCustomProperties);
+            }
+            PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);
         }
     }
 
@@ -92,6 +100,18 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
             int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
             DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+
+            //this part is for private room vcs. If master client left, then will the new master client get this and execute this?
+            Debug.LogError("Executing private vc rooms check, third safety");
+            foreach(var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
+            {
+                int targetChairId = table.GetComponent<WebRTCVoiceChat>().FindChairIdFromUserId(otherPlayer.UserId);
+                if (targetChairId != -1) //he is somehow still in a chair! Left abruptly!
+                {
+                    //Announce that he left for him.
+                    table.GetComponent<WebRTCVoiceChat>().AnnounceChairOccupation(targetChairId, false, otherPlayer.UserId);
+                }
+            }
         }
 
         Debug.Log($"Player has left the room {otherPlayer.UserId}");
@@ -110,6 +130,18 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             string myID = GetComponent<PlayFabController>().myID;
             DataBaseCommunicator.UpdateCurrOwnerOfRoom(roomID, myID);
         }
+    }
+
+    // This will be called
+    // - as soon as you entered a room
+    // - whenever someone writes into the room properties
+    // In PUN2 the client who sets properties will trigger the callbacks only when the server sends the PropertiesChanged event.
+    // This event is sent back to the client who sets the properties only if RoomOptions.BroadcastPropsChangeToAll is enabled,
+    // which is the case by default.
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        base.OnRoomPropertiesUpdate(propertiesThatChanged);
+        Debug.Log("Properties updated"); //this statement should be called once if you are not master, twice if you are?
     }
 
     public override void OnDisconnected(DisconnectCause cause) //when you disconnect from game, self announce RPC that you disconnect from VC
