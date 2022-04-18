@@ -218,8 +218,8 @@ public class WebRTCVoiceChat : MonoBehaviour
         var chairsCurrentSitterArray = (string[]) initPropertiesCache["PVCT" + identifyingId + "CCS"];
         for(int i = 0; i < chairsOccupationArray.Length; i++)
         {
-            chairsOccupationList.Add(i, chairsOccupationArray[i]);
-            chairsCurrentSitter.Add(i, chairsCurrentSitterArray[i]);
+            chairsOccupationList[i] = chairsOccupationArray[i];
+            chairsCurrentSitter[i] = chairsCurrentSitterArray[i];
         }
         idsOfConnectedUsers = chairsCurrentSitter.Values.ToList();
         idsOfConnectedUsers.RemoveAll(item => item == null);
