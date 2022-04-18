@@ -71,6 +71,8 @@ public class WebRTCVoiceChat : MonoBehaviour
         {
             StartCoroutine(ReadyToReceiveRoomProperties());
         }*/
+
+        UpdateCurrentTableCustomProperties();
     }
 
     public bool roomPropertiesReady = false; //it's like a one-time thing
