@@ -86,7 +86,6 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
                 table.GetComponent<WebRTCVoiceChat>().UploadCurrentTableCustomProperties(tableCustomProperties);
             }
             PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);
-            Debug.LogError("Newest custom properties uploaded");
         }
     }
 
@@ -103,7 +102,6 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
 
             //this part is for private room vcs. If master client left, then will the new master client get this and execute this?
-            Debug.LogError("Executing private vc rooms check, third safety");
             foreach(var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
             {
                 int targetChairId = table.GetComponent<WebRTCVoiceChat>().FindChairIdFromUserId(otherPlayer.UserId);
@@ -142,7 +140,6 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
         base.OnRoomPropertiesUpdate(propertiesThatChanged);
-        Debug.LogError("Properties updates received OR FIRST JOIN"); //this statement should be called once if you are not master, twice if you are?
 
         foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
         {
@@ -150,7 +147,6 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             {
                 table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady = true;
                 table.GetComponent<WebRTCVoiceChat>().UpdateCurrentTableCustomProperties();
-                //table.GetComponent<WebRTCVoiceChat>().initPropertiesCache = propertiesThatChanged;
             }
         }
     }

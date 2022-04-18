@@ -67,32 +67,9 @@ public class WebRTCVoiceChat : MonoBehaviour
         //If you are the master client, then you are likely a room creator, so no need to do so.
         //If you are not, then you are joining people, and you will receive master client's callback. So can safely start it here.
         //If you are lurkers in the room, then this won't even be called, so no worries.
-        /*if(!PhotonNetwork.IsMasterClient)
-        {
-            StartCoroutine(ReadyToReceiveRoomProperties());
-        }*/
-
-        //UpdateCurrentTableCustomProperties();
     }
 
     public bool roomPropertiesReady = false; //it's like a one-time thing
-    //public ExitGames.Client.Photon.Hashtable initPropertiesCache;
-    /*IEnumerator ReadyToReceiveRoomProperties()
-    {
-        yield return new WaitUntil(() => roomPropertiesReady);
-
-        Debug.LogError("Room properties for this table received and updated");
-        UpdateCurrentTableCustomProperties();
-    }*/
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.G))
-        {
-            UpdateCurrentTableCustomProperties();
-        }
-    }
 
     //This is called by a chair upon user entering
     public void InitializeWebRTCCall()
@@ -102,28 +79,6 @@ public class WebRTCVoiceChat : MonoBehaviour
         currentLocalWebRTCVCCallObj.wrtcvc = this;
         currentLocalWebRTCVCCallObj.StartMyOwnQuickRTCVoiceConnection(myID);
     }
-
-    /*public void UserJoinsPrivateRoomVC(string userID) //joiner calls this
-    {
-        view.RPC("UserJoinsPrivateRoomVCRPC", RpcTarget.All, userID, identifyingId);
-    }
-
-    [PunRPC] //multiple sets can receive this call. Need an identifying id.
-    public void UserJoinsPrivateRoomVCRPC(string userID, int identifyingId)
-    {
-        if(this.identifyingId == identifyingId && userID != myID) idsOfConnectedUsers.Add(userID);
-    }
-
-    public void UserLeavesPrivateRoomVC(string userID) //leaver calls this
-    {
-        view.RPC("UserLeavesPrivateRoomVCRPC", RpcTarget.All, userID, identifyingId);
-    }
-
-    [PunRPC]
-    public void UserLeavesPrivateRoomVCRPC(string userID, int identifyingId)
-    {
-        if(this.identifyingId == identifyingId && userID != myID) idsOfConnectedUsers.Remove(userID);
-    }*/
 
     public void AnnounceChairOccupation(int chairId, bool state, string userId)
     {
@@ -219,15 +174,14 @@ public class WebRTCVoiceChat : MonoBehaviour
 
         //chairsOccupationList = (Dictionary<int, bool>) initPropertiesCache["PVCT" + identifyingId + "COL"];
         //chairsCurrentSitter = (Dictionary<int, string>) initPropertiesCache["PVCT" + identifyingId + "CCS"];
-        Debug.LogError("Updating room private vc status from room properties");
         var chairsOccupationArray = (bool[]) initPropertiesCache["PVCT" + identifyingId + "COL"];
         var chairsCurrentSitterArray = (string[]) initPropertiesCache["PVCT" + identifyingId + "CCS"];
         for(int i = 0; i < chairsOccupationArray.Length; i++)
         {
-            if(chairsOccupationArray[i] != false)
+            /*if(chairsOccupationArray[i] != false)
             {
                 Debug.LogError("Based on current info, user " + chairsCurrentSitterArray[i] + " is sitting on chair " + chairsOccupationArray[i]);
-            }
+            }*/
             chairsOccupationList[i] = chairsOccupationArray[i];
             chairsCurrentSitter[i] = chairsCurrentSitterArray[i];
         }
