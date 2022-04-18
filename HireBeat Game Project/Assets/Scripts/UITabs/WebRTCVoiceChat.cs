@@ -187,8 +187,20 @@ public class WebRTCVoiceChat : MonoBehaviour
     //lists accordingly on the callback.
     public void UploadCurrentTableCustomProperties(ExitGames.Client.Photon.Hashtable tableCustomProperties)
     {
-        tableCustomProperties["PVCT" + identifyingId + "COL"] = chairsOccupationList;
-        tableCustomProperties["PVCT" + identifyingId + "CCS"] = chairsCurrentSitter;
+        //tableCustomProperties["PVCT" + identifyingId + "COL"] = chairsOccupationList;
+        //tableCustomProperties["PVCT" + identifyingId + "CCS"] = chairsCurrentSitter;
+
+        bool[] chairsOccupationArray = new bool[chairs.Length];
+        string[] chairsCurrentSitterArray = new string[chairs.Length];
+        foreach(var kvp in chairsOccupationList)
+        {
+            chairsOccupationArray[kvp.Key] = kvp.Value;
+            chairsCurrentSitterArray[kvp.Key] = chairsCurrentSitter[kvp.Key];
+        }
+
+        //Add instead of directly set? could this be why? but dict should auto add
+        tableCustomProperties["PVCT" + identifyingId + "COL"] = chairsOccupationArray;
+        tableCustomProperties["PVCT" + identifyingId + "CCS"] = chairsCurrentSitterArray;
     }
 
     //This is only called once at object instantiation at beginning. Rest of the time it's dealt with through rpc all
@@ -200,8 +212,15 @@ public class WebRTCVoiceChat : MonoBehaviour
         if (!initPropertiesCache.ContainsKey("PVCT" + identifyingId + "COL") || //if you created the room then duhhh
             !initPropertiesCache.ContainsKey("PVCT" + identifyingId + "CCS")) return;
 
-        chairsOccupationList = (Dictionary<int, bool>) initPropertiesCache["PVCT" + identifyingId + "COL"];
+        //chairsOccupationList = (Dictionary<int, bool>) initPropertiesCache["PVCT" + identifyingId + "COL"];
         //chairsCurrentSitter = (Dictionary<int, string>) initPropertiesCache["PVCT" + identifyingId + "CCS"];
+        var chairsOccupationArray = (bool[]) initPropertiesCache["PVCT" + identifyingId + "COL"];
+        var chairsCurrentSitterArray = (string[]) initPropertiesCache["PVCT" + identifyingId + "CCS"];
+        for(int i = 0; i < chairsOccupationArray.Length; i++)
+        {
+            chairsOccupationList.Add(i, chairsOccupationArray[i]);
+            chairsCurrentSitter.Add(i, chairsCurrentSitterArray[i]);
+        }
         idsOfConnectedUsers = chairsCurrentSitter.Values.ToList();
         idsOfConnectedUsers.RemoveAll(item => item == null);
     }
