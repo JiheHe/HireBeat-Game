@@ -17,7 +17,7 @@ using System.Linq;
 // Can use isMine to delete the rest.
 public class WebRTCVoiceChat : MonoBehaviour
 {
-    public List<string> idsOfConnectedUsers = new List<string>(); //this should EXCLUDE yourself.
+    public List<string> idsOfConnectedUsers = new List<string>(); //this should INCLUDE yourself.
     PhotonView view;
 
     public GameObject webRTCVCCallObjPrefab;
@@ -47,7 +47,7 @@ public class WebRTCVoiceChat : MonoBehaviour
         {
             chair.SetTerminal(this);
             chairsOccupationList.Add(chair.chairId, false); //then room properties overwrites occupation boolean hopefully.
-            chairsCurrentSitter.Add(chair.chairId, null); 
+            chairsCurrentSitter.Add(chair.chairId, "null"); 
         }
     }
 
@@ -138,19 +138,19 @@ public class WebRTCVoiceChat : MonoBehaviour
             //Debug.LogError("At table id" + identifyingId + ", user " + userId + " at chair " + chairId + " has joined: " + state);
             chairsOccupationList[chairId] = state;
 
-            if(userId != myID)
+            //if(userId != myID)
+            //{
+            if(state) //true = someone's joining, false = someone's leaving.
             {
-                if(state) //true = someone's joining, false = someone's leaving.
-                {
-                    idsOfConnectedUsers.Add(userId);
-                    chairsCurrentSitter[chairId] = userId;
-                }
-                else
-                {
-                    idsOfConnectedUsers.Remove(userId);
-                    chairsCurrentSitter[chairId] = null;
-                }
+                idsOfConnectedUsers.Add(userId);
+                chairsCurrentSitter[chairId] = userId;
             }
+            else
+            {
+                idsOfConnectedUsers.Remove(userId);
+                chairsCurrentSitter[chairId] = "null";
+            }
+            //}
 
             CheckStateAndUpdateInterface();
         }
@@ -232,6 +232,6 @@ public class WebRTCVoiceChat : MonoBehaviour
             chairsCurrentSitter[i] = chairsCurrentSitterArray[i];
         }
         idsOfConnectedUsers = chairsCurrentSitter.Values.ToList();
-        idsOfConnectedUsers.RemoveAll(item => item == null);
+        idsOfConnectedUsers.RemoveAll(item => item == "null");
     }
 }

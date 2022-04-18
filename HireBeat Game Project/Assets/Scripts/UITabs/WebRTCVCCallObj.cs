@@ -63,10 +63,13 @@ public class WebRTCVCCallObj : MonoBehaviour
     {
         yield return new WaitUntil(() => serverInitializationReady);
 
-        foreach (string id in wrtcvc.idsOfConnectedUsers) 
+        foreach (string id in wrtcvc.idsOfConnectedUsers)
         {
-            communicator.Connect(addressPrefix + id);
-            Debug.Log("VCAddressSubmitted to " + addressPrefix + id);
+            if (id != myID)
+            {
+                communicator.Connect(addressPrefix + id);
+                Debug.Log("VCAddressSubmitted to " + addressPrefix + id);
+            }
         }
     }
 
