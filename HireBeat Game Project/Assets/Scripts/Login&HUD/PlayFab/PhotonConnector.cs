@@ -141,13 +141,14 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
         base.OnRoomPropertiesUpdate(propertiesThatChanged);
-        Debug.Log("Properties updated"); //this statement should be called once if you are not master, twice if you are?
+        Debug.LogError("Properties updates received OR FIRST JOIN"); //this statement should be called once if you are not master, twice if you are?
 
         foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
         {
             if(!table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady)
             {
                 table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady = true;
+                table.GetComponent<WebRTCVoiceChat>().UpdateCurrentTableCustomProperties();
                 //table.GetComponent<WebRTCVoiceChat>().initPropertiesCache = propertiesThatChanged;
             }
         }

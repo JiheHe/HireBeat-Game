@@ -67,21 +67,21 @@ public class WebRTCVoiceChat : MonoBehaviour
         //If you are the master client, then you are likely a room creator, so no need to do so.
         //If you are not, then you are joining people, and you will receive master client's callback. So can safely start it here.
         //If you are lurkers in the room, then this won't even be called, so no worries.
-        if(!PhotonNetwork.IsMasterClient)
+        /*if(!PhotonNetwork.IsMasterClient)
         {
             StartCoroutine(ReadyToReceiveRoomProperties());
-        }
+        }*/
     }
 
     public bool roomPropertiesReady = false; //it's like a one-time thing
     //public ExitGames.Client.Photon.Hashtable initPropertiesCache;
-    IEnumerator ReadyToReceiveRoomProperties()
+    /*IEnumerator ReadyToReceiveRoomProperties()
     {
         yield return new WaitUntil(() => roomPropertiesReady);
 
         Debug.LogError("Room properties for this table received and updated");
         UpdateCurrentTableCustomProperties();
-    }
+    }*/
 
     // Update is called once per frame
     void Update()
@@ -205,7 +205,7 @@ public class WebRTCVoiceChat : MonoBehaviour
 
     //This is only called once at object instantiation at beginning. Rest of the time it's dealt with through rpc all
     //Can remove caching later. Problem is not caching, but key's value intepretation
-    private void UpdateCurrentTableCustomProperties()
+    public void UpdateCurrentTableCustomProperties()
     {
         //Not using Photon.CurrentRoom.CustomProperties
         var initPropertiesCache = PhotonNetwork.CurrentRoom.CustomProperties;
