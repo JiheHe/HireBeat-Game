@@ -107,7 +107,7 @@ public class WebRTCVoiceChat : MonoBehaviour
     {
         if (this.identifyingId == identifyingId)
         {
-            Debug.LogError("At table id" + identifyingId + ", user " + userId + " at chair " + chairId + " has joined: " + state);
+            //Debug.LogError("At table id" + identifyingId + ", user " + userId + " at chair " + chairId + " has joined: " + state);
             chairsOccupationList[chairId] = state;
 
             if(userId != myID)
@@ -147,6 +147,15 @@ public class WebRTCVoiceChat : MonoBehaviour
             {
                 chairs[kvp.Key].HideInterface();
             }
+        }
+    }
+
+    // Hides all interface on user leaving
+    public void OnLocalDisconnect()
+    {
+        foreach(var chair in chairs)
+        {
+            chair.HideInterface();
         }
     }
 }

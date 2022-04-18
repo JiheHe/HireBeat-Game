@@ -90,6 +90,7 @@ public class WebRTCVCChair : MonoBehaviour
         terminal.AnnounceChairOccupation(chairId, false, terminal.myID);
         Destroy(terminal.currentLocalWebRTCVCCallObj.gameObject);
         terminal.currentLocalWebRTCVCCallObj = null;
+        terminal.OnLocalDisconnect();
         //Play animation
         youThePlayer.GetComponent<Transform>().position = positionEntered;
         youThePlayer.GetComponent<playerController>().enabled = true;
