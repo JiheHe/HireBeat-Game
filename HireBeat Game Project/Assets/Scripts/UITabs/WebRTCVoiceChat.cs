@@ -74,6 +74,7 @@ public class WebRTCVoiceChat : MonoBehaviour
     }
 
     public bool roomPropertiesReady = false; //it's like a one-time thing
+    public ExitGames.Client.Photon.Hashtable initPropertiesCache;
     IEnumerator ReadyToReceiveRoomProperties()
     {
         yield return new WaitUntil(() => roomPropertiesReady);
@@ -193,12 +194,12 @@ public class WebRTCVoiceChat : MonoBehaviour
     //This is only called once at object instantiation at beginning. Rest of the time it's dealt with through rpc all
     private void UpdateCurrentTableCustomProperties()
     {
-        var currProp = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (!currProp.ContainsKey("PVCT" + identifyingId + "COL") || //if you created the room then duhhh
-            !currProp.ContainsKey("PVCT" + identifyingId + "CCS")) return;
+        //Not using Photon.CurrentRoom.CustomProperties
+        if (!initPropertiesCache.ContainsKey("PVCT" + identifyingId + "COL") || //if you created the room then duhhh
+            !initPropertiesCache.ContainsKey("PVCT" + identifyingId + "CCS")) return;
 
-        chairsOccupationList = (Dictionary<int, bool>) PhotonNetwork.CurrentRoom.CustomProperties["PVCT" + identifyingId + "COL"];
-        chairsCurrentSitter = (Dictionary<int, string>) PhotonNetwork.CurrentRoom.CustomProperties["PVCT" + identifyingId + "CCS"];
+        chairsOccupationList = (Dictionary<int, bool>) initPropertiesCache["PVCT" + identifyingId + "COL"];
+        chairsCurrentSitter = (Dictionary<int, string>) initPropertiesCache["PVCT" + identifyingId + "CCS"];
         idsOfConnectedUsers = chairsCurrentSitter.Values.ToList();
         idsOfConnectedUsers.RemoveAll(item => item == null);
     }

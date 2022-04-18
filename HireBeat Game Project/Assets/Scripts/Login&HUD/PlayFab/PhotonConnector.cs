@@ -145,7 +145,11 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
 
         foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
         {
-            table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady = true;
+            if(!table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady)
+            {
+                table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady = true;
+                table.GetComponent<WebRTCVoiceChat>().initPropertiesCache = propertiesThatChanged;
+            }
         }
     }
 
