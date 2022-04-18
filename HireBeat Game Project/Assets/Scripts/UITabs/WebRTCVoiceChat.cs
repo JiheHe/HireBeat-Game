@@ -214,10 +214,15 @@ public class WebRTCVoiceChat : MonoBehaviour
 
         //chairsOccupationList = (Dictionary<int, bool>) initPropertiesCache["PVCT" + identifyingId + "COL"];
         //chairsCurrentSitter = (Dictionary<int, string>) initPropertiesCache["PVCT" + identifyingId + "CCS"];
+        Debug.LogError("Updating room private vc status from room properties");
         var chairsOccupationArray = (bool[]) initPropertiesCache["PVCT" + identifyingId + "COL"];
         var chairsCurrentSitterArray = (string[]) initPropertiesCache["PVCT" + identifyingId + "CCS"];
         for(int i = 0; i < chairsOccupationArray.Length; i++)
         {
+            if(chairsOccupationArray[i] != false)
+            {
+                Debug.LogError("Based on current info, user " + chairsCurrentSitterArray[i] + " is sitting on chair " + chairsOccupationArray[i]);
+            }
             chairsOccupationList[i] = chairsOccupationArray[i];
             chairsCurrentSitter[i] = chairsCurrentSitterArray[i];
         }
