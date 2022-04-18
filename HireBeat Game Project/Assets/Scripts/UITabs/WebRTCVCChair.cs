@@ -118,6 +118,8 @@ public class WebRTCVCChair : MonoBehaviour
 
     public void OnTriggerExit2D(Collider2D collision)
     {
+        if (collision.gameObject == null) return; //Photon can destroy the object before this is called if user jumps 
+
         //Join button won't be active if we already clicked on it via joining
         //It only stays active if we didn't click on it.
         if(collision.GetComponentInParent<PhotonView>().IsMine && joinButton.gameObject.activeSelf)
