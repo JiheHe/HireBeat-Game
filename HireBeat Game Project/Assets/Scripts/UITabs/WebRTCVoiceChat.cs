@@ -72,7 +72,7 @@ public class WebRTCVoiceChat : MonoBehaviour
             StartCoroutine(ReadyToReceiveRoomProperties());
         }*/
 
-        UpdateCurrentTableCustomProperties();
+        //UpdateCurrentTableCustomProperties();
     }
 
     public bool roomPropertiesReady = false; //it's like a one-time thing
@@ -88,7 +88,10 @@ public class WebRTCVoiceChat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            UpdateCurrentTableCustomProperties();
+        }
     }
 
     //This is called by a chair upon user entering

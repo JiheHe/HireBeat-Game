@@ -86,6 +86,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
                 table.GetComponent<WebRTCVoiceChat>().UploadCurrentTableCustomProperties(tableCustomProperties);
             }
             PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);
+            Debug.LogError("Newest custom properties uploaded");
         }
     }
 
