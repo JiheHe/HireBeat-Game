@@ -80,12 +80,12 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
 
             //this part is for updating new joiners with current room private vc distribution info.
-            /*ExitGames.Client.Photon.Hashtable tableCustomProperties = new ExitGames.Client.Photon.Hashtable();
+            ExitGames.Client.Photon.Hashtable tableCustomProperties = new ExitGames.Client.Photon.Hashtable();
             foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
             {
                 table.GetComponent<WebRTCVoiceChat>().UploadCurrentTableCustomProperties(tableCustomProperties);
             }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);*/
+            PhotonNetwork.CurrentRoom.SetCustomProperties(tableCustomProperties);
         }
     }
 

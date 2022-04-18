@@ -60,7 +60,7 @@ public class WebRTCVoiceChat : MonoBehaviour
 
         canvas.GetComponent<Canvas>().worldCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>().zoomCamera;
 
-        UpdateCurrentTableCustomProperties();
+        //UpdateCurrentTableCustomProperties();
     }
 
     // Update is called once per frame
