@@ -148,7 +148,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             if(!table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady)
             {
                 table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady = true;
-                table.GetComponent<WebRTCVoiceChat>().initPropertiesCache = propertiesThatChanged;
+                //table.GetComponent<WebRTCVoiceChat>().initPropertiesCache = propertiesThatChanged;
             }
         }
     }
