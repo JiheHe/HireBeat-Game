@@ -60,7 +60,26 @@ public class WebRTCVoiceChat : MonoBehaviour
 
         canvas.GetComponent<Canvas>().worldCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>().zoomCamera;
 
-        //UpdateCurrentTableCustomProperties();
+        //UpdateCurrentTableCustomProperties(); //This line causes the disconnection error...
+        //presumably should be called on RoomPropertiesChanged...
+
+        //Since this method is only called ONCE upon first joining...
+        //If you are the master client, then you are likely a room creator, so no need to do so.
+        //If you are not, then you are joining people, and you will receive master client's callback. So can safely start it here.
+        //If you are lurkers in the room, then this won't even be called, so no worries.
+        if(!PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(ReadyToReceiveRoomProperties());
+        }
+    }
+
+    public bool roomPropertiesReady = false; //it's like a one-time thing
+    IEnumerator ReadyToReceiveRoomProperties()
+    {
+        yield return new WaitUntil(() => roomPropertiesReady);
+
+        Debug.LogError("Room properties for this table received and updated");
+        UpdateCurrentTableCustomProperties();
     }
 
     // Update is called once per frame

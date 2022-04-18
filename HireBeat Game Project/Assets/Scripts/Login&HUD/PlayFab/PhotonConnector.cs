@@ -142,6 +142,11 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     {
         base.OnRoomPropertiesUpdate(propertiesThatChanged);
         Debug.Log("Properties updated"); //this statement should be called once if you are not master, twice if you are?
+
+        foreach (var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
+        {
+            table.GetComponent<WebRTCVoiceChat>().roomPropertiesReady = true;
+        }
     }
 
     public override void OnDisconnected(DisconnectCause cause) //when you disconnect from game, self announce RPC that you disconnect from VC
