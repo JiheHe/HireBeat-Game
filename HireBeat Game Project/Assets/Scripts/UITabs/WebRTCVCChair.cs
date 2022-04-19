@@ -7,7 +7,7 @@ using Photon.Pun;
 
 public class WebRTCVCChair : MonoBehaviour
 {
-    public ConnectionId currentLocalConnectionId;
+    public ConnectionId currentLocalConnectionId = ConnectionId.INVALID; //this exists locally
 
     //Chair properties
     public int chairId; //assign this via inspector, unique for each!
@@ -26,6 +26,11 @@ public class WebRTCVCChair : MonoBehaviour
     public Button leaveButton;
     public Button joinButton;
 
+    public Transform chairCanvas;
+    public GameObject connectLoadingCirclePrefab;
+    public Vector2 connectLoadingCirclePosition; //this is the local position relative to chair canvas.
+    private GameObject loaderObj; //this is the local pointer
+
     //This is called once at the beginning of initialization
     public void SetTerminal(WebRTCVoiceChat wrtcvc)
     {
@@ -39,6 +44,7 @@ public class WebRTCVCChair : MonoBehaviour
         volumeControl.gameObject.SetActive(true); 
         muteSelfToggle.transform.parent.gameObject.SetActive(false);
         leaveButton.gameObject.SetActive(false);
+        CloseConnectionLoadingCue();
     }
     //This is called if you join this chair
     public void SetCurrentChairOwner()
@@ -91,6 +97,7 @@ public class WebRTCVCChair : MonoBehaviour
     //On leave button pressed.
     public void LeaveThisChair()
     {
+        terminal.iAmConnected = false;
         terminal.AnnounceChairOccupation(chairId, false, terminal.myID);
         Destroy(terminal.currentLocalWebRTCVCCallObj.gameObject);
         terminal.currentLocalWebRTCVCCallObj = null;
@@ -108,6 +115,22 @@ public class WebRTCVCChair : MonoBehaviour
         volumeControl.gameObject.SetActive(false);
         muteSelfToggle.transform.parent.gameObject.SetActive(false);
         leaveButton.gameObject.SetActive(false);
+        CloseConnectionLoadingCue();
+    }
+
+    public void StartConnectionLoadingCue()
+    {
+        if(loaderObj != null) Destroy(loaderObj);
+        if(currentLocalConnectionId == ConnectionId.INVALID) //only invalid if either self (won't be called on self), or webrtc call hasn't arrived yet.
+        {
+            loaderObj = Instantiate(connectLoadingCirclePrefab, chairCanvas);
+            loaderObj.transform.localPosition = connectLoadingCirclePosition;
+        }
+    }
+
+    public void CloseConnectionLoadingCue()
+    {
+        if(loaderObj != null) Destroy(loaderObj);
     }
 
     //To avoid other users triggering the below, need to make sure it's you!

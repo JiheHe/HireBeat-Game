@@ -18,6 +18,7 @@ using System.Linq;
 public class WebRTCVoiceChat : MonoBehaviour
 {
     public List<string> idsOfConnectedUsers = new List<string>(); //this should INCLUDE yourself.
+    public bool iAmConnected = false; //this is more efficient than contains.
     PhotonView view;
 
     public GameObject webRTCVCCallObjPrefab;
@@ -99,11 +100,32 @@ public class WebRTCVoiceChat : MonoBehaviour
             {
                 idsOfConnectedUsers.Add(userId);
                 chairsCurrentSitter[chairId] = userId;
+
+                //hopefully webrtc arrives after photon rpc... else coroutine it
+                if (iAmConnected && userId != myID) //if someone's joining your table! 
+                {
+                    chairs[chairId].StartConnectionLoadingCue(); 
+                }
+                else if(userId == myID) //you are joining someone else's table!
+                {
+                    iAmConnected = true; 
+
+                    foreach(var kvp in chairsOccupationList)
+                    {
+                        if (kvp.Value && chairsCurrentSitter[kvp.Key] != myID) chairs[kvp.Key].StartConnectionLoadingCue(); //if is occupied, then set up a loading cueu
+                    }
+                }
             }
             else
             {
                 idsOfConnectedUsers.Remove(userId);
                 chairsCurrentSitter[chairId] = "null";
+
+                if (iAmConnected) //if someone's joining your table!
+                {
+                    chairs[chairId].CloseConnectionLoadingCue(); //if someone leaves before loading finishes
+                    chairs[chairId].currentLocalConnectionId = ConnectionId.INVALID;
+                }
             }
             //}
 
@@ -136,9 +158,10 @@ public class WebRTCVoiceChat : MonoBehaviour
     // Hides all interface on user leaving
     public void OnLocalDisconnect()
     {
-        foreach(var chair in chairs)
+        foreach (var chair in chairs)
         {
             chair.HideInterface();
+            chair.currentLocalConnectionId = ConnectionId.INVALID;
         }
     }
 
