@@ -979,7 +979,7 @@ public class RoomSystemPanelScript : MonoBehaviour
         {
             playerObj.GetComponent<playerController>().enabled = true;
             playerCamera.enabled = true;
-            playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
+            playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
         }
         UIController.hasOneOn = false;
     }

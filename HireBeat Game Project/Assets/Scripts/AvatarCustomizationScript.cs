@@ -252,7 +252,7 @@ public class AvatarCustomizationScript : MonoBehaviour
         playerCamera.turnOffUICamera();
         playerObj.SetActive(true);
         UIController.hasOneOn = false;
-        playerObj.GetComponent<playerController>().isMoving = false;
+        playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE;
     }
 
     public void grabFromMainComp()

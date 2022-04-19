@@ -75,8 +75,9 @@ public class WebRTCVCChair : MonoBehaviour
             //Play animation
             joinButton.gameObject.SetActive(false);
             youThePlayer = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>().zoomCamera.transform.parent.gameObject;
+            youThePlayer.GetComponent<playerController>().SitDownFacingTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             youThePlayer.GetComponent<playerController>().enabled = false;
-            youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
+            //youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             youThePlayer.transform.position = GetComponent<Transform>().position;
             Debug.Log("Joining Private VC");
             //Join chair
@@ -96,6 +97,7 @@ public class WebRTCVCChair : MonoBehaviour
         //Play animation
         youThePlayer.GetComponent<Transform>().position = positionEntered;
         youThePlayer.GetComponent<playerController>().enabled = true;
+        youThePlayer.GetComponent<playerController>().LeaveSeat();
         youThePlayer = null;
         Debug.Log("Leaving Private VC");
     }

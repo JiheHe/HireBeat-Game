@@ -8,7 +8,13 @@ public class playerController : MonoBehaviour
     public float moveSpeed;
     public LayerMask solidObjectsLayer; //might use in the future for collision
 
-    public bool isMoving;
+    // public bool isMoving;
+    //Instead of is moving, going to use an action int:
+    // 0 = idle, 1 = moving, 2 = sitting.
+    public int actionParem;
+    public enum CharActionCode : int { IDLE, MOVING, SITTING };
+
+
     private Vector2 input;
 
     //private Animator animator;
@@ -37,7 +43,7 @@ public class playerController : MonoBehaviour
     {
         if (view.IsMine)
         {
-            if (!isMoving)
+            if(actionParem == (int)CharActionCode.IDLE) //Don't need to read if you are sitting I think.
             {
                 input.x = Input.GetAxisRaw("Horizontal");
                 input.y = Input.GetAxisRaw("Vertical");
@@ -69,16 +75,17 @@ public class playerController : MonoBehaviour
                         StartCoroutine(Move(targetPos));
                 }
             }
+
             foreach (Animator animator in animators)
             {
-                animator.SetBool("isMoving", isMoving);
+                animator.SetInteger("actionParem", actionParem);
             }
         }
     }
 
     IEnumerator Move(Vector3 targetPos)
     {
-        isMoving = true;
+        actionParem = (int)CharActionCode.MOVING;
 
         while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
         {
@@ -87,7 +94,7 @@ public class playerController : MonoBehaviour
         }
         transform.position = targetPos;
 
-        isMoving = false;
+        actionParem = (int)CharActionCode.IDLE; 
     }
 
     private bool IsWalkable(Vector3 targetPos)
@@ -107,6 +114,24 @@ public class playerController : MonoBehaviour
             animator.SetFloat("moveX", x);
             animator.SetFloat("moveY", y);
         }
+    }
+
+    public void SitDownFacingTowards(float x, float y)
+    {
+        actionParem = (int)CharActionCode.SITTING;
+
+        //Need to set action parem updates here, else playerController set to false immediately after sitting so update won't run!
+        foreach (Animator animator in animators)
+        {
+            animator.SetInteger("actionParem", actionParem);
+            animator.SetFloat("moveX", x);
+            animator.SetFloat("moveY", y);
+        }
+    }
+
+    public void LeaveSeat()
+    {
+        actionParem = (int)CharActionCode.IDLE;
     }
 
 }
