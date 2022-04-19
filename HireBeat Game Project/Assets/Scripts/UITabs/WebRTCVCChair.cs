@@ -12,6 +12,7 @@ public class WebRTCVCChair : MonoBehaviour
     //Chair properties
     public int chairId; //assign this via inspector, unique for each!
     public Vector2 userInChairTurnOrientation;
+    public Vector3 userSitPositionOffset;
 
     //These two variables are local, so they'll only track you!
     public Vector2 positionEntered = new Vector2(0, 0); //this keeps track of user entering position to connect / disconnect him
@@ -78,7 +79,7 @@ public class WebRTCVCChair : MonoBehaviour
             youThePlayer.GetComponent<playerController>().SitDownFacingTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             youThePlayer.GetComponent<playerController>().enabled = false;
             //youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
-            youThePlayer.transform.position = GetComponent<Transform>().position;
+            youThePlayer.transform.position = GetComponent<Transform>().position -  userSitPositionOffset;
             Debug.Log("Joining Private VC");
             //Join chair
             terminal.AnnounceChairOccupation(chairId, true, terminal.myID);

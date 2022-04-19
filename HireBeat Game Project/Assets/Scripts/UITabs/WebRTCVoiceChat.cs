@@ -35,7 +35,7 @@ public class WebRTCVoiceChat : MonoBehaviour
     //Basically each chair object has an "isOccupied" boolean. If someone sits on that chair then use this Dict to set it occupied.
     public Dictionary<int, bool> chairsOccupationList = new Dictionary<int, bool>(); //4 chairs per table rn.
     public Dictionary<int, string> chairsCurrentSitter = new Dictionary<int, string>(); //chair id to user id.
-    public WebRTCVCChair[] chairs = new WebRTCVCChair[4]; //id should be in order: 0, 1, 2, 3, same as index.
+    public WebRTCVCChair[] chairs; //id should be in order: 0, 1, 2, 3, same as index. Can add more chairs via inspector
 
     public string myID;
 
