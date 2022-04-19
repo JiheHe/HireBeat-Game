@@ -67,6 +67,8 @@ public class WebRTCVCChair : MonoBehaviour
         if(terminal.chairsOccupationList[chairId])
         {
             Debug.Log("Sorry, this chair is already occupied.");
+            //Hide join button
+            joinButton.gameObject.SetActive(false);
         }
         else
         {
