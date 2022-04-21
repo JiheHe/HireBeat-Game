@@ -85,9 +85,9 @@ public class WebRTCVCChair : MonoBehaviour
             youThePlayer.GetComponent<playerController>().SitDownFacingTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             youThePlayer.GetComponent<playerController>().enabled = false;
             //youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
-            //youThePlayer.transform.position = GetComponent<Transform>().position -  userSitPositionOffset;
-            var step = 2 * Time.deltaTime; //speed = first var
-            StartCoroutine(MakeCharUploadInPlaceMoving(GetComponent<Transform>().position - userSitPositionOffset, step));
+            youThePlayer.transform.position = GetComponent<Transform>().position -  userSitPositionOffset;
+            //var step = 2 * Time.deltaTime; //speed = first var
+            //StartCoroutine(MakeCharUploadInPlaceMoving(GetComponent<Transform>().position - userSitPositionOffset, step));
             Debug.Log("Joining Private VC");
             //Join chair
             terminal.AnnounceChairOccupation(chairId, true, terminal.myID);
@@ -96,7 +96,7 @@ public class WebRTCVCChair : MonoBehaviour
         }
     }
 
-    IEnumerator MakeCharUploadInPlaceMoving(Vector3 targetPosition, float step)
+    /*IEnumerator MakeCharUploadInPlaceMoving(Vector3 targetPosition, float step)
     {
         yield return new WaitForEndOfFrame();
 
@@ -111,7 +111,7 @@ public class WebRTCVCChair : MonoBehaviour
             Debug.LogError("Movement done!");
             yield return null;
         }
-    }
+    }*/
 
     //On leave button pressed.
     public void LeaveThisChair()
