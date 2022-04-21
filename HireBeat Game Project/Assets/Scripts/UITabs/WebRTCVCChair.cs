@@ -86,7 +86,7 @@ public class WebRTCVCChair : MonoBehaviour
             youThePlayer.GetComponent<playerController>().enabled = false;
             //youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             //youThePlayer.transform.position = GetComponent<Transform>().position -  userSitPositionOffset;
-            var step = 20 * Time.deltaTime; //speed = first var
+            var step = 2 * Time.deltaTime; //speed = first var
             StartCoroutine(MakeCharUploadInPlaceMoving(GetComponent<Transform>().position - userSitPositionOffset, step));
             Debug.Log("Joining Private VC");
             //Join chair
