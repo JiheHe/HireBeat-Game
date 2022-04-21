@@ -85,7 +85,7 @@ public class playerController : MonoBehaviour
 
     public void MoveToPosition(Vector3 newPosition)
     {
-        view.RPC("MoveToPositionRPC", RpcTarget.All, newPosition);
+        view.RPC("MoveToPositionRPC", RpcTarget.All, newPosition); //Can do all here, because new joiners's position is precise.
     }
 
     [PunRPC]

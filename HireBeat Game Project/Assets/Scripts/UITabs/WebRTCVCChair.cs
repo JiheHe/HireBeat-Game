@@ -84,11 +84,7 @@ public class WebRTCVCChair : MonoBehaviour
             youThePlayer = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>().zoomCamera.transform.parent.gameObject;
             youThePlayer.GetComponent<playerController>().SitDownFacingTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             youThePlayer.GetComponent<playerController>().enabled = false;
-            //youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
-            //youThePlayer.transform.position = GetComponent<Transform>().position -  userSitPositionOffset;
             youThePlayer.GetComponent<playerController>().MoveToPosition(GetComponent<Transform>().position - userSitPositionOffset);
-            //var step = 2 * Time.deltaTime; //speed = first var
-            //StartCoroutine(MakeCharUploadInPlaceMoving(GetComponent<Transform>().position - userSitPositionOffset, step));
             Debug.Log("Joining Private VC");
             //Join chair
             terminal.AnnounceChairOccupation(chairId, true, terminal.myID);
@@ -96,23 +92,6 @@ public class WebRTCVCChair : MonoBehaviour
             SetCurrentChairOwner();
         }
     }
-
-    /*IEnumerator MakeCharUploadInPlaceMoving(Vector3 targetPosition, float step)
-    {
-        yield return new WaitForEndOfFrame();
-
-        if (youThePlayer.transform.position != targetPosition)
-        {
-            youThePlayer.transform.position = Vector2.MoveTowards(youThePlayer.transform.position, targetPosition, step);
-            yield return null;
-            StartCoroutine(MakeCharUploadInPlaceMoving(targetPosition, step));
-        }
-        else
-        {
-            Debug.LogError("Movement done!");
-            yield return null;
-        }
-    }*/
 
     //On leave button pressed.
     public void LeaveThisChair()
