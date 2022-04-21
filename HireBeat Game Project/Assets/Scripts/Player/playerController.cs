@@ -83,6 +83,17 @@ public class playerController : MonoBehaviour
         }
     }
 
+    public void MoveToPosition(Vector3 newPosition)
+    {
+        view.RPC("MoveToPositionRPC", RpcTarget.All, newPosition);
+    }
+
+    [PunRPC]
+    public void MoveToPositionRPC(Vector3 newPosition)
+    {
+        gameObject.transform.position = newPosition;
+    }
+
     IEnumerator Move(Vector3 targetPos)
     {
         actionParem = (int)CharActionCode.MOVING;
