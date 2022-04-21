@@ -86,10 +86,8 @@ public class WebRTCVCChair : MonoBehaviour
             youThePlayer.GetComponent<playerController>().enabled = false;
             //youThePlayer.GetComponent<playerController>().ForceTurnTowards(userInChairTurnOrientation.x, userInChairTurnOrientation.y);
             //youThePlayer.transform.position = GetComponent<Transform>().position -  userSitPositionOffset;
-            var step = 1 * Time.deltaTime; //speed = first var
-            youThePlayer.transform.position = Vector2.MoveTowards(youThePlayer.transform.position,
-                GetComponent<Transform>().position - userSitPositionOffset, step);
-            //StartCoroutine(MakeCharUploadInPlaceMoving(200));
+            var step = 20 * Time.deltaTime; //speed = first var
+            StartCoroutine(MakeCharUploadInPlaceMoving(GetComponent<Transform>().position - userSitPositionOffset, step));
             Debug.Log("Joining Private VC");
             //Join chair
             terminal.AnnounceChairOccupation(chairId, true, terminal.myID);
@@ -98,22 +96,22 @@ public class WebRTCVCChair : MonoBehaviour
         }
     }
 
-    /*IEnumerator MakeCharUploadInPlaceMoving(int numTimes)
+    IEnumerator MakeCharUploadInPlaceMoving(Vector3 targetPosition, float step)
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForEndOfFrame();
 
-        if (numTimes <= 0)
+        if (youThePlayer.transform.position != targetPosition)
         {
+            youThePlayer.transform.position = Vector2.MoveTowards(youThePlayer.transform.position, targetPosition, step);
             yield return null;
+            StartCoroutine(MakeCharUploadInPlaceMoving(targetPosition, step));
         }
         else
         {
-            youThePlayer.transform.position = Vector2.MoveTowards(youThePlayer.transform.position,
-                GetComponent<Transform>().position - userSitPositionOffset, 0);
+            Debug.LogError("Movement done!");
             yield return null;
-            StartCoroutine(MakeCharUploadInPlaceMoving(numTimes-1));
         }
-    }*/
+    }
 
     //On leave button pressed.
     public void LeaveThisChair()
