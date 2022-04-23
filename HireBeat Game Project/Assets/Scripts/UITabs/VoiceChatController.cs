@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class VoiceChatController : MonoBehaviour
 {
+    public InGameUIController gameUIController = null; //assigned by that object at first start call.
+
     public GameObject connectButton;
     public GameObject disconnectButton;
 
@@ -73,6 +75,7 @@ public class VoiceChatController : MonoBehaviour
     public void OnTabClose()
     {
         gameObject.SetActive(false);
+        gameUIController.hasOneOn = false;
     }
 
     public void OnConnectPressed()

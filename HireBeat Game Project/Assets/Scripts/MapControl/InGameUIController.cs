@@ -7,6 +7,7 @@ public class InGameUIController : MonoBehaviour
     public bool hasOneOn;
     public GameObject characterCustomizationUI;
     public GameObject backgroundChangerUI;
+    public GameObject voiceChatPanelUI;
     public int zoneNumber;
     // Start is called before the first frame update
 
@@ -23,6 +24,12 @@ public class InGameUIController : MonoBehaviour
                 else if (Input.GetKeyDown(KeyCode.E))
                 {
                     instantiateBackgroundChanger();
+                }
+                break;
+            case 2: //Voice chat panel activator
+                if(Input.GetKeyDown(KeyCode.E))
+                {
+                    ActivateGlobalVoiceChatPanel();
                 }
                 break;
         }
@@ -43,6 +50,16 @@ public class InGameUIController : MonoBehaviour
         {
             hasOneOn = true;
             Instantiate(backgroundChangerUI, new Vector3(0, 0, 0), Quaternion.identity);
+        }
+    }
+    public void ActivateGlobalVoiceChatPanel()
+    {
+        if(!hasOneOn)
+        {
+            hasOneOn = true;
+            voiceChatPanelUI.SetActive(true);
+            if (voiceChatPanelUI.GetComponent<VoiceChatController>().gameUIController == null)
+                voiceChatPanelUI.GetComponent<VoiceChatController>().gameUIController = this;
         }
     }
 }
