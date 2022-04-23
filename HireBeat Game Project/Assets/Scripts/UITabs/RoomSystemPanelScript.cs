@@ -89,6 +89,9 @@ public class RoomSystemPanelScript : MonoBehaviour
     public GameObject playerSearchDisplayPrefab; //this is the prefab for each user display in search results
     public List<InvitePlayerToRoomTab> playerTabsOnDisplay = new List<InvitePlayerToRoomTab>();
 
+    //has to be >16 char! to distinguish between usernames, intialized by PD
+    public List<string> commonRoomNames;
+
     DataBaseCommunicator dbc = null; //the real time database!
     // Start is called before the first frame update
     void Start()
@@ -99,6 +102,7 @@ public class RoomSystemPanelScript : MonoBehaviour
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
 
         listOfInvitedRoomIds = PersistentData.listOfInvitedRoomIds;
+        commonRoomNames = PersistentData.commonRoomNamesAndRelatedSceneName.Keys.ToList();
     }
 
     public void OnEnable() //called everytime when panel gets active
@@ -282,6 +286,11 @@ public class RoomSystemPanelScript : MonoBehaviour
             }
             playerTabsOnDisplay.Clear();
 
+            //a temp var from earlier, stores common room. No need for data base
+            foreach (var roomName in commonRoomsInvited) 
+            {
+                AddNewRoomToList(roomName, null, 69, true, true, true, true);
+            }
             //in invite tab! //currently not sorted because I think there's no need? //since they are invites, give each accept/decline buttons as well.
             foreach (var room in dbRooms)
             {
@@ -354,13 +363,14 @@ public class RoomSystemPanelScript : MonoBehaviour
     }
 
     private void AddNewRoomToList(string roomName, string ownerID, int numMembers, bool isPublic, bool isInvited = false,
-        bool inInviteTab = false) //this uses roomName
+        bool inInviteTab = false, bool isCommonRoom = false) //this uses roomName
     {
         var newPlayerRoomDisplay = Instantiate(playerRoomDisplayPrefab, playerRoomDisplayPanel);
         //newVCRoomDisplay.name = prefix + roomName; //no need for prefix...
         //if (invitedRoomList.Contains(roomName)) newVCRoomDisplay.GetComponent<VidCDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, currOwnerID, true); //invited!
-        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID, isInvited, inInviteTab);
-        playerRoomList.Add(ownerID, new PlayerRoomInfo(roomName, numMembers, isPublic, newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>()));
+        newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>().SetRoomInfo(roomName, numMembers, isPublic, ownerID, isInvited, inInviteTab, isCommonRoom);
+        if(ownerID != null) playerRoomList.Add(ownerID, new PlayerRoomInfo(roomName, numMembers, isPublic, newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>()));
+        else playerRoomList.Add(roomName, new PlayerRoomInfo(roomName, numMembers, isPublic, newPlayerRoomDisplay.GetComponent<PlayerRoomDisplayTab>()));
     }
 
     private void UpdateRoomInfo(string roomId, string roomName, int numMembers) 
@@ -510,7 +520,8 @@ public class RoomSystemPanelScript : MonoBehaviour
             playerTabsOnDisplay.Clear();
         }
         //Then check if there are invited rooms. If yes then bye bye too.
-        if(inInvitedRoomsView) 
+        //Also check if there any common rooms in display. If yes remove all. Remember: common rooms are special!
+        if (inInvitedRoomsView || playerRoomList.Keys.Intersect(commonRoomNames).Any()) 
         {
             foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
             {
@@ -647,9 +658,22 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
         if(!roomInfoPanel.activeSelf)
         {
-            dbc.GetCurrentRoomInfo(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM, "CurrentRoomInfo");
+            if (!commonRoomNames.Contains(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM)) //if you are not in a common room!
+            {
+                dbc.GetCurrentRoomInfo(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM, "CurrentRoomInfo");
+            }
             //roomNameTxt.text = PhotonNetwork.CurrentRoom.Name; //Don't do this! Actual Photon room name will be playfab id since it's fixed.
             //Haven't set a cap on max player per room count yet, current it is 5. In MainMenu script.
+            else //you are a common room
+            {
+                ownRoomSettingsPanel.SetActive(false); //this is a sneaky way to get user click n call refresh
+
+                roomNameTxt.text = PersistentData.TRUEOWNERID_OF_CURRENT_ROOM; //this is the common room name here.
+                numPlayersInRoomTxt.text = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
+                roomAccessTxt.text = "Open to Public"; //common room is always open to public
+
+                roomInfoPanel.SetActive(true);
+            }
         }
         else
         {
@@ -758,11 +782,15 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
     }
 
+    List<string> commonRoomsInvited;
     public void OnCheckInviteTabPressed()
     {
         //dbc.GrabAllInvitedRoomNameFromGivenIds(listOfInvitedRoomIds);
         string query;
         SQL4Unity.SQLParameter parameters = new SQL4Unity.SQLParameter();
+
+        commonRoomsInvited = this.listOfInvitedRoomIds.Intersect(commonRoomNames).ToList();
+        var listOfInvitedRoomIds = this.listOfInvitedRoomIds.Except(commonRoomsInvited).ToList();
 
         if (listOfInvitedRoomIds.Count < 2) //1 or 0
         {
@@ -841,6 +869,32 @@ public class RoomSystemPanelScript : MonoBehaviour
     {
         if (!changedDueToDBCheck) dbc.ChangeRoomPublicStatus(myID, selfRoomPublicStatus.isOn);
         else changedDueToDBCheck = false;
+    }
+
+    //Every user has the same room name, and there's no need to track numPlayers so no need for data base (encourage joining).
+    //So just straight up join the rooms! Make sure dealing with personal room operations exclude these 
+    //Distinguishing factors? Either use a boolean "inCommonRoom" or length of room cuz username <= 16. Or even " " in room names!
+    //Trying room name > 16: "Common Room: Technology", not bad eh? Don't think there's a need for inCommonRoom then.
+    //But if want to add that in the future, use it alongside PersistentData static boolean.
+    public void OnCommonRoomButtonPressed() //should this show in invite tab if you are invited?
+    {
+        //First, remove everything.
+        foreach (var roomTabObj in playerRoomList.Values.Select(i => i.roomDisplayTab.gameObject))
+        {
+            Destroy(roomTabObj);
+        }
+        playerRoomList.Clear();
+        foreach (var playerTabObj in playerTabsOnDisplay.Select(i => i.gameObject))
+        {
+            Destroy(playerTabObj);
+        }
+        playerTabsOnDisplay.Clear();
+
+        // Second, display all common rooms.
+        foreach (string roomName in commonRoomNames)
+        {
+            AddNewRoomToList(roomName, null, 69, true, false, false, true);
+        }
     }
 
     public void OnRefreshButtonPressed()

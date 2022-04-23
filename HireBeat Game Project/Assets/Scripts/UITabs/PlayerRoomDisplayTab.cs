@@ -13,19 +13,31 @@ public class PlayerRoomDisplayTab : MonoBehaviour
     public Button rejectButton; //not active by default.
     string roomOwnerId; //idk maybe do a profile show with this? //wait this is good 
 
-    public void SetRoomInfo(string roomOwnerName, int numMembers, bool isPublic, string roomOwnerId, bool isInvited, bool inInviteTab)
+    public void SetRoomInfo(string roomOwnerName, int numMembers, bool isPublic, 
+        string roomOwnerId, bool isInvited, bool inInviteTab, bool isCommonRoom)
     {
         this.roomOwnerName.text = roomOwnerName;
-        this.numMembers.text = numMembers.ToString();
-        if (isPublic)
+        if(!isCommonRoom) //if it's a common room, then no need for num members, public access, or roomOwnerId.
         {
-            publicAccess.text = "Public"; //this basically show up in all tabs
+            this.numMembers.text = numMembers.ToString();
+            if (isPublic)
+            {
+                publicAccess.text = "Public"; //this basically show up in all tabs
+            }
+            else
+            {
+                publicAccess.text = "Private"; //this only show up in invite tab
+            }
+            this.roomOwnerId = roomOwnerId;
         }
         else
         {
-            publicAccess.text = "Private"; //this only show up in invite tab
+            this.numMembers.transform.parent.gameObject.SetActive(false);
+            publicAccess.gameObject.SetActive(false);
+            this.roomOwnerName.GetComponent<RectTransform>().sizeDelta = new Vector2(1490, 
+                this.roomOwnerName.GetComponent<RectTransform>().rect.height);
+            this.roomOwnerId = null; //special value indicating a common room!
         }
-        this.roomOwnerId = roomOwnerId;
 
         //Usually public rooms only show in public, private rooms only show in invites. This is for specific room search only.
         if (!isPublic && !isInvited) joinButton.gameObject.SetActive(false);
@@ -45,6 +57,25 @@ public class PlayerRoomDisplayTab : MonoBehaviour
 
     public void OnConnectPressed() //the objects below should be active by the time connect is pressed.
     {
+        if(roomOwnerId == null) //common room! no need to consult database.
+        {
+            //If you are invited... then by pressing connected you should remove that invite
+            if (PersistentData.listOfInvitedRoomIds.Contains(roomOwnerName.text))
+            {
+                PersistentData.listOfInvitedRoomIds.Remove(roomOwnerName.text); //can directly operate on PD too! same list I believe.
+            } //gonna consume the invitation here instead of on room joined, hopefully worth it...
+
+            //The actual connection step:
+            PersistentData.TRUEOWNERID_OF_JOINING_ROOM = roomOwnerName.text;
+            PersistentData.NAME_OF_JOINING_ROOM = roomOwnerName.text;
+
+            Debug.Log("Connecting...");
+
+            //Only connect forreal after everything is ready with callbacks n stuff
+            GameObject.Find("PlayFabController").GetComponent<PhotonConnector>().DisconnectPlayer();
+
+            return;
+        }
         //Normally, in other cases, you are good to join. But this one careful: before join, 
         //check if room is private and you are not invited (else you can't join)
         //No need for a parameter, just make a ez string call LOL
@@ -103,7 +134,8 @@ public class PlayerRoomDisplayTab : MonoBehaviour
     {
         var rsps = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
         //tell rsps to remove it from the list
-        rsps.listOfInvitedRoomIds.Remove(roomOwnerId); //remove it
+        if (roomOwnerId != null) rsps.listOfInvitedRoomIds.Remove(roomOwnerId); //remove it
+        else rsps.listOfInvitedRoomIds.Remove(roomOwnerName.text); //common room invite rejected
         rsps.OnCheckInviteTabPressed(); //then update it
     }
 }

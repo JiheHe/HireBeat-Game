@@ -49,6 +49,12 @@ public class PersistentData : MonoBehaviour
 
     public static List<string> listOfInvitedRoomIds = new List<string>(); //this is for room system, need to keep invites between rooms
     public static List<string> invitedRoomList = new List<string>(); //this is for video chat room system
+    public static Dictionary<string, string> commonRoomNamesAndRelatedSceneName =
+        new Dictionary<string, string> { //change the name "MainScene" to different scenes in the future!
+            { "Common Room: Technology", "MainScene" },
+            { "Common Room: Finance", "MainScene" },
+            { "Common Room: Dummy", "MainScene" }
+            };
 
     private void OnEnable() //making sure only 1 playfab controller
     {
@@ -71,7 +77,8 @@ public class PersistentData : MonoBehaviour
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
 
         //Testing
-        listOfInvitedRoomIds = new List<string> { "B", "f", "Z", "i", "falkdfdjfsf;" };
+        listOfInvitedRoomIds = new List<string> { "Common Room: Technology", "Common Room: Dummy", "B", "f", "Z", "i", "falkdfdjfsf;" };
+        //listOfInvitedRoomIds = new List<string> { "Common Room: Finance", "COMING" };
     }
 
     public static bool strToBool(string str)

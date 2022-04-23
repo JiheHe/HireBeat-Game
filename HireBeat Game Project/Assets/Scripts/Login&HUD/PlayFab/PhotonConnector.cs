@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 
 //This is like the persistent version of Photon main menu thingy
@@ -19,7 +20,13 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         Debug.Log($"You have joined the Photon Room named {PhotonNetwork.CurrentRoom.Name}");
         Debug.Log("Your userID is: " + PhotonNetwork.AuthValues.UserId); //this is now Playfab's, as set in the controller!
         //PhotonConnector.GetPhotonFriends?.Invoke(); //THIS ONE HMMm
-        PhotonNetwork.LoadLevel("MainScene"); //instead of loadscene
+
+        if (PersistentData.commonRoomNamesAndRelatedSceneName.ContainsKey(PersistentData.TRUEOWNERID_OF_JOINING_ROOM)) //speical room for common rooms!
+        {
+            PhotonNetwork.LoadLevel(PersistentData.commonRoomNamesAndRelatedSceneName[PersistentData.TRUEOWNERID_OF_JOINING_ROOM]);
+            Debug.Log("Joining a common room with a special map!");
+        }
+        else PhotonNetwork.LoadLevel("MainScene"); //instead of loadscene. This is the default for user rooms.
 
         if (PersistentData.TRUEOWNERID_OF_JOINING_ROOM != null) 
             PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = PersistentData.TRUEOWNERID_OF_JOINING_ROOM;
@@ -76,8 +83,11 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient)
         {
             string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
-            int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-            DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+            if(!PersistentData.commonRoomNamesAndRelatedSceneName.Keys.Contains(roomID)) //if not in a common room
+            {
+                int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+                DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+            }
 
             //this part is for updating new joiners with current room private vc distribution info.
             ExitGames.Client.Photon.Hashtable tableCustomProperties = new ExitGames.Client.Photon.Hashtable();
@@ -98,8 +108,11 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient) //If a master client leaves, then the next one shuld still exist hopefully.
         {
             string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
-            int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-            DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+            if (!PersistentData.commonRoomNamesAndRelatedSceneName.Keys.Contains(roomID)) //if not in a common room
+            {
+                int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+                DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+            }
 
             //this part is for private room vcs. If master client left, then will the new master client get this and execute this?
             foreach(var table in GameObject.FindGameObjectsWithTag("PrivateVCTable"))
@@ -126,8 +139,11 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient) //this should be more convenient, use the one above if this doesn't work.
         {
             string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
-            string myID = GetComponent<PlayFabController>().myID;
-            DataBaseCommunicator.UpdateCurrOwnerOfRoom(roomID, myID);
+            if (!PersistentData.commonRoomNamesAndRelatedSceneName.Keys.Contains(roomID)) //if not in a common room
+            {
+                string myID = GetComponent<PlayFabController>().myID;
+                DataBaseCommunicator.UpdateCurrOwnerOfRoom(roomID, myID);
+            }
         }
     }
 
@@ -178,6 +194,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         Debug.Log("Joined lobby");
+        
         JoinOrCreateRoom(PersistentData.TRUEOWNERID_OF_JOINING_ROOM);
     }
 
