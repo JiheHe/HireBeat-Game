@@ -30,10 +30,13 @@ public class BackgroundUI : MonoBehaviour
 
         background = GameObject.FindGameObjectWithTag("Background"); //no need to worry, since background is local, only 1
         //playerObj = GameObject.FindGameObjectWithTag("Player");
-        playerObj.SetActive(false);
+        //playerObj.SetActive(false);
+        playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE;
+        playerObj.GetComponent<playerController>().enabled = false;
         playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
-        playerCamera.turnOnUICamera();
-        UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<InGameUIController>();
+        playerCamera.enabled = false;
+        //playerCamera.turnOnUICamera();
+        UIController = playerCamera.gameObject.GetComponent<InGameUIController>();
         skyIndex = background.GetComponent<BackgroundSetter>().skyIndex;
     }
 
@@ -55,8 +58,10 @@ public class BackgroundUI : MonoBehaviour
     public void CloseTab()
     {
         Destroy(gameObject);
-        playerCamera.turnOffUICamera();
-        playerObj.SetActive(true);
+        //playerCamera.turnOffUICamera();
+        //playerObj.SetActive(true);
+        playerObj.GetComponent<playerController>().enabled = true;
+        playerCamera.enabled = true;
         UIController.hasOneOn = false;
         playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE;
     }

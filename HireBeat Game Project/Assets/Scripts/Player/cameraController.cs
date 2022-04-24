@@ -33,6 +33,7 @@ public class cameraController : MonoBehaviourPunCallbacks
         }*/
     }
 
+    //These two methods below (with UI camera) are for a secondary UI camera with special design if needed... no need for now
     public void turnOnUICamera()
     {
         UICamera.SetActive(true);

@@ -59,11 +59,13 @@ public class AvatarCustomizationScript : MonoBehaviour
 
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
 
-        //playerObj = GameObject.FindGameObjectWithTag("Player");
-        playerObj.SetActive(false);
+        //playerObj.SetActive(false);
+        playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE;
+        playerObj.GetComponent<playerController>().enabled = false;
         playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>();
-        playerCamera.turnOnUICamera();
-        UIController = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<InGameUIController>();
+        playerCamera.enabled = false;
+        //playerCamera.turnOnUICamera();
+        UIController = playerCamera.gameObject.GetComponent<InGameUIController>();
         hasNoHair(); //false...
         hasNoTopWear();
         hasNoBotWear();
@@ -249,9 +251,11 @@ public class AvatarCustomizationScript : MonoBehaviour
     public void closeWindow()
     {
         Destroy(gameObject.transform.parent.gameObject);
-        playerCamera.turnOffUICamera();
-        playerObj.SetActive(true);
+        //playerCamera.turnOffUICamera();
+        //playerObj.SetActive(true);
+        playerObj.GetComponent<playerController>().enabled = true;
         UIController.hasOneOn = false;
+        playerCamera.enabled = true;
         playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE;
     }
 
