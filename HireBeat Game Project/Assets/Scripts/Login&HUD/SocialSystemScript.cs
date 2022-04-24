@@ -90,12 +90,15 @@ public class SocialSystemScript : MonoBehaviour
     {
         gameObject.SetActive(false); //want to keep data!
         CloseProfileEditor();
-        if (!playerZoneTab.hasOneOn)
+        //if (!playerZoneTab.hasOneOn)
+        //{
+        playerCamera.enabled = true;
+        if (!PersistentData.isMovementRestricted)
         {
             playerObj.GetComponent<playerController>().enabled = true;
-            playerCamera.enabled = true;
             playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
         }
+            //}
         UIController.hasOneOn = false;
 
         //turn off all open stuff
@@ -105,7 +108,7 @@ public class SocialSystemScript : MonoBehaviour
         requestsList.SetActive(false);
         if (currentInfoCardOpened != null) Destroy(currentInfoCardOpened);
         PFC.GetFriends();
-        voiceChatPanel.SetActive(false);
+        //voiceChatPanel.SetActive(false);
     }
 
     public void OpenProfileEditor()

@@ -80,6 +80,17 @@ public class VoiceChatController : MonoBehaviour
 
     public void OnConnectPressed()
     {
+        if(PersistentData.usingMicrophone)
+        {
+            Debug.Log("Please leave the current voice system first.");
+            gameObject.GetComponentInParent<changeReceiver>().ShowCanvasMessage(2, "Please leave the current voice system first.");
+            return;
+        }
+        else
+        {
+            PersistentData.usingMicrophone = true;
+        }
+
         AnnounceMeJoining();
         dataCenter.UserJoinsRoomVC(myID);
 
@@ -103,6 +114,8 @@ public class VoiceChatController : MonoBehaviour
     //send
     public void OnDisconnectPressed()
     {
+        PersistentData.usingMicrophone = false;
+
         dataCenter.UserLeavesRoomVC(myID);
 
         connectButton.SetActive(true);

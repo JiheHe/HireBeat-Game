@@ -30,6 +30,9 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
 
         if (PersistentData.TRUEOWNERID_OF_JOINING_ROOM != null) 
             PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = PersistentData.TRUEOWNERID_OF_JOINING_ROOM;
+
+        PersistentData.usingMicrophone = false; //not in a call when you entered a new room, surely
+        PersistentData.isMovementRestricted = false;
         disconnectDueToKicked = false; //you are in a new room, reset.
         userHasLeftPhotonRoom = false;
     }

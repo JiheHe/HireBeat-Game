@@ -1029,10 +1029,10 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
 
         gameObject.SetActive(false); //want to keep data!
-        if (!playerZoneTab.hasOneOn)
+        playerCamera.enabled = true;
+        if (!PersistentData.isMovementRestricted)
         {
             playerObj.GetComponent<playerController>().enabled = true;
-            playerCamera.enabled = true;
             playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
         }
         UIController.hasOneOn = false;

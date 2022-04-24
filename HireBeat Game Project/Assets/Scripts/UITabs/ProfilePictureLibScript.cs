@@ -470,10 +470,10 @@ public class ProfilePictureLibScript : MonoBehaviour, IDragHandler, IBeginDragHa
         Destroy(gameObject.transform.parent.gameObject);
         //playerCamera.turnOffUICamera();
         //playerObj.SetActive(true);
-        if (!playerZoneTab.hasOneOn)
+        playerCamera.enabled = true;
+        if (!PersistentData.isMovementRestricted)
         {
             playerObj.GetComponent<playerController>().enabled = true;
-            playerCamera.enabled = true;
             playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
         }
         UIController.hasOneOn = false;

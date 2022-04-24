@@ -151,6 +151,13 @@ public class VideoChatRoomSearch : MonoBehaviour
     string connectRoomName;
     public void OnConnectPressed(string roomName) //address should be HireBeatProjVidC + myID //this is to avoid connect to other
     {
+        if (PersistentData.usingMicrophone)
+        {
+            Debug.Log("Please leave the current voice system first.");
+            gameObject.GetComponentInParent<changeReceiver>().ShowCanvasMessage(2, "Please leave the current voice system first.");
+            return;
+        }
+
         connectRoomName = roomName;
         Debug.Log("Connecting to VC_ROOM: " + roomName);
         //Check amount of current users. If full then fail... but if not full then immediately add 1 to the current count! (cuz you gona connect!)
@@ -301,6 +308,13 @@ public class VideoChatRoomSearch : MonoBehaviour
     //When create new vc room button is pressed
     public void OnCreateNewVCRoom()
     {
+        if (PersistentData.usingMicrophone)
+        {
+            Debug.Log("Please leave the current voice system first.");
+            gameObject.GetComponentInParent<changeReceiver>().ShowCanvasMessage(2, "Please leave the current voice system first.");
+            return;
+        }
+
         //check if roomName is unique:
         newRoomRoomName = vcRoomCreateField.text.Trim(); //remove spaces beginning & end
         newRoomIsPublic = vcRoomPublicSwitch.isOn;

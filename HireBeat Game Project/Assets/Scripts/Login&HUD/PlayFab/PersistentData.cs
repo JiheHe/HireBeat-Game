@@ -41,6 +41,9 @@ public class PersistentData : MonoBehaviour
         "topWearStyle", "topWearColor", "hasBotWear", "botWearStyle", "botWearColor",
         "hasShoes", "shoesColor", "pfpImage", "acctName", "acctSignature", "acctID", "skyIndex"}; //var names 
 
+    public static bool usingMicrophone = false; //3 instances, video chat, public voice chat, private room voice chat
+    public static bool isMovementRestricted = false; //for example, sitting on a chair
+
     //This value defaults to null, but upon switching rooms validated it changes.
     public static string TRUEOWNERID_OF_CURRENT_ROOM = null;
     //This value is set by PlayerRoomDisplayTab's join button, a placeholder for future connection. Or by PFC at start

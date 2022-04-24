@@ -79,6 +79,18 @@ public class WebRTCVCChair : MonoBehaviour
         }
         else
         {
+            if (PersistentData.usingMicrophone)
+            {
+                Debug.Log("Please leave the current voice system first.");
+                GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().ShowCanvasMessage(2, "Please leave the current voice system first.");
+                return;
+            }
+            else
+            {
+                PersistentData.usingMicrophone = true;
+                PersistentData.isMovementRestricted = true;
+            }
+
             //Play animation
             joinButton.gameObject.SetActive(false);
             youThePlayer = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<cameraController>().zoomCamera.transform.parent.gameObject;
@@ -96,6 +108,9 @@ public class WebRTCVCChair : MonoBehaviour
     //On leave button pressed.
     public void LeaveThisChair()
     {
+        PersistentData.usingMicrophone = false;
+        PersistentData.isMovementRestricted = false;
+
         terminal.iAmConnected = false;
         terminal.AnnounceChairOccupation(chairId, false, terminal.myID);
         Destroy(terminal.currentLocalWebRTCVCCallObj.gameObject);

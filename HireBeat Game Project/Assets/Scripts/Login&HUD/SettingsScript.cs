@@ -36,13 +36,11 @@ public class SettingsScript : MonoBehaviour
     public void closeWindow()
     {
         Destroy(gameObject);
-        if (!playerZoneTab.hasOneOn)
+        playerCamera.enabled = true;
+        if (!PersistentData.isMovementRestricted)
         {
             playerObj.GetComponent<playerController>().enabled = true;
-            playerCamera.enabled = true;
-            //playerObj.GetComponent<playerController>().isMoving = false; //this line prevents the player from getitng stuck after
-            playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE;
-            
+            playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
         }
         UIController.hasOneOn = false;
     }

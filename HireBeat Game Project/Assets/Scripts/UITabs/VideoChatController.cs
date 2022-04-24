@@ -97,6 +97,8 @@ public class VideoChatController : MonoBehaviour
         selfAddress = "HireBeatProjVidC" + myID; //no need for Application.productName
 
         SetCellSizeBasedOnNum(); //for testing too.
+
+        PersistentData.usingMicrophone = true; //this obj is initalized successfully, so yeah.
     }
 
     public void SetupMediaAndNetConfAndOther(MediaConfig mC, NetworkConfig nC, VideoChatRoomSearch vCS, List<string> userIds, string rName)
@@ -610,6 +612,8 @@ public class VideoChatController : MonoBehaviour
 
             //Remove the remote panels, etc //this should be covered.
         }
+
+        PersistentData.usingMicrophone = false;
 
         Destroy(gameObject); //then destroy this prefab!
         vcs.gameObject.SetActive(true); //open chat room search panel after leaving
