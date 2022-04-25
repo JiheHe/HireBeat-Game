@@ -261,7 +261,7 @@ public class AvatarCustomizationScript : MonoBehaviour
 
     public void grabFromMainComp()
     {
-        playerObj.SetActive(true);
+        //playerObj.SetActive(true);
         CompositionSetter mainComp = playerObj.GetComponent<CompositionSetter>();
         field.text = mainComp.charName;
         hasHair = mainComp.hasHair;
@@ -281,7 +281,7 @@ public class AvatarCustomizationScript : MonoBehaviour
         gameObject.transform.GetChild(topWearLayerIndex).gameObject.SetActive(hasTopWear);
         gameObject.transform.GetChild(botWearLayerIndex).gameObject.SetActive(hasBotWear);
         gameObject.transform.GetChild(shoesLayerIndex).gameObject.SetActive(hasShoes);
-        playerObj.SetActive(false);
+        //playerObj.SetActive(false);
     }
 
     public void scrollRectReset(ScrollRect rect)

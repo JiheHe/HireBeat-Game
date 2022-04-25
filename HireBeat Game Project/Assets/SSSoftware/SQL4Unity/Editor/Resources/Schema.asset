@@ -85,7 +85,7 @@ MonoBehaviour:
     displayName: IPAdressToUniqueID
     hidden: 0
     columns: 1b001d001e00
-    indexes: 1c001f00
+    indexes: 1c003600
     dropped: 0
     created: 1
     updated: 0
@@ -265,7 +265,7 @@ MonoBehaviour:
     dataType: string
     dataLength: 0
     allowNull: 0
-    primaryKey: 1
+    primaryKey: 0
     autoIncrement: 0
     hidden: 0
     dropped: 0
@@ -280,7 +280,7 @@ MonoBehaviour:
     dataType: string
     dataLength: 0
     allowNull: 0
-    primaryKey: 0
+    primaryKey: 1
     autoIncrement: 0
     hidden: 0
     dropped: 0
@@ -609,7 +609,7 @@ MonoBehaviour:
     displayName: IPAddressPK
     type: Dict
     hidden: 1
-    dropped: 0
+    dropped: 1
     created: 1
     columns: 1d00
     dataType: string
@@ -722,6 +722,21 @@ MonoBehaviour:
     dataPage: 0
     bigTab: 0
     unique: 1
+  - id: 54
+    tabId: 26
+    dbId: 0
+    indexName: hirebeatprojectdb.ipadresstouniqueid.uniqueidpk
+    displayName: UniqueIDPK
+    type: Dict
+    hidden: 1
+    dropped: 0
+    created: 1
+    columns: 1e00
+    dataType: string
+    dataIndex: 11
+    dataPage: 0
+    bigTab: 0
+    unique: 1
   procedures:
   - id: 15
     dbId: 0
@@ -825,7 +840,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 16
+    lastId: 17
   - id: 23
     dbId: 0
     procedureName: hirebeatprojectdb.updatevcroomprops
@@ -862,7 +877,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 16
+    lastId: 17
   - id: 24
     dbId: 0
     procedureName: hirebeatprojectdb.deletevcroom
@@ -891,7 +906,7 @@ MonoBehaviour:
     groupby: 0
     conditions: '#0#'
     joins: []
-    lastId: 16
+    lastId: 17
   - id: 25
     dbId: 0
     procedureName: hirebeatprojectdb.graballvcroominfo
@@ -929,4 +944,4 @@ MonoBehaviour:
     conditions: 
     joins: []
     lastId: 1
-  lastID: 53
+  lastID: 54
