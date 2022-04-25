@@ -22,6 +22,8 @@ public class SpawnPlayers : MonoBehaviour
 
     GameObject newPlayer;
 
+    PersistentData p;
+
     //THIS IS TO INDIVIDUAL AS WELL!
     //probably is?
 
@@ -45,7 +47,15 @@ public class SpawnPlayers : MonoBehaviour
         newPlayer = PhotonNetwork.Instantiate(player.name, randomPosition, Quaternion.identity, 0, instanceData);
         Debug.Log("A new player has joined!");
 
-        InstantiateLocalData();
+
+        //Quickly set sky so it looks better visually.
+        p = GameObject.Find("PersistentData").GetComponent<PersistentData>();
+        var bs = GameObject.FindGameObjectWithTag("Background").GetComponent<BackgroundSetter>();
+        bs.skyIndex = PersistentData.strToInt(p.skyIndex);
+        bs.SetBackground();
+
+        StartCoroutine(InstantiateLocalData());
+
 
         //assign the camera to the current, local manager
         manager.GetComponent<cameraController>().zoomCamera = newPlayer.transform.Find("PlayerCamera").GetComponent<Camera>();
@@ -61,27 +71,45 @@ public class SpawnPlayers : MonoBehaviour
     }
 
     //use this to spawn local data! personal instantiation is dealt with in PlayerDataUpdater.
-    void InstantiateLocalData()
+    IEnumerator InstantiateLocalData()
     {
-        var p = GameObject.Find("PersistentData").GetComponent<PersistentData>(); //shorthand
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null)
+        {
+            yield return null;
+            StartCoroutine(InstantiateLocalData());
+        }
+        else
+        {
+            yield return null;
 
-        changeReceiver hudCentralControl = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>();
-        byte[] pfpByteArr = Convert.FromBase64String(p.pfpImage);
-        //Image newSprite = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("profilePicture").transform.Find("placeholderImage").gameObject.GetComponent<Image>();
-        Image newSprite = hudCentralControl.hudProfilePicture;
-        myTexture = new Texture2D(newSprite.sprite.texture.width, newSprite.sprite.texture.height, TextureFormat.RGB24, false, true); //or use constants
-        myTexture.LoadImage(pfpByteArr);
-        Sprite spriteImg = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
-        newSprite.sprite = spriteImg;
-        hudCentralControl.hudAccountName.text = p.acctName;
-        hudCentralControl.accountNameInEditor.text = p.acctName;
-        hudCentralControl.accountSignatureInEditor.text = p.acctSignature;
-        hudCentralControl.uniqueIDinEditor.text = "Unique ID: " + p.acctID;
+            //All these chunks down here are basically the same for future updates because UI is persistent now! But good for first update.
+            changeReceiver hudCentralControl = playerHud.GetComponent<changeReceiver>();
+            byte[] pfpByteArr = Convert.FromBase64String(p.pfpImage);
+            Image newSprite = hudCentralControl.hudProfilePicture;
+            myTexture = new Texture2D(newSprite.sprite.texture.width, newSprite.sprite.texture.height, TextureFormat.RGB24, false, true); //or use constants
+            myTexture.LoadImage(pfpByteArr);
+            Sprite spriteImg = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), new Vector2(0.5f, 0.5f));
+            newSprite.sprite = spriteImg;
+            hudCentralControl.hudAccountName.text = p.acctName;
+            hudCentralControl.accountNameInEditor.text = p.acctName;
+            hudCentralControl.accountSignatureInEditor.text = p.acctSignature;
+            hudCentralControl.uniqueIDinEditor.text = "Unique ID: " + p.acctID;
 
-        var bs = GameObject.FindGameObjectWithTag("Background").GetComponent<BackgroundSetter>();
-        bs.skyIndex = PersistentData.strToInt(p.skyIndex);
-        bs.SetBackground();
-}
+
+            //Do more UI initalizations here
+            playerHud.GetComponent<changeReceiver>().Initialize(); //cover voice chat system here
+            playerHud.transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>().Initalize();
+            playerHud.transform.Find("SocialSystem").GetComponent<SocialSystemScript>().Initialize();
+            //Avatar customization is a prefab that initializes on spawn, no need
+            //Background UI is a prefab that initializes on spawn, no need
+            //Profile pic UI is a prefab that initializes on spawn, no need
+            //Global voice chat is initialized by changeReceiver above, no need
+            //Nothing to init for video chat...It's based off of social system and DBC. Will do in the future if bugs.
+            //Not sure on the quest system yet. 
+            //Not sure on the settings tab yet. 
+        }
+    }
 
     object[] InitializePlayerInformation()
     {

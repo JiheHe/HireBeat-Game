@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneListener : MonoBehaviour
 {
-    GameObject playerHUD;
+    public GameObject playerHUD;
 
     void OnEnable()
     {
@@ -21,10 +22,27 @@ public class SceneListener : MonoBehaviour
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name == "MainScene")
+        if(scene.name == "MainScene" || PersistentData.commonRoomNamesAndRelatedSceneName.ContainsValue(scene.name))
         {
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.name));
+            SceneManager.UnloadSceneAsync("LoadingScene");
+            if (!PhotonConnector.firstTimePCMConnectionDone) //hud doens't exist yet. use awake to assign stuff.
+            {
+                SceneManager.LoadSceneAsync("UIAdditiveOverlay", LoadSceneMode.Additive);
+            }
+            else
+            {
+                GetComponent<PhotonChatManager>().ReconnectToRoomPublicChat();
+            }
+        }
+
+        if(scene.name == "UIAdditiveOverlay") //only init once.
+        {
+            Debug.Log("UI scene finished initializing!");
+
             playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD");
             GetComponent<PlayFabController>().socialSystem = playerHUD.transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+            //GetComponent<PlayFabController>().ClearMyFriends(); //no need for this, going to do additive scene loading.
             GetComponent<PlayFabController>().friendsList = playerHUD.GetComponent<changeReceiver>().friendsList;
             GetComponent<PlayFabController>().requesterList = playerHUD.GetComponent<changeReceiver>().requesterList;
             GetComponent<PlayFabController>().requesteeList = playerHUD.GetComponent<changeReceiver>().requesteeList;
@@ -34,14 +52,7 @@ public class SceneListener : MonoBehaviour
             GetComponent<PhotonChatManager>().roomSystem = playerHUD.transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
             GetComponent<PhotonChatManager>().ConnectChat(); //make sure social system is ready, then connect
 
-            if (PhotonConnector.firstTimePCMConnectionDone)
-            {
-                GetComponent<PhotonChatManager>().OnConnected(); //Since photon chat doesn't disconnect, have to simulate new connection.
-            }
-            else
-            {
-                PhotonConnector.firstTimePCMConnectionDone = true;
-            }
+            PhotonConnector.firstTimePCMConnectionDone = true;
         }
     }
 }

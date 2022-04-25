@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class VoiceChatController : MonoBehaviour
 {
-    public InGameUIController gameUIController = null; //assigned by that object at first start call.
+    public InGameUIController gameUIController; //assigned by that object at first start call.
 
     public GameObject connectButton;
     public GameObject disconnectButton;
@@ -27,12 +27,6 @@ public class VoiceChatController : MonoBehaviour
     // Start is called before the first frame update
     void Start() 
     {
-        socialSystem = gameObject.transform.parent.Find("SocialSystem").GetComponent<SocialSystemScript>();
-        myID = GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID;
-        dataCenter = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>();
-
-        myNameLocalDisplay.text = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctName + " (You)";
-
         //VCC starts in active, so they won't work unless opened... so we'll initailize them in changeReceiver instead.
         /*
         voiceSystem = GetComponent<VoiceChatSystem>();
@@ -51,6 +45,12 @@ public class VoiceChatController : MonoBehaviour
 
     public void InitializationSteps()
     {
+        dataCenter = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>();
+        gameUIController = null; //this is special! every time open in a new room, null -> reassignment.
+        socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        myID = GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID;
+        myNameLocalDisplay.text = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctName + " (You)";
+
         voiceSystem = GetComponent<VoiceChatSystem>();
         voiceSystem.InitializationSteps();
 
@@ -83,7 +83,7 @@ public class VoiceChatController : MonoBehaviour
         if(PersistentData.usingMicrophone)
         {
             Debug.Log("Please leave the current voice system first.");
-            gameObject.GetComponentInParent<changeReceiver>().ShowCanvasMessage(2, "Please leave the current voice system first.");
+            GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().ShowCanvasMessage(2, "Please leave the current voice system first.");
             return;
         }
         else
@@ -114,7 +114,7 @@ public class VoiceChatController : MonoBehaviour
     //send
     public void OnDisconnectPressed()
     {
-        PersistentData.usingMicrophone = false;
+        if(disconnectButton.gameObject.activeSelf) PersistentData.usingMicrophone = false; //if you are connected to voice chat
 
         dataCenter.UserLeavesRoomVC(myID);
 

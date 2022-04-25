@@ -46,7 +46,6 @@ public class SocialSystemScript : MonoBehaviour
     public GameObject currentInfoCardOpened = null; //starts null, set throughout
     public GameObject lobbyInfoCardOpened = null; //i think making 2 info card aval is not bad? one in system, 1 in lobby
 
-    public GameObject voiceChatPanel;
     public GameObject videoChatPanel;
     public RoomSystemPanelScript rsps; //put it here for convenience, directly-assigned.
 
@@ -54,7 +53,7 @@ public class SocialSystemScript : MonoBehaviour
     IEnumerator errorMsgDisplay;
 
     // Start is called before the first frame update
-    void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
+    public void Initialize() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players)
@@ -74,10 +73,14 @@ public class SocialSystemScript : MonoBehaviour
         playerCamera = cameraController.GetComponent<cameraController>();
         UIController = cameraController.GetComponent<PlayerMenuUIController>();
         playerZoneTab = cameraController.GetComponent<InGameUIController>();
-        playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
+        playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>();
 
         NoCurrentChat();
-        //OnTabOpen shouldbe auto called so chilling
+    }
+
+    private void Start() //new scene, new ss, new list!
+    {
+        //PFC.GetFriends();
     }
 
     // Update is called once per frame
@@ -92,14 +95,17 @@ public class SocialSystemScript : MonoBehaviour
         CloseProfileEditor();
         //if (!playerZoneTab.hasOneOn)
         //{
-        playerCamera.enabled = true;
-        if (!PersistentData.isMovementRestricted)
+        if (playerCamera != null) //null if destroyed! closed window due to kicked
         {
-            playerObj.GetComponent<playerController>().enabled = true;
-            playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
-        }
+            playerCamera.enabled = true;
+            if (!PersistentData.isMovementRestricted)
+            {
+                playerObj.GetComponent<playerController>().enabled = true;
+                playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
+            }
             //}
-        UIController.hasOneOn = false;
+            UIController.hasOneOn = false;
+        }
 
         //turn off all open stuff
         addFriendSearchBar.SetActive(false);
@@ -359,14 +365,22 @@ public class SocialSystemScript : MonoBehaviour
         PCM.chatClient.SendPrivateMessage(userID, "RMINVT_TO_" + roomID);
     }
 
-    public void CreatePublicRoomPanel()
+    public void CreatePublicRoomPanel(string publicRoomChatName)
     {
+        //During room transitioning, destroy previous room's panel. no data caching for now
+        if (publicRoomChatPanel != null)
+        {
+            chatPanels.Remove(this.currentPublicRoomChatName);
+            Destroy(publicRoomChatPanel);
+        }
+
         publicRoomChatPanel = Instantiate(chatPanel, msgViewPort.transform);
         publicRoomChatPanel.transform.SetParent(msgViewPort.transform, false);
         publicRoomChatPanel.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
         publicRoomChatPanel.GetComponent<MsgContentController>().listing = null; //juust makin sure
         publicRoomChatPanel.SetActive(false);
-        chatPanels.Add(currentPublicRoomChatName, publicRoomChatPanel);
+        this.currentPublicRoomChatName = publicRoomChatName;
+        chatPanels.Add(publicRoomChatName, publicRoomChatPanel);
     }
 
     public void OnPublicChatRoomClicked()
@@ -380,11 +394,6 @@ public class SocialSystemScript : MonoBehaviour
         Destroy(currentInfoCardOpened);
         currentInfoCardOpened = null;
         NoCurrentChat();
-    }
-
-    public void OnVoiceChatPanelOpenClicked()
-    {
-        voiceChatPanel.SetActive(true);
     }
 
     public void OnVideoChatPanelOpenClicked() //this will involve more decisions in the future.

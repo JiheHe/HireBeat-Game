@@ -45,10 +45,27 @@ public class OnMouseOverObject : MonoBehaviour
         playerCamera = cameraController.GetComponent<cameraController>();
         UIController = cameraController.GetComponent<PlayerMenuUIController>();
         playerZoneTab = cameraController.GetComponent<InGameUIController>();
-        playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
+        StartCoroutine(AssignPlayerHud());
+        //playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
 
-        localSocialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").gameObject;
+        //localSocialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").gameObject;
         _eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+    }
+
+    IEnumerator AssignPlayerHud()
+    {
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null)
+        {
+            yield return null;
+            StartCoroutine(AssignPlayerHud());
+        }
+        else
+        {
+            yield return null;
+            this.playerHud = playerHud.transform.GetChild(0).GetComponent<changeReceiver>();
+            localSocialSystem = playerHud.transform.Find("SocialSystem").gameObject;
+        }
     }
 
     // Start is called before the first frame update

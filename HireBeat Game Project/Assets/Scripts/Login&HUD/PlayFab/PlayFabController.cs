@@ -81,6 +81,7 @@ public class PlayFabController : MonoBehaviour
         PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
         SetUserData("acctID", myID, "Public");
         PD.RetrieveUserData();
+        PD.gameObject.GetComponent<DataBaseCommunicator>().InitializeDBC(myID);
     }
 
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
@@ -100,6 +101,7 @@ public class PlayFabController : MonoBehaviour
         SetUserData("acctName", username, "Public"); //acctName is the data version of display name
         SetUserData("acctID", myID, "Public");
         PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend (cuz mostly will be null!)
+        PD.gameObject.GetComponent<DataBaseCommunicator>().InitializeDBC(myID);
     }
 
     void OnDisplayName(UpdateUserTitleDisplayNameResult result)
@@ -400,6 +402,12 @@ public class PlayFabController : MonoBehaviour
     public Transform requesteeList;
     List<PlayFab.ClientModels.FriendInfo> myFriends;
     string requestAcceptedId = null; //upon request accepted, update //make into a key string!
+
+    // This method is used for scene transitioning. Need to clear this list, else the comparison won't add new ones in the new room
+    public void ClearMyFriends()
+    {
+        if(myFriends != null) myFriends.Clear();
+    }
 
     //Last function in the process, you decide how you wanna show it ;D
     void DisplayFriends(List<PlayFab.ClientModels.FriendInfo> friendsCache)

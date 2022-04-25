@@ -8,13 +8,13 @@ using System.Linq;
 
 public class RoomSystemPanelScript : MonoBehaviour
 {
-    [HideInInspector] public GameObject playerObj;
-    [HideInInspector] public cameraController playerCamera;
-    [HideInInspector] public InGameUIController playerZoneTab;
-    [HideInInspector] public PlayerMenuUIController UIController;
-    [HideInInspector] public changeReceiver playerHud;
+    public GameObject playerObj;
+    public cameraController playerCamera;
+    public InGameUIController playerZoneTab;
+    public PlayerMenuUIController UIController;
+    public changeReceiver playerHud;
 
-    void Awake() //awake is called before start, so it works ;D!!!!!!!!!!!!!!!!
+    public void Initalize()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players)
@@ -30,7 +30,7 @@ public class RoomSystemPanelScript : MonoBehaviour
         playerCamera = cameraController.GetComponent<cameraController>();
         UIController = cameraController.GetComponent<PlayerMenuUIController>();
         playerZoneTab = cameraController.GetComponent<InGameUIController>();
-        playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").transform.GetChild(0).GetComponent<changeReceiver>();
+        playerHud = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>();
     }
 
     public string myID;
@@ -96,7 +96,7 @@ public class RoomSystemPanelScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
+        dbc = GameObject.Find("PersistentData").GetComponent<DataBaseCommunicator>();
         dbc.GrabAllPublicRooms(0, OnGrabAllPublicRoomsNormCallback);
 
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
@@ -1029,12 +1029,16 @@ public class RoomSystemPanelScript : MonoBehaviour
         }
 
         gameObject.SetActive(false); //want to keep data!
-        playerCamera.enabled = true;
-        if (!PersistentData.isMovementRestricted)
+
+        if (playerCamera != null) //null if destroyed! closed window due to pressing join.
         {
-            playerObj.GetComponent<playerController>().enabled = true;
-            playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
+            playerCamera.enabled = true;
+            if (!PersistentData.isMovementRestricted)
+            {
+                playerObj.GetComponent<playerController>().enabled = true;
+                playerObj.GetComponent<playerController>().actionParem = (int)playerController.CharActionCode.IDLE; //this line prevents the player from getitng stuck after
+            }
+            UIController.hasOneOn = false;
         }
-        UIController.hasOneOn = false;
     }
 }

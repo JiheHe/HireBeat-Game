@@ -28,12 +28,19 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     public void OnConnected() //on connected, automatically connects to public room chat
     {
         AddPhotonChatFriends(); //hopefully this won't cause duplicates.
+        ReconnectToRoomPublicChat();
+        //throw new System.NotImplementedException();
+    }
+
+    public void ReconnectToRoomPublicChat()
+    {
+        //In order to avoid the complication that a user joins 10+ rooms -> 10+ channels, and I don't know how many public channels
+        //a user can be in, it is the best to just allow 1 channel at a time (in room only!) and with no data caching. 
+        chatClient.Unsubscribe(new string[] { socialSystem.currentPublicRoomChatName }); //will fail if null, so no worries.
         publicRoomChatName = PhotonNetwork.CurrentRoom.Name + " public room";
         chatClient.Subscribe(new string[] { publicRoomChatName }); //this is for the public room chat, room name will be owner ID
-        socialSystem.currentPublicRoomChatName = publicRoomChatName;
-        socialSystem.CreatePublicRoomPanel();
+        socialSystem.CreatePublicRoomPanel(publicRoomChatName);
         Debug.Log("Public Chatroom Connected!"); //connected!
-        //throw new System.NotImplementedException();
     }
 
     public void OnDisconnected()
@@ -83,13 +90,13 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
                     //nvm refresh is kinda trivia
                     return;
                 case "LEAVING VC": //it's better to use voiceChatPanel.GetComponent<> for the next 3 msg, change in future.
-                    socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(sender);
+                    GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().vcc.ClearSpeaker(sender);
                     return;
                 case "NEW VCP JOINED":
-                    socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().OnOtherPlayerConnected(sender);
+                    GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().vcc.OnOtherPlayerConnected(sender);
                     return;
                 case "UPDATE VC NAMES":
-                    socialSystem.gameObject.transform.parent.Find("VoiceChat").GetComponent<VoiceChatController>().CheckCurrentSpeakerNames();
+                    GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<changeReceiver>().vcc.CheckCurrentSpeakerNames();
                     return;
                 case "REQSTING VCRM INFO": //normally only owner receieve this, and he usually has a room panel avail, so...
                     if(sender != GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID) //sender sends a msg to myself too, avoid!

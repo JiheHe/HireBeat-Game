@@ -44,7 +44,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	public BlockingCollection<QueueItem> queue = new BlockingCollection<QueueItem>();
 
 	// Make it a Singleton
-	void Awake()
+	/*void Awake()
 	{
 		if (instance == null)
 		{
@@ -52,6 +52,13 @@ public class DataBaseCommunicator : MonoBehaviour
 			instance.initialise();
 		}
 		else Destroy(this);
+	}*/
+
+	//playfabcontroller will call this upon successfully logging in.
+	public void InitializeDBC(string myID)
+    {
+		instance = this;
+		instance.initialise(myID);
 	}
 
 	SQLResult result;
@@ -61,11 +68,11 @@ public class DataBaseCommunicator : MonoBehaviour
 
 	Action<SQLResult> callBack;
 
-    void initialise()
+    void initialise(string myID)
 	{
 		sql = new SQLExecute(this);
 
-		myID = UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().myID; //playfab user id as the username
+		this.myID = myID;
 		myOwnIpAddress = GetPublicIpAddress(); //this is the ip address that the user connects to the server with.
 
 		// Must be WebSocket for WebGL
@@ -79,11 +86,28 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.Log("SQL database connection: Using Protocol " + Protocol + " to " + IpAddress + ":" + Port);
 		// Monobehaviour required for Websocket and TCP Async Connections. Secure Socket = True/False required for WebSocket Protocol
 
-		vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
-		rsps = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
+		StartCoroutine(AssignVcsAndRsps());
+		//vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
+		//rsps = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
 
 		sql.Connect(Protocol, IpAddress, Port, UUID, secure, false, UserName, ConnectCallback);
 	}
+
+	IEnumerator AssignVcsAndRsps()
+    {
+		var playerHud = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD");
+		if (playerHud == null)
+        {
+			yield return null;
+			StartCoroutine(AssignVcsAndRsps());
+        }
+		else
+        {
+			yield return null;
+			vcs = playerHud.transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
+			rsps = playerHud.transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
+		}
+    }
 
 	// Called once a connection to the server has been made
 	void ConnectCallback(bool ok)
@@ -1420,7 +1444,7 @@ public class DataBaseCommunicator : MonoBehaviour
 
 	//This simply updates numPlayersInRoom (based off of photon room count, simple) //can access with PhotonCurrentRoom.roomName etc not anymore
 	//Can access id through the "currentRoomTrueOwnerID" in rsps! Which is stored when connect button is pressed.
-	public static void UpdateNumPlayersInRoom(string roomOwnerId, int numPlayers) //hopefully our effort has ensured name's uniqueness.
+	public static void UpdateNumPlayersInRoom(string roomOwnerId, int numPlayers, Action<SQL4Unity.SQLResult> callback = null) //hopefully our effort has ensured name's uniqueness.
     {
 		string query = "UPDATE UserRoomsAssociated SET NumPlayersInRoom = %numPlayers% WHERE TrueOwnerID = %userId%";
 		SQLParameter parameters = new SQLParameter();
@@ -1428,7 +1452,8 @@ public class DataBaseCommunicator : MonoBehaviour
 		parameters.SetValue("numPlayers", numPlayers); 
 		parameters.SetValue("userId", roomOwnerId);
 
-		Execute(query, UpdateNumPlayersInRoomCallback, parameters);
+		if(callback == null) Execute(query, UpdateNumPlayersInRoomCallback, parameters);
+		else Execute(query, callback, parameters);
 		//sql.Command(query, null, parameters, UpdateNumPlayersInRoomCallback);
 	}
 	private static void UpdateNumPlayersInRoomCallback(SQLResult result)

@@ -20,7 +20,7 @@ public class changeReceiver : MonoBehaviour
     public Transform requesterList;
     public Transform requesteeList;
 
-    PlayerMenuUIController pui;
+    public PlayerMenuUIController pui;
 
     public TMP_Text canvasMsg;
     public IEnumerator canvasMsgDisplay;
@@ -28,11 +28,23 @@ public class changeReceiver : MonoBehaviour
     //below are special scripts that need initialization
     public VoiceChatController vcc;
 
+    /*public void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }*/
+
     // Start is called before the first frame update
-    void Start()
+    /*void Start()
     {
         pui = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
 
+        vcc.InitializationSteps();
+    }*/
+
+    public void Initialize()
+    {
+        vcc = GameObject.Find("GlobalRoomVoiceChat").transform.Find("VoiceChat").GetComponent<VoiceChatController>();
+        pui = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<PlayerMenuUIController>();
         vcc.InitializationSteps();
     }
 

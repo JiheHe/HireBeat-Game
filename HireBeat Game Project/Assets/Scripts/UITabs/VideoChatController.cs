@@ -768,8 +768,15 @@ public class VideoChatController : MonoBehaviour
     #region Buttons
     public void OnTextChatOpenButtonPressed()
     {
-        GetComponent<Transform>().localPosition = new Vector2(-380, 0);
-        vidCTextChatObj.SetActive(true);
+        if(vidCTextChatObj.activeSelf)
+        {
+            CloseTextChatTab();
+        }
+        else
+        {
+            GetComponent<Transform>().localPosition = new Vector2(-380, 0);
+            vidCTextChatObj.SetActive(true);
+        }
     }
 
     public void CloseTextChatTab()

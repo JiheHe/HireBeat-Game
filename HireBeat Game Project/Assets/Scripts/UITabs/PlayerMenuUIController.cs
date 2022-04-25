@@ -14,10 +14,32 @@ public class PlayerMenuUIController : MonoBehaviour
 
     public InGameUIController UIController;
 
+    private void Awake()
+    {
+        StartCoroutine(AssignSocialAndRoomSystemUIs());
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         UIController = GetComponent<InGameUIController>();
+    }
+
+    IEnumerator AssignSocialAndRoomSystemUIs()
+    {
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null)
+        {
+            yield return null;
+            StartCoroutine(AssignSocialAndRoomSystemUIs());
+        }
+        else
+        {
+            yield return null;
+            socialSystemUI = playerHud.transform.Find("SocialSystem").gameObject;
+            roomSystemUI = playerHud.transform.Find("PlayerRoomSystem").gameObject;
+            UIController.voiceChatPanelUI = GameObject.Find("GlobalRoomVoiceChat").transform.Find("VoiceChat").gameObject;
+        }
     }
 
     public void instantiateProfilePicPicker()

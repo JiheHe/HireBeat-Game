@@ -22,8 +22,6 @@ public class ContentChangerScript : MonoBehaviour
 
     PlayFabController PFC;
 
-    DataBaseCommunicator dbc;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -39,7 +37,6 @@ public class ContentChangerScript : MonoBehaviour
         playerDataDisplay = playerObj.transform.Find("PlayerMouseDetector").GetComponent<OnMouseOverObject>();
 
         PFC = GameObject.Find("PlayFabController").GetComponent<PlayFabController>();
-        dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
     }
 
     // Update is called once per frame

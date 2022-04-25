@@ -32,21 +32,37 @@ public class PlayerStatsScript : MonoBehaviour
 
     void Start()
     {
-        titleController = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("hudText").
-            transform.Find("TitleSelector").gameObject.GetComponent<titleSelectorScript>();
-        expBar = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("hudText").
-            transform.Find("EXPBarObj").transform.Find("ExpBarOutline").gameObject.GetComponent<Slider>();
-        currRankTerm = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("hudText").
-            transform.Find("CurrRank").transform.Find("rankTerm").gameObject.GetComponent<Text>();
-        lvUpMessage = currRankTerm.gameObject.transform.parent.transform.parent.transform.Find("RankedUpText").GetComponent<Animator>();
+        StartCoroutine(UpdatePlayerStats());
+    }
 
-        //change these lines: we want a server that tracks previous player data, not resetting them every game
-        currRank = 1;
-        expAccumulated = 0;
-        nextAdvExp = rank2Exp;
-        maxLv = false;
-        updateExpBar(expAccumulated, rank2Exp);
-        updateRankDisplay(titleController.rankTitles[0]);
+    IEnumerator UpdatePlayerStats()
+    {
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null)
+        {
+            yield return null;
+            StartCoroutine(UpdatePlayerStats());
+        }
+        else
+        {
+            yield return null;
+
+            titleController = playerHud.transform.Find("hudText").
+            transform.Find("TitleSelector").gameObject.GetComponent<titleSelectorScript>();
+            expBar = playerHud.transform.Find("hudText").
+                transform.Find("EXPBarObj").transform.Find("ExpBarOutline").gameObject.GetComponent<Slider>();
+            currRankTerm = playerHud.transform.Find("hudText").
+                transform.Find("CurrRank").transform.Find("rankTerm").gameObject.GetComponent<Text>();
+            lvUpMessage = currRankTerm.gameObject.transform.parent.transform.parent.transform.Find("RankedUpText").GetComponent<Animator>();
+
+            //change these lines: we want a server that tracks previous player data, not resetting them every game
+            currRank = 1;
+            expAccumulated = 0;
+            nextAdvExp = rank2Exp;
+            maxLv = false;
+            updateExpBar(expAccumulated, rank2Exp);
+            updateRankDisplay(titleController.rankTitles[0]);
+        }
     }
 
     // Update is called once per frame

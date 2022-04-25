@@ -117,7 +117,7 @@ public class VideoChatRoomSearch : MonoBehaviour
             ExampleGlobals.TurnUser,
             ExampleGlobals.TurnPass));
 
-        dbc = GameObject.FindGameObjectWithTag("DataCenter").GetComponent<DataBaseCommunicator>();
+        dbc = GameObject.Find("PersistentData").GetComponent<DataBaseCommunicator>();
         vcRoomList = new Dictionary<string, VidCRoomInfo>(); //key will be roomName, it stays fixed.
         myID = GameObject.Find("PersistentData").GetComponent<PersistentData>().acctID;
         invitedRoomList = PersistentData.invitedRoomList;

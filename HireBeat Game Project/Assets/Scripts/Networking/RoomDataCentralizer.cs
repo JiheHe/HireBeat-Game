@@ -15,13 +15,29 @@ public class RoomDataCentralizer : MonoBehaviour
 
     void Start()
     {
-        socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        StartCoroutine(AssignSocialSystem());
+        //socialSystem = GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
         view = GetComponent<PhotonView>();
 
         //This is not a good practice.
         Invoke("InstantiateAllVCUsersFromList", 2); //after 2 seconds, hopefully all the RPC calls are finished, then init all users!
 
         pc = GameObject.Find("PlayFabController").GetComponent<PhotonConnector>(); //pfc is persistent, so won't null.
+    }
+
+    IEnumerator AssignSocialSystem()
+    {
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null)
+        {
+            yield return null;
+            StartCoroutine(AssignSocialSystem());
+        }
+        else
+        {
+            yield return null;
+            socialSystem = playerHud.transform.Find("SocialSystem").GetComponent<SocialSystemScript>();
+        }
     }
 
     // Update is called once per frame

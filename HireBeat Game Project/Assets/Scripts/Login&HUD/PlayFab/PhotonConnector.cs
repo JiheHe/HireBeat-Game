@@ -26,12 +26,19 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
             PhotonNetwork.LoadLevel(PersistentData.commonRoomNamesAndRelatedSceneName[PersistentData.TRUEOWNERID_OF_JOINING_ROOM]);
             Debug.Log("Joining a common room with a special map!");
         }
-        else PhotonNetwork.LoadLevel("MainScene"); //instead of loadscene. This is the default for user rooms.
+        else
+        {
+            PhotonNetwork.LoadLevel("MainScene"); //instead of loadscene. This is the default for user rooms. Changed to additive def.
+        }
 
         if (PersistentData.TRUEOWNERID_OF_JOINING_ROOM != null) 
             PersistentData.TRUEOWNERID_OF_CURRENT_ROOM = PersistentData.TRUEOWNERID_OF_JOINING_ROOM;
 
-        PersistentData.usingMicrophone = false; //not in a call when you entered a new room, surely
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null || playerHud.transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>().vCC == null)
+            PersistentData.usingMicrophone = false; //not in a call when you entered a new room, surely. Nope... video chat can persist btw.
+        
+        
         PersistentData.isMovementRestricted = false;
         disconnectDueToKicked = false; //you are in a new room, reset.
         userHasLeftPhotonRoom = false;
@@ -57,6 +64,14 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient) //Surely
         {
             isRoomCreator = true;
+
+            string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
+            if (!PersistentData.commonRoomNamesAndRelatedSceneName.Keys.Contains(roomID)) //if not in a common room
+            {
+                int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+                DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+            }
+
             //Notice: if you are a new user, then you don't need to do this call! Registration will handle it default case.
             //I mean like you probably can. If the room then doesn't exist then no effect (then regis. creates it). If it does then won't hurt. 
             //Going to call such step in dbc, because need to wait till dbc is connected anyway.
@@ -236,8 +251,31 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
 
         //Do all the things you need before you actually leave
         //This is for when you leave current room, thus leaving current VC
-        GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().UserLeavesRoomVC(GetComponent<PlayFabController>().myID);
+        //GameObject.FindGameObjectWithTag("DataCenter").GetComponent<RoomDataCentralizer>().UserLeavesRoomVC(GetComponent<PlayFabController>().myID);
+        GameObject.Find("GlobalRoomVoiceChat").transform.Find("VoiceChat").GetComponent<VoiceChatController>().OnDisconnectPressed();
         GetComponent<PlayFabController>().GetPlayerData();
+
+        //This is for closing all UI tabs, since they are persistent. (add more UI tabs later).
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        playerHud.transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>().CloseWindow();
+        playerHud.transform.Find("SocialSystem").GetComponent<SocialSystemScript>().closeWindow();
+        //Avatar customization is a prefab that destroys on transition, no need
+        //Background UI is a prefab that destroys on transition, no need
+        //Profile pic UI is a prefab that destroys on transition, no need
+        //Voice chat quit case is covered above. It's also destroyed (local) upon transition, no need
+        var vcrs = playerHud.transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
+        if (vcrs.vCC != null) vcrs.vCC.CloseVideoChatPanel();
+        else vcrs.CloseVideoChatRoomSearchPanel(); //Nothing to reset for video chat...It's based off of social system and DBC. Will do in the future if bugs.
+        //Not sure on the quest system yet. 
+        //Not sure on the settings tab yet. 
+
+
+        string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1 && !PersistentData.commonRoomNamesAndRelatedSceneName.Keys.Contains(roomID)) //if you are the only player! then call dbc to set room num players to 0.
+        {    
+            DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, 0, FinishedUpdatingRoomNumPlayersToZero);
+            FinishedUpdatingRoomNumPlayersToZeroIfNone = false;
+        }
 
         //SHOULD WAIT AND MAKE SURE EVERYTHING ABOVE IS FINISHED!!!
         //Then you leave.
@@ -246,16 +284,23 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         //StartCoroutine(DisconnectAndLoad());
     }
 
+    void FinishedUpdatingRoomNumPlayersToZero(SQL4Unity.SQLResult result)
+    {
+        FinishedUpdatingRoomNumPlayersToZeroIfNone = true;
+    }
+
     public static bool FinishedGrabbingNewestUserDataFromPFC = false; //this is set in PFC
+    bool FinishedUpdatingRoomNumPlayersToZeroIfNone = true;
     IEnumerator WaitUntilLeavePrepsAreReady()
     {
         yield return new WaitForEndOfFrame();
-        if(FinishedGrabbingNewestUserDataFromPFC) //can add more && conditions
+        if(FinishedGrabbingNewestUserDataFromPFC && FinishedUpdatingRoomNumPlayersToZeroIfNone) //can add more && conditions
         {
             yield return null;
             FinishedGrabbingNewestUserDataFromPFC = false; //reset the variables
             PhotonNetwork.LeaveRoom();
-            SceneManager.LoadScene("LoadingScene");
+            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name); //usually the main scene, or whatever the name is has.
+            SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         }
         else
         {
