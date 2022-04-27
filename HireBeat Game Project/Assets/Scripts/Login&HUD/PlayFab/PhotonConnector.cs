@@ -120,7 +120,7 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         //gotta call it here... OnLeftRoom basically doesn't work if you leave directly..... I think OnDisconnected is called.
-        GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(otherPlayer.UserId);
+        GameObject.Find("GlobalRoomVoiceChat").transform.Find("VoiceChat").GetComponent<VoiceChatController>().ClearSpeaker(otherPlayer.UserId);
 
         //Check if you are the master! If you are then you should queue a data table update to user num in room.
         if(PhotonNetwork.IsMasterClient) //If a master client leaves, then the next one shuld still exist hopefully.
