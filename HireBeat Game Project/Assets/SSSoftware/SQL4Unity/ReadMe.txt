@@ -1,3 +1,4 @@
+
 SQL4Unity Client / Server - Read Me.
 
 SQL4Unity can be accessed under the Unity Menu Tools->SQL for Unity
@@ -12,6 +13,30 @@ SteveSmith.Software
 
 
 Release Notes:
+
+	V.1.0.5	April 2022
+		Bug Fix
+			Using NULL values in Constraint columns causes Illegal Cast Exception
+			Float values truncated to 2 decimals in Table Editor
+			Color and Color32 values incorrectly validated in Table Editor
+			Compact Schema leaves orphaned Indexes
+			Fixes Implemented
+
+		New Features
+			SQL4UnityAdmin
+				'logs' command to display the Service Event Logs
+
+	V.1.0.5 April 2022
+		Bug Fix
+			Multiple OR clauses cause out of bounds error
+			Fix for async TCP callback not being executed
+			Fix for Decompression error when deserializing Receive from Server
+
+		New Features
+			Added ulong (UInt64) datatype
+			Added sbyte (signed byte) datatype
+			INSERT statement now returns the Inserted row, to facilitate the retrieval of auto-increment values
+
 
 	V.1.0.5 March 2022
 		Bug Fix
