@@ -18,7 +18,15 @@ public class LoginPageScripts : MonoBehaviour
     public GameObject loginErrorText;
     public GameObject registerErrorText;
 
+    public GameObject loginPageObj;
+    public GameObject askForAcctNameInputObj;
+    public InputField acctNameInputField;
+    public Text askForAcctNameErrorTxt;
+    private IEnumerator errorMsgDisplay;
+
     public bool rememberMe;
+
+    PlayFabController PFC = null;
 
     // Start is called before the first frame update
     void Start()
@@ -50,10 +58,42 @@ public class LoginPageScripts : MonoBehaviour
         loginErrorText.SetActive(false);
     }
 
-    IEnumerator WaitUntilClose(GameObject obj, float waitTime)
+    public void toAskAcctNameMode(PlayFabController pfc)
     {
-        yield return new WaitForSeconds(waitTime);
-        obj.SetActive(false);
+        loginPageObj.SetActive(false);
+        askForAcctNameInputObj.SetActive(true);
+        PFC = pfc;
+    }
+
+    string acctName;
+    public void OnPreferredAcctNameSubmit()
+    {
+        acctName = acctNameInputField.text;
+        if(acctName.Length < 3)
+        {
+            DisplayErrorText(askForAcctNameErrorTxt, 3f, "Username has to have at least 3 characters");
+        }
+        else
+        {
+            string query = "SELECT * FROM UserDataStorage WHERE UserName = %acctName%";
+            SQL4Unity.SQLParameter parameter = new SQL4Unity.SQLParameter();
+            parameter.SetValue("acctName", acctName);
+            DataBaseCommunicator.Execute(query, OnPreferredAcctNameSubmitCallback, parameter);
+        }
+    }
+    private void OnPreferredAcctNameSubmitCallback(SQL4Unity.SQLResult result)
+    {
+        if(result.rowsAffected == 0) //the name is unique! Let it through and register the user on DBC.
+        {
+            PFC.setDataForAcctNameRegis = true; //this bool eventually lead to scene change.
+            PFC.AddNewUserToDBCTable(acctName);
+            PFC.SetUserData("acctName", acctName, "Public"); //acctName is the data version of display name
+            PFC.UpdateUserDisplayName(acctName);
+        }
+        else //not unique... display error message
+        {
+            DisplayErrorText(askForAcctNameErrorTxt, 3f, "Username already exists");
+        }
     }
 
     public void SetRememberMe() //starts off false, so every change changes it now
@@ -61,11 +101,19 @@ public class LoginPageScripts : MonoBehaviour
         rememberMe = !rememberMe;
     }
 
-    public void DisplayErrorText(GameObject errorTextObj, string errorText)
+    public void DisplayErrorText(Text errorMsg, float time, string message)
     {
-        errorTextObj.transform.Find("Label").GetComponent<Text>().text = errorText;
-        errorTextObj.SetActive(true);
-        StartCoroutine(WaitUntilClose(errorTextObj, 4f)); //no disappearing animation for now.
+        if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+        errorMsgDisplay = DisplayErrorMessage(errorMsg, time, message);
+        StartCoroutine(errorMsgDisplay);
+    }
+
+    IEnumerator DisplayErrorMessage(Text errorMsg, float time, string message)
+    {
+        errorMsg.gameObject.SetActive(true);
+        errorMsg.text = message;
+        yield return new WaitForSeconds(time);
+        errorMsg.gameObject.SetActive(false);
     }
 
     public void DisplayEmailAndPassword(string usernameOrEmail, string password)

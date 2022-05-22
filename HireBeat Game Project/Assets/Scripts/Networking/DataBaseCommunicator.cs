@@ -86,14 +86,14 @@ public class DataBaseCommunicator : MonoBehaviour
 		Debug.Log("SQL database connection: Using Protocol " + Protocol + " to " + IpAddress + ":" + Port);
 		// Monobehaviour required for Websocket and TCP Async Connections. Secure Socket = True/False required for WebSocket Protocol
 
-		StartCoroutine(AssignVcsAndRsps());
+		//StartCoroutine(AssignVcsAndRsps()); //too early now, since dbc first then photon room login
 		//vcs = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("VidCRoomSearch").GetComponent<VideoChatRoomSearch>();
 		//rsps = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD").transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>();
 
 		sql.Connect(Protocol, IpAddress, Port, UUID, secure, false, UserName, ConnectCallback);
 	}
 
-	IEnumerator AssignVcsAndRsps()
+	public IEnumerator AssignVcsAndRsps()
     {
 		var playerHud = UnityEngine.GameObject.FindGameObjectWithTag("PlayerHUD");
 		if (playerHud == null)
@@ -134,9 +134,15 @@ public class DataBaseCommunicator : MonoBehaviour
 		//sql.SyncWithServer(true); //DOn't sync with server! Everything will be server based if don't sync, which is good!
 		isOpen = true;
 
+		StartCoroutine(processQueue()); //start scanning in inputs
+
+		//adding ip addr to unique id to the table
 		AddIPAddressToUniqueID(myOwnIpAddress, myID);
 
-		if(PhotonConnector.isRoomCreator)
+		//check if unique id exists in userdatastorage (i.e. has name ready)
+		CheckIfUserHasRegistered(); //this function's callback is below
+
+		/*if (PhotonConnector.isRoomCreator)
         {
 			string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
 			int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
@@ -145,7 +151,18 @@ public class DataBaseCommunicator : MonoBehaviour
 			PhotonConnector.isRoomCreator = false; //avoids retrigger next room because PC is persistent.
 		}
 
-		StartCoroutine(processQueue()); //start scanning in inputs
+		StartCoroutine(processQueue()); //start scanning in inputs*/
+	}
+	
+	void PostRegistrationCheckCallback(SQLResult result)
+    {
+		//Notice that add new user is only called after a name is ready.
+		bool isRegistered = result.rowsAffected != 0;
+
+		//Right now, you connect to dbc first, then join photon room after. So we know dbc is ready when we are in a photon room. so...
+		//The update part below should only be called when you are in room. Fix later
+
+		UnityEngine.GameObject.Find("PlayFabController").GetComponent<PlayFabController>().DBCCallbackOnCheckingRegistration(isRegistered);
 	}
 
 	IEnumerator processQueue()
@@ -707,6 +724,14 @@ public class DataBaseCommunicator : MonoBehaviour
 		}
 	}*/
 
+	private void CheckIfUserHasRegistered()
+    {
+		string query = "SELECT * FROM UserDataStorage WHERE UserId = %userId%";
+		SQLParameter parameter = new SQLParameter();
+		parameter.SetValue("userId", myID);
+		Execute(query, PostRegistrationCheckCallback, parameter);
+	}
+
 	public void AddIPAddressToUniqueID(string ipAddress, string uniqueID)
     {
 		string query = "insert into IPAdressToUniqueID (IPAddress, UniqueID) values (%ipAddress%, %uniqueID%)";
@@ -1184,7 +1209,7 @@ public class DataBaseCommunicator : MonoBehaviour
 
 		string infoQuery = "INSERT INTO UserDataStorage (UserName,UserId,Email,IsRoomPublic) VALUES (%userName%, %userId%, %email%, %rmPub%)";
 		SQLParameter infoParameters = new SQLParameter();
-		infoParameters.SetValue("userName", userName); //,,,...;;; is a special syntax, doesn't matter XD just a placeholder 
+		infoParameters.SetValue("userName", userName); 
 		infoParameters.SetValue("userId", userId);
 		infoParameters.SetValue("email", userEmail);
 		infoParameters.SetValue("rmPub", roomPublic);

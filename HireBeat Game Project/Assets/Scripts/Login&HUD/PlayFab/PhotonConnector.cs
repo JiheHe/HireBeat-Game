@@ -54,7 +54,6 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         JoinOrCreateRoom(PersistentData.TRUEOWNERID_OF_CURRENT_ROOM);
     }
 
-    public static bool isRoomCreator = false;
     public override void OnCreatedRoom()
     {
         Debug.Log($"You have created a Photon Room named {PhotonNetwork.CurrentRoom.Name}");
@@ -63,13 +62,13 @@ public class PhotonConnector: MonoBehaviourPunCallbacks
         //after all set up is ready.
         if(PhotonNetwork.IsMasterClient) //Surely
         {
-            isRoomCreator = true;
-
             string roomID = PhotonNetwork.CurrentRoom.Name.Substring("USERROOM_".Length);
             if (!PersistentData.commonRoomNamesAndRelatedSceneName.Keys.Contains(roomID)) //if not in a common room
             {
                 int numPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+                string myID = GetComponent<PlayFabController>().myID;
                 DataBaseCommunicator.UpdateNumPlayersInRoom(roomID, numPlayers);
+                DataBaseCommunicator.UpdateCurrOwnerOfRoom(roomID, myID);
             }
 
             //Notice: if you are a new user, then you don't need to do this call! Registration will handle it default case.

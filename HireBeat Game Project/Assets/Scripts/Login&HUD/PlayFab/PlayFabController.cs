@@ -29,7 +29,7 @@ public class PlayFabController : MonoBehaviour
     //use these as default internal error report
     void DisplayPlayFabError(PlayFabError error)
     {
-        Debug.Log(error.GenerateErrorReport());
+        Debug.LogError(error.GenerateErrorReport());
     }
     void DisplayError(string error)
     {
@@ -72,16 +72,18 @@ public class PlayFabController : MonoBehaviour
         Debug.Log("Congratulations, your login attempt was successful!");
         if (!loginMenu.rememberMe) PlayerPrefs.DeleteAll(); //this removes saved info, so no auto login
         else SetPlayerLoginPrefs(); //"Remember me
-        SceneManager.LoadScene("LoadingScene");
-        loginMenu = null;
-        GetStats();
-
         myID = result.PlayFabId; //this is the unique ID!!!
-        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID; //always default to your own room upon login.
-        PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
         SetUserData("acctID", myID, "Public");
-        PD.RetrieveUserData();
         PD.gameObject.GetComponent<DataBaseCommunicator>().InitializeDBC(myID);
+
+        //SceneManager.LoadScene("LoadingScene");
+        //loginMenu = null;
+        //GetStats();
+
+        
+        //PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID; //always default to your own room upon login.
+        //PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
+        //PD.RetrieveUserData();
     }
 
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
@@ -89,19 +91,61 @@ public class PlayFabController : MonoBehaviour
         Debug.Log("Congratulations, a new user has been registered!");
         if (!loginMenu.rememberMe) PlayerPrefs.DeleteAll();
         else SetPlayerLoginPrefs();
-        SceneManager.LoadScene("LoadingScene");
-        loginMenu = null;
-        GetStats(); //player shouldn't have any values at this point
+        myID = result.PlayFabId;
+        SetUserData("acctID", myID, "Public");
+        PD.gameObject.GetComponent<DataBaseCommunicator>().InitializeDBC(myID);
+
+        //SceneManager.LoadScene("LoadingScene");
+        //loginMenu = null;
+        //GetStats(); //player shouldn't have any values at this point
         //maybe set up a default stats value later
 
-        myID = result.PlayFabId;
-        PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID;
-        PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
-        UpdateUserDisplayName(username);
-        SetUserData("acctName", username, "Public"); //acctName is the data version of display name
-        SetUserData("acctID", myID, "Public");
-        PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend (cuz mostly will be null!)
-        PD.gameObject.GetComponent<DataBaseCommunicator>().InitializeDBC(myID);
+        //PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID;
+        //PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
+        //UpdateUserDisplayName(username); call this at the actual first time name changer!!! like content changer script.
+        //PD.RetrieveUserData(); //not necessary, not data, unless manually set at backend (cuz mostly will be null!)
+    }
+
+    public void DBCCallbackOnCheckingRegistration(bool isRegistered)
+    {
+        if(isRegistered) //Already registered! Go straight onto point
+        {
+            loginMenu = null;
+            PersistentData.TRUEOWNERID_OF_JOINING_ROOM = myID; //always default to your own room upon login.
+            PersistentData.NAME_OF_JOINING_ROOM = "Your Room";
+            PD.RetrieveUserData();
+            SceneManager.LoadScene("LoadingScene");
+            PD.GetComponent<DataBaseCommunicator>().StartCoroutine(PD.GetComponent<DataBaseCommunicator>().AssignVcsAndRsps());
+        }
+        else //Ask for a unique username.
+        {
+            if(userEmail == null) LoadAccountData(); //but make sure email is ready first!
+            else loginMenu.toAskAcctNameMode(this);
+        }
+    }
+
+    public void LoadAccountData()
+    {
+        PlayFabClientAPI.GetAccountInfo(
+            // Request
+            new GetAccountInfoRequest
+            {
+                // No properties means get the calling user's info
+            },
+            // Success
+            (GetAccountInfoResult response) =>
+            {
+                Debug.Log("GetAccountInfo (email) completed.");
+                userEmail = response.AccountInfo.PrivateInfo.Email;
+                loginMenu.toAskAcctNameMode(this);
+            },
+            // Failure
+            (PlayFabError error) =>
+            {
+                Debug.LogError("GetAccountInfo failed.");
+                Debug.LogError(error.GenerateErrorReport());
+            }
+            );
     }
 
     void OnDisplayName(UpdateUserTitleDisplayNameResult result)
@@ -109,7 +153,7 @@ public class PlayFabController : MonoBehaviour
         Debug.Log(result.DisplayName + " is your new display name");
     }
 
-    public void UpdateUserDisplayName(string name)
+    public void UpdateUserDisplayName(string name) 
     {
         PlayFabClientAPI.UpdateUserTitleDisplayName(new UpdateUserTitleDisplayNameRequest { DisplayName = name }, OnDisplayName, OnLoginFailure);
     }
@@ -118,12 +162,12 @@ public class PlayFabController : MonoBehaviour
     {
         //if login fail, then jump to register page (what if wrong password?, covered! Don't need to jump.. just give error message. Have switch button)
         //Debug.LogError(error.GenerateErrorReport()); //"AccountNotFound" (no account with that email) or "InvalidUsernameOrPassword".
-        loginMenu.DisplayErrorText(loginMenu.loginErrorText, error.GenerateErrorReport()); 
+        loginMenu.DisplayErrorText(loginMenu.loginErrorText.GetComponent<Text>(), 4f, error.GenerateErrorReport());
     }
 
     private void OnRegisterFailure(PlayFabError error)
     {
-        loginMenu.DisplayErrorText(loginMenu.registerErrorText, error.GenerateErrorReport());
+        loginMenu.DisplayErrorText(loginMenu.registerErrorText.GetComponent<Text>(), 4f, error.GenerateErrorReport());
     }
 
     public void GetUserEmail(string emailIn)
@@ -345,20 +389,38 @@ public class PlayFabController : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < PD.charProperties.Length; i++)
+            if(result.Data.Count != PD.charProperties.Length) //not fully initialized yet. Register mode: set default values.
             {
-                string varName = PD.charProperties[i];
-                if (!result.Data.ContainsKey(varName))
+                for (int i = 0; i < PD.charProperties.Length; i++)
                 {
-                    Debug.Log(varName + " not set");
+                    string varName = PD.charProperties[i];
+                    if (!result.Data.ContainsKey(varName))
+                    {
+                        Debug.Log(varName + " not set, now set to default value.");
+                        //Set default value for vars in PD, so either overwrite or maintain default luckily to avoid bugs.
+                        //Since PD already has default values. We can upload them onto playfab!
+                        SetUserData(varName, PD.GetType().GetField(varName).GetValue(PD).ToString(), "Public"); //Private public doesn't matter tbh. All public for now at first w/e
+                    }
                 }
-                else
-                {
-                    //this sets the "key"-named variable in PD to the value of the return Data
-                    PD.GetType().GetField(varName).SetValue(PD, result.Data[varName].Value);
-                }
+                GetPlayerData();
             }
-            PhotonConnector.FinishedGrabbingNewestUserDataFromPFC = true;
+            else
+            {
+                for (int i = 0; i < PD.charProperties.Length; i++)
+                {
+                    string varName = PD.charProperties[i];
+                    if (!result.Data.ContainsKey(varName))
+                    {
+                        Debug.LogError(varName + " not set, which is weird.");
+                    }
+                    else
+                    {
+                        //this sets the "key"-named variable in PD to the value of the return Data
+                        PD.GetType().GetField(varName).SetValue(PD, result.Data[varName].Value);
+                    }
+                }
+                PhotonConnector.FinishedGrabbingNewestUserDataFromPFC = true;
+            }
         }
     }
 
@@ -377,11 +439,21 @@ public class PlayFabController : MonoBehaviour
         PlayFabClientAPI.UpdateUserData(request, SetDataSuccess, OnUserDataFailed);
     }
 
-    
 
+    public bool setDataForAcctNameRegis = false;
     void SetDataSuccess(UpdateUserDataResult result)
     {
         //Debug.Log(result.DataVersion);
+        if(setDataForAcctNameRegis) 
+        {
+            DBCCallbackOnCheckingRegistration(true);
+            setDataForAcctNameRegis = false;
+        }
+    }
+
+    public void AddNewUserToDBCTable(string acctName)
+    {
+        PD.GetComponent<DataBaseCommunicator>().AddNewPlayerWithFullDetail(acctName, myID, userEmail);
     }
 
     #endregion PlayerData

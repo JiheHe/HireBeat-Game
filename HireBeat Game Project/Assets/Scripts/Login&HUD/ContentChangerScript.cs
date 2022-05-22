@@ -56,9 +56,12 @@ public class ContentChangerScript : MonoBehaviour
     string tempUserName; //only be used if username.
     public void OnConfirmationPressed() //exit edit mode
     {
-        if(!canLeftEmpty && newInput.text.Replace(" ", "").Length == 0) 
+        if(!canLeftEmpty && newInput.text.Replace(" ", "").Length < 3) 
         {
-            Debug.Log("Such textfield cannot be empty!");
+            Debug.Log("Username has to have at least 3 characters");
+            if (errorMsgDisplay != null) StopCoroutine(errorMsgDisplay); //"restart" coroutine
+            errorMsgDisplay = DisplayErrorMessage(2f, "Username has to have at least 3 characters"); //each time a coro is called, a new obj is formed.
+            StartCoroutine(errorMsgDisplay);
         } 
         else
         {

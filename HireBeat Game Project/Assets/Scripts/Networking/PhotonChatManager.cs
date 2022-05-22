@@ -291,7 +291,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     private void OnPlayFabError(PlayFabError obj)
     {
-        LogMessage(obj.GenerateErrorReport());
+        Debug.LogError("PlayFab + PhotonChat: " + obj.GenerateErrorReport());
     }
 
     public void LogMessage(string message)
