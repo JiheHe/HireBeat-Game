@@ -201,7 +201,9 @@ public class PlayFabController : MonoBehaviour
     public void OnClickLogin()
     {
         type = 0;
-        if(usernameOrEmail.Contains('@')) //username is alphanumeric, so won't contain @
+        userPassword = loginMenu.passwordInputField.GetComponent<InputField>().text;
+        usernameOrEmail = loginMenu.usernameOrEmailInputField.GetComponent<InputField>().text;
+        if (usernameOrEmail.Contains('@')) //username is alphanumeric, so won't contain @
         {
             userEmail = usernameOrEmail;
             LoginWithEmail();
@@ -231,7 +233,10 @@ public class PlayFabController : MonoBehaviour
     public void OnClickRegister()
     {
         type = 1;
-        var registerRequest = new RegisterPlayFabUserRequest { Email = userEmail, Password = userPassword, Username = username };
+        username = loginMenu.usernameInputField.GetComponent<InputField>().text; //do it here to enforce the result and avoid no-change transition carry bug
+        userEmail = loginMenu.emailInputField.GetComponent<InputField>().text;
+        userPassword = loginMenu.passwordInputField.GetComponent<InputField>().text;
+        var registerRequest = new RegisterPlayFabUserRequest { Email = userEmail, Password = userPassword, Username = username, RequireBothUsernameAndEmail = true };
         PlayFabClientAPI.RegisterPlayFabUser(registerRequest, RequestPhotonToken, OnRegisterFailure);
     }
 

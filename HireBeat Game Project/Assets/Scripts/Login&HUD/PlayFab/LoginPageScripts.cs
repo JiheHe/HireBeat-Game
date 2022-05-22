@@ -39,6 +39,7 @@ public class LoginPageScripts : MonoBehaviour
         loginButton.SetActive(true);
         registerButton.SetActive(false);
         usernameOrEmailInputField.SetActive(true);
+        passwordInputField.GetComponent<InputField>().text = "";
         usernameInputField.SetActive(false);
         emailInputField.SetActive(false);
         toRegisterTabButton.SetActive(true);
@@ -53,6 +54,7 @@ public class LoginPageScripts : MonoBehaviour
         usernameOrEmailInputField.SetActive(false);
         usernameInputField.SetActive(true);
         emailInputField.SetActive(true);
+        passwordInputField.GetComponent<InputField>().text = "";
         toRegisterTabButton.SetActive(false);
         toLoginTabButton.SetActive(true);
         loginErrorText.SetActive(false);
@@ -99,6 +101,22 @@ public class LoginPageScripts : MonoBehaviour
     public void SetRememberMe() //starts off false, so every change changes it now
     {
         rememberMe = !rememberMe;
+    }
+
+    public void TogglePasswordVisablilty(bool isOn)
+    {
+        //https://answers.unity.com/questions/1771684/what-is-the-difference-between-inputfieldinputtype.html
+
+        if (isOn)
+        {
+            passwordInputField.GetComponent<InputField>().inputType = InputField.InputType.Standard;
+        }
+        else
+        {
+            passwordInputField.GetComponent<InputField>().inputType = InputField.InputType.Password;
+        }
+
+        passwordInputField.GetComponent<InputField>().ForceLabelUpdate();
     }
 
     public void DisplayErrorText(Text errorMsg, float time, string message)
