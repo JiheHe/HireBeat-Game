@@ -101,6 +101,7 @@ public class SpawnPlayers : MonoBehaviour
             playerHud.GetComponent<changeReceiver>().Initialize(); //cover voice chat system here
             playerHud.transform.Find("PlayerRoomSystem").GetComponent<RoomSystemPanelScript>().Initalize();
             playerHud.transform.Find("SocialSystem").GetComponent<SocialSystemScript>().Initialize();
+            playerHud.transform.Find("Settings").GetComponent<SettingsScript>().Initialize();
             //Avatar customization is a prefab that initializes on spawn, no need
             //Background UI is a prefab that initializes on spawn, no need
             //Profile pic UI is a prefab that initializes on spawn, no need

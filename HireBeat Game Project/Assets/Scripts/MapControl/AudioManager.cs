@@ -73,4 +73,16 @@ public class AudioManager : MonoBehaviour
         s.volume = volume;
         s.source.volume = volume;
     }
+
+    public void SetSceneThemeVolume(float volume)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == SceneThemeName); // cool shorthand ;D
+        if (s == null)
+        {
+            Debug.LogWarning("Sound: " + SceneThemeName + " not found!");
+            return; //just in case..
+        }
+        s.volume = volume;
+        s.source.volume = volume;
+    }
 }

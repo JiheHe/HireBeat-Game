@@ -29,15 +29,15 @@ public class soundControl : MonoBehaviour
         if (2 == volume) {              //currently at high volume; change to mute
             volume = 0;
             sfxImage.GetComponent<Image>().sprite = sfxImageMuteSprite;
-            FindObjectOfType<AudioManager>().SetVolume("LoginPageTheme", 0);
+            FindObjectOfType<AudioManager>().SetSceneThemeVolume(0);
         } else if (1 == volume) {       //currently at low volume; change to high
             volume = 2;
             sfxImage.GetComponent<Image>().sprite = sfxImageHighSprite;
-            FindObjectOfType<AudioManager>().SetVolume("LoginPageTheme", 1);
+            FindObjectOfType<AudioManager>().SetSceneThemeVolume(1);
         } else {                        //currently mute; change to low volume
             volume = 1;
             sfxImage.GetComponent<Image>().sprite = sfxImageLowSprite;
-            FindObjectOfType<AudioManager>().SetVolume("LoginPageTheme", 0.5f);
+            FindObjectOfType<AudioManager>().SetSceneThemeVolume(0.5f);
         }
     }
 }

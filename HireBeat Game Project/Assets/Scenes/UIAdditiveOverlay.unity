@@ -1008,6 +1008,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -30
       objectReference: {fileID: 0}
+    - target: {fileID: 421674975496370168, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: gameThemeVolumeSlider
+      value: 
+      objectReference: {fileID: 49834557}
     - target: {fileID: 1013442843414273202, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -1236,6 +1240,38 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 49834558}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetGameThemeVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingsScript, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 9036276628561493704, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -1448,6 +1484,28 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 9036276628219146943, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
   m_PrefabInstance: {fileID: 49834555}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &49834557 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9036276628475687779, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+  m_PrefabInstance: {fileID: 49834555}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &49834558 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 421674975496370168, guid: b33fcd70f3b4e1e4083c60960dba98df, type: 3}
+  m_PrefabInstance: {fileID: 49834555}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7176b1b91c0e5434587e6c0557e01aa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &53119588
 GameObject:
   m_ObjectHideFlags: 0
@@ -33696,7 +33754,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5b122262b8e91c4bb7dc81fb0c93b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeControl: {fileID: 0}
   hudText: {fileID: 1245704281}
   profilePicture: {fileID: 858139392}
   accountNameInEditor: {fileID: 11208428}
@@ -44386,7 +44443,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5b122262b8e91c4bb7dc81fb0c93b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeControl: {fileID: 0}
   hudText: {fileID: 1245704281}
   profilePicture: {fileID: 858139392}
   accountNameInEditor: {fileID: 0}

@@ -6,7 +6,6 @@ using TMPro;
 
 public class changeReceiver : MonoBehaviour
 {
-    public GameObject volumeControl;
     public GameObject hudText;
     public GameObject profilePicture;
 

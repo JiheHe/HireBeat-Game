@@ -38,6 +38,7 @@ public class PlayerMenuUIController : MonoBehaviour
             yield return null;
             socialSystemUI = playerHud.transform.Find("SocialSystem").gameObject;
             roomSystemUI = playerHud.transform.Find("PlayerRoomSystem").gameObject;
+            settingsUI = playerHud.transform.Find("Settings").gameObject;
             UIController.voiceChatPanelUI = GameObject.Find("GlobalRoomVoiceChat").transform.Find("VoiceChat").gameObject;
         }
     }
@@ -59,13 +60,17 @@ public class PlayerMenuUIController : MonoBehaviour
     {
         if (!hasOneOn && !UIController.hasOneOn)
         {
-            hasOneOn = true;
+            /*hasOneOn = true;
             GameObject settingsTab = Instantiate(settingsUI, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 
             settingsTab.transform.SetParent(GameObject.Find("hudCanvas").transform);
             settingsTab.transform.localPosition = new Vector2(0, 0);
-            settingsTab.transform.localScale = new Vector2(1, 1);
+            settingsTab.transform.localScale = new Vector2(1, 1);*/
             //Instantiate(settingsUI, new Vector3(0, 0, 0), Quaternion.identity);
+
+            hasOneOn = true;
+            settingsUI.SetActive(true);
+            settingsUI.GetComponent<SettingsScript>().OnTabOpen();
         }
         else
         {
