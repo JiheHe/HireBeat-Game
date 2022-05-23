@@ -304,7 +304,7 @@ public class SocialSystemScript : MonoBehaviour
     private void SendPublicMessage()
     {
         DateTime sentTime = DateTime.UtcNow;
-        string senderName = transform.parent.GetChild(2).GetChild(0).GetComponent<Text>().text; //I don't wanna set a string for this in social system.. grab from hud ;D
+        string senderName = transform.parent.Find("hudText").GetChild(0).GetComponent<Text>().text; //I don't wanna set a string for this in social system.. grab from hud ;D
         PCM.chatClient.PublishMessage(currentPublicRoomChatName,
             new string[] { message, sentTime.ToBinary().ToString(), senderName, PFC.myID });
         currentChatPanel.GetComponent<MsgContentController>().AddMessage(senderName, //current chat panel should be the public room one, can put that in to safe check

@@ -70,7 +70,7 @@ public class PlayFabController : MonoBehaviour
     private void OnLoginSuccess(LoginResult result)
     {
         Debug.Log("Congratulations, your login attempt was successful!");
-        if (!loginMenu.rememberMe) PlayerPrefs.DeleteAll(); //this removes saved info, so no auto login
+        if (!loginMenu.rememberMe) DeletePlayerLoginPrefs(); //this removes saved info, so no auto login
         else SetPlayerLoginPrefs(); //"Remember me
         myID = result.PlayFabId; //this is the unique ID!!!
         SetUserData("acctID", myID, "Public");
@@ -89,8 +89,12 @@ public class PlayFabController : MonoBehaviour
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
         Debug.Log("Congratulations, a new user has been registered!");
-        if (!loginMenu.rememberMe) PlayerPrefs.DeleteAll();
-        else SetPlayerLoginPrefs();
+        if (!loginMenu.rememberMe) DeletePlayerLoginPrefs();
+        else
+        {
+            usernameOrEmail = userEmail; //default to userEmail
+            SetPlayerLoginPrefs();
+        }
         myID = result.PlayFabId;
         SetUserData("acctID", myID, "Public");
         PD.gameObject.GetComponent<DataBaseCommunicator>().InitializeDBC(myID);
@@ -311,6 +315,13 @@ public class PlayFabController : MonoBehaviour
     {
         PlayerPrefs.SetString("USERNAMEOREMAIL", usernameOrEmail);
         PlayerPrefs.SetString("PASSWORD", userPassword);
+        PlayerPrefs.Save(); //ensure this for webgl
+    }
+
+    private void DeletePlayerLoginPrefs()
+    {
+        PlayerPrefs.DeleteKey("USERNAMEOREMAIL");
+        PlayerPrefs.DeleteKey("PASSWORD");
     }
     #endregion Login 
 

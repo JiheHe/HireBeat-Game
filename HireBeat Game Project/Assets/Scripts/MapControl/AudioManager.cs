@@ -1,11 +1,13 @@
 using UnityEngine.Audio;
 using UnityEngine;
 using System;
-
+using System.Collections;
 
 public class AudioManager : MonoBehaviour
 {
     public string SceneThemeName;
+    public bool hasSettings = false;
+    public bool isLoading = false;
 
     public Sound[] sounds;
     // Start is called before the first frame update
@@ -35,12 +37,40 @@ public class AudioManager : MonoBehaviour
             s.source.pitch = s.pitch;
             s.source.loop = s.loop;
         }
-        
     }
 
     void Start()
     {
-        if (SceneThemeName.Length != 0) Play(SceneThemeName);
+        if (hasSettings) StartCoroutine(LoadInPlayerPrefSettings()); 
+        else if (isLoading)
+        {
+            if (PlayerPrefs.HasKey("ALLSOUNDON"))
+            {
+                if (PlayerPrefs.GetInt("ALLSOUNDON") == 0) MuteAll(true);
+                else SetAllSFXVolume(PlayerPrefs.GetFloat("SFXVOL"));
+            }
+            //else stays on and 1
+        }
+        else if (SceneThemeName.Length != 0) Play(SceneThemeName);
+    }
+
+    IEnumerator LoadInPlayerPrefSettings()
+    {
+        var playerHud = GameObject.FindGameObjectWithTag("PlayerHUD");
+        if (playerHud == null)
+        {
+            yield return null;
+            StartCoroutine(LoadInPlayerPrefSettings());
+        }
+        else
+        {
+            yield return null;
+
+            var ss = playerHud.transform.Find("Settings").GetComponent<SettingsScript>();
+            ss.SetCurrentAudioManager(this);
+            ss.LoadInPlayerPrefSettings();
+            Play(SceneThemeName);
+        }
     }
 
     public void Play(string name)
@@ -62,6 +92,22 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void MuteAll(bool mute)
+    {
+        foreach (Sound s in sounds)
+        {
+            s.source.mute = mute;
+        }
+    }
+
+    public void SetAllSFXVolume(float volume)
+    {
+        foreach(Sound s in sounds)
+        {
+            if(s.name != SceneThemeName) s.source.volume = s.volume * volume;
+        }
+    }
+
     public void SetVolume(string name, float volume)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name); // cool shorthand ;D
@@ -70,8 +116,8 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning("Sound: " + name + " not found!");
             return; //just in case..
         }
-        s.volume = volume;
-        s.source.volume = volume;
+        //s.volume = volume; //Sound class's volume should stay the same. Only need to change the applied so can rec og value.
+        s.source.volume = s.volume * volume;
     }
 
     public void SetSceneThemeVolume(float volume)
@@ -82,7 +128,7 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning("Sound: " + SceneThemeName + " not found!");
             return; //just in case..
         }
-        s.volume = volume;
-        s.source.volume = volume;
+        //s.volume = volume;
+        s.source.volume = s.volume * volume;
     }
 }
