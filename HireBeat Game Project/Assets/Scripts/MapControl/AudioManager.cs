@@ -5,6 +5,7 @@ using System;
 
 public class AudioManager : MonoBehaviour
 {
+    public string SceneThemeName;
 
     public Sound[] sounds;
     // Start is called before the first frame update
@@ -21,9 +22,9 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
-        }
+        }*/
 
-        DontDestroyOnLoad(gameObject); sounds carry on through scene transitions*/
+        //DontDestroyOnLoad(gameObject); //sounds carry on through scene transitions
 
         foreach (Sound s in sounds)
         {
@@ -39,7 +40,7 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        //Play("ThemeName");
+        if (SceneThemeName.Length != 0) Play(SceneThemeName);
     }
 
     public void Play(string name)
@@ -51,5 +52,25 @@ public class AudioManager : MonoBehaviour
             return; //just in case..
         }
         s.source.Play();
+    }
+
+    public void PlayAll()
+    {
+        foreach (Sound s in sounds)
+        {
+            s.source.Play();
+        }
+    }
+
+    public void SetVolume(string name, float volume)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == name); // cool shorthand ;D
+        if (s == null)
+        {
+            Debug.LogWarning("Sound: " + name + " not found!");
+            return; //just in case..
+        }
+        s.volume = volume;
+        s.source.volume = volume;
     }
 }

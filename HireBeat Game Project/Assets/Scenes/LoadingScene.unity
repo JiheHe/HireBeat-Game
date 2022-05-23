@@ -1286,6 +1286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 564867433}
   - component: {fileID: 564867432}
+  - component: {fileID: 564867434}
   m_Layer: 0
   m_Name: ConnectToServer
   m_TagString: Untagged
@@ -1337,6 +1338,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &564867434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564867431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5441aa85930174a4f86f9759934840e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SceneThemeName: 
+  sounds:
+  - name: TrainMovement
+    clip: {fileID: 8300000, guid: 2a4285d36e3883a40a6e118bd2253ea5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - name: WindSound
+    clip: {fileID: 8300000, guid: dedafb5640613a145b0037300e56652e, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - name: CitySound
+    clip: {fileID: 8300000, guid: 2f66f92cba7448d47b6dda8c772d0d37, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - name: ServoSound
+    clip: {fileID: 8300000, guid: b8dbf153ddb127144ad2027268b36dff, type: 3}
+    volume: 0.2
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - name: EngineSound
+    clip: {fileID: 8300000, guid: 38662f247b888d74a9ea4c46c66f3f1b, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
 --- !u!1 &640757508
 GameObject:
   m_ObjectHideFlags: 0

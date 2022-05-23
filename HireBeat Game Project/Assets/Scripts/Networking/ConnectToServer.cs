@@ -24,6 +24,8 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        GetComponent<AudioManager>().PlayAll();
+
         trainStartPosition = cam.WorldToViewportPoint(train.transform.localPosition);
         trainSpeed = 800;
 
