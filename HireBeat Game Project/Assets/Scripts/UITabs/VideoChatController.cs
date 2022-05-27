@@ -332,6 +332,7 @@ public class VideoChatController : MonoBehaviour
                     Destroy(uVideoOutputs[evt.ConnectionId].gameObject.transform.parent.gameObject); //I see!
                     uVideoOutputs.Remove(evt.ConnectionId);
                     userInRoomIds.Remove(connectionIdWithPlayFabId[evt.ConnectionId]);
+                    leavers.Add(connectionIdWithPlayFabId[evt.ConnectionId]); //add to leavers
                     connectionIdWithPlayFabId.Remove(evt.ConnectionId);
 
                     if (!inProportionalView && currentSpeaker == evt.ConnectionId) //if in speaker && the person leaving is speaker
@@ -343,6 +344,8 @@ public class VideoChatController : MonoBehaviour
                     Log("Connection disconnected");
                     /*if (uSender == false)
                         this.GetComponent<Image>().color = new Color(0, 0.5f, 0, 1); //receiver lost connection.  */
+
+                    vcs.RetrieveVCRoomCurrentOwnerWait(roomName, "leaverCheck", 1f);
                 }
                 break;
             case NetEventType.ServerInitialized:
@@ -364,6 +367,30 @@ public class VideoChatController : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    List<string> leavers = new List<string>();
+    public void OnLeaverCheckCallback(SQL4Unity.SQLResult result)
+    {
+        string roomOwnerID = null;
+        try
+        {
+            roomOwnerID = result.Get<hirebeatprojectdb_videochatsavailable>()[0].CurrOwnerID;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.Message);
+            return;
+        }
+
+        if(leavers.Contains(roomOwnerID) || roomOwnerID == "-null-") //then compete! One user will succeed.
+        {
+            vcs.UpdateVCRoomOwner(roomName, myID);
+            vcs.UpdateVCRoomNumMembers(roomName, userInRoomIds.Count + 1); //including you so +1
+        }
+        //else roomOwner is not a leaver or it is someone else that's not null. Then no need to do anything!
+
+        leavers.Clear();
     }
     #endregion
 
@@ -555,7 +582,7 @@ public class VideoChatController : MonoBehaviour
 
     public void OnDisconnectPressed()
     {
-        vcs.RetrieveVCRoomCurrentOwner(roomName); //this creates a callback
+        vcs.RetrieveVCRoomCurrentOwner(roomName, "disconnect"); //this creates a callback
     }
     public void OnDisconnectPressedSecondHalf(SQL4Unity.SQLResult result) //this will be called by dbc.
     {
@@ -583,7 +610,7 @@ public class VideoChatController : MonoBehaviour
                 vcs.UpdateVCRoomOwner(roomName, userInRoomIds[0]); //assign new owner through database, which can easily be the first person
             }
         }
-        else //If you are not owner, then webrtc msg owner to - 1.
+        else if(roomOwnerID != "-null-") //If you are not owner, then webrtc msg owner to - 1. //also ignore if null... eventual update hopefully
         {
             //'=' is indicator for leaver msg, "," is splitter, and 2nd part is content.
             byte[] msgData = Encoding.UTF8.GetBytes("=," + myID); //This is to tell the owner you are leaving.

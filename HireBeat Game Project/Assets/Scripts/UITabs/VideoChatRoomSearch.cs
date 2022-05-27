@@ -199,18 +199,45 @@ public class VideoChatRoomSearch : MonoBehaviour
 
         //Check who the owner is
         string currOwnerID = roomInfo.CurrOwnerID;
+
+        if(currOwnerID == "-null-") //Curr owner just disconnected abruptedly and other members haven't replaced yet.
+        {
+            DisplaySearchMessage(3, "Please try joining again.");
+            return;
+        }
+
         prevRoomName = connectRoomName;
 
         //Then use Photon Chat to request the list of userInRoomIDs from the owner and send them through messages. 
         //Then the owner will add 1 to member and send back info upon receiving.
         socialSystem.RequestVidCRoomInfo(currOwnerID);
+
+        if (WaitingForOwnerRes != null) StopCoroutine(WaitingForOwnerRes);
+        WaitingForOwnerRes = WaitForOwnerResponse();
+        StartCoroutine(WaitingForOwnerRes);
+    }
+
+    private IEnumerator WaitingForOwnerRes;
+    bool ownerResponseReceived;
+    IEnumerator WaitForOwnerResponse()
+    {
+        ownerResponseReceived = false;
+
+        yield return new WaitForSeconds(3.5f);
+
+        if (!ownerResponseReceived)
+        {
+            DisplaySearchMessage(3, "Please try joining again.");
+        }
     }
 
     //This callback is received when the owner sends you the list all users in room: ready to go!
     //Called from photon chat manager
     public void OnRoomOwnerInfoSendBack(string[] userIds)
     {
-        Debug.LogError("Userids to connect to received: " + userIds.ToString());
+        ownerResponseReceived = true;
+
+        Debug.Log("Userids to connect to received: " + userIds.ToString());
         InitializeVideoChatRoomPanel(userIds.ToList()); //you are joining!
     }
 
@@ -231,9 +258,16 @@ public class VideoChatRoomSearch : MonoBehaviour
     }
 
     //Only vcc will call this upon leaving, to check.
-    public void RetrieveVCRoomCurrentOwner(string roomName)
+    public void RetrieveVCRoomCurrentOwner(string roomName, string callerName)
     {
-        dbc.RetrieveVCRoomCurrentOwner(roomName);
+        dbc.RetrieveVCRoomCurrentOwner(roomName, callerName);
+    }
+
+    public IEnumerator RetrieveVCRoomCurrentOwnerWait(string roomName, string callerName, float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        dbc.RetrieveVCRoomCurrentOwner(roomName, callerName);
     }
 
     public void DeleteVCRoom(string roomName)

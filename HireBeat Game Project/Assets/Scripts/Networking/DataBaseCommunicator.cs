@@ -15,7 +15,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	public SQL4Unity.Server.Protocol Protocol = SQL4Unity.Server.Protocol.TCP;
 	public string Database = "HireBeatProjectDB";
 	public string UserName = string.Empty;
-	public string IpAddress = "54.229.65.122"; // Local IP for testing. Updated to TCP
+	public string IpAddress = "54.229.65.122"; //"10.0.0.32"; is Local IP for testing. Updated to TCP //Change in EDITOR!!!
 
 	public string myOwnIpAddress = string.Empty;
 	public string myID = string.Empty;
@@ -73,6 +73,7 @@ public class DataBaseCommunicator : MonoBehaviour
 		sql = new SQLExecute(this);
 
 		this.myID = myID;
+		//myOwnIpAddress = GetLocalIPv4(); //Switch it back to public after testing admin server check
 		myOwnIpAddress = GetPublicIpAddress(); //this is the ip address that the user connects to the server with.
 
 		// Must be WebSocket for WebGL
@@ -551,7 +552,7 @@ public class DataBaseCommunicator : MonoBehaviour
 	//SQLResult retrieveVCRoomCurrentOwnerResult;
 	//bool retrieveVCRoomCurrentOwnerReady;
 	//Retrieve one vc room info in the database
-	public void RetrieveVCRoomCurrentOwner(string roomName) //this will only be used by vCC, so....
+	public void RetrieveVCRoomCurrentOwner(string roomName, string callerName) //this will only be used by vCC, so....
 	{
 		//retrieveVCRoomCurrentOwnerReady = false;
 
@@ -560,7 +561,11 @@ public class DataBaseCommunicator : MonoBehaviour
 		SQLParameter parameters = new SQLParameter();
 		parameters.SetValue("roomName", roomName);
 
-		if (vcs.vCC != null) Execute(query, vcs.vCC.OnDisconnectPressedSecondHalf, parameters);
+		if (vcs.vCC != null)
+		{
+			if (callerName == "disconnect") Execute(query, vcs.vCC.OnDisconnectPressedSecondHalf, parameters);
+			else if (callerName == "leaverCheck") Execute(query, vcs.vCC.OnLeaverCheckCallback, parameters);
+		}
 		//sql.Command(query, null, parameters, RetrieveVCRoomCurrentOwnerCallback); //no tis more. 
 		//StartCoroutine(SendVCRoomOwnerInfo());
 	}
